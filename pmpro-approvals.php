@@ -65,7 +65,8 @@ class PMPro_Approvals {
     * Run code on admin init
     */
     public static function admin_init(){
-    	//look into this in near future.
+    	//TODO: Add Approver role (maybe in activation/deactivation)
+		
         //get role of administrator
         $role = get_role( 'administrator' );
         //add custom capability
@@ -77,7 +78,7 @@ class PMPro_Approvals {
 	 * Fires during the "admin_menu" action.
 	 */
     public static function admin_menu(){
-		add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro' ), __( 'Approvals', 'pmpro' ), 'administrator', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
+		add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro' ), __( 'Approvals', 'pmpro' ), 'pmpro_approvals', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
     }
 
 	/**
@@ -108,28 +109,46 @@ class PMPro_Approvals {
 		require_once( dirname(__FILE__) . '/adminpages/approvals.php' );
 	}
 
+	/**
+	 * Get options for level.
+	 */
+	public static function getOptions($level_id = NULL) {
+		$options = get_option('pmproapp_options', array());
+		if(!empty($level_id)) {
+			if(!empty($options[$level_id]))
+				return $options;
+			else
+				return false;
+		} else {
+			return $options;
+		}
+	}
 
-  /**
-  * Load check box to make level require membership.
-  */
-  public static function membership_level_after_other_settings(){
-
-
-?>
-    <h3 class="topborder"><?php _e('Approval Settings', 'pmproapp') ?></h3>
-    <table>
-    <tbody class="form-table">
-    	<tr>
-    		<th scope="row" valign="top"><label for="requires_approval"><?php _e('Requires Approval:', 'pmproapp');?></label></th>
-    		<td>
-    			<input type="checkbox" id="requires_approval" name="requires_approval" value="1" <?php checked($requires_approval, 1);?> />
-    			<label for="requires_approval"><?php _e('Check this if membership requires approval before users are assigned to this membership level.', 'pmproapp');?></label>
-    		</td>
-    	</tr>
-    </tbody>
-    </table>
-<?php
-  }
+	/**
+	* Load check box to make level require membership.
+	*/
+	public static function membership_level_after_other_settings(){
+		$level_id = $_REQUEST['edit'];
+		if($level_id > 0)
+			$options = PMPro_Approvals::getOptions($level_id);
+		else
+			$options = false;
+		
+		?>
+		<h3 class="topborder"><?php _e('Approval Settings', 'pmproapp') ?></h3>
+		<table>
+		<tbody class="form-table">
+			<tr>
+				<th scope="row" valign="top"><label for="requires_approval"><?php _e('Requires Approval:', 'pmproapp');?></label></th>
+				<td>
+					<input type="checkbox" id="requires_approval" name="requires_approval" value="1" <?php checked($options['requires_approval'], 1);?> />
+					<label for="requires_approval"><?php _e('Check this if membership requires approval before users are assigned to this membership level.', 'pmproapp');?></label>
+				</td>
+			</tr>
+		</tbody>
+		</table>
+		<?php
+	}
 
 	/**
 	 * Approve a member
@@ -137,7 +156,7 @@ class PMPro_Approvals {
 	public function approveMember( $user_id, $membership_id ) {
 		//update user meta to save timestamp and user who approved
 
-		//update statues/etc
+		//update statuses/etc
 
     	//send email
 	}
@@ -148,7 +167,7 @@ class PMPro_Approvals {
 	public function denyMember( $user_id, $membership_id ) {
 		//update user meta to save timestamp and user who denied
 
-		//update statues/etc
+		//update statuses/etc
 
 		//send emails
  
