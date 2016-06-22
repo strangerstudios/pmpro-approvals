@@ -6,6 +6,7 @@ Description: Grants administrators the ability to approve/deny memberships after
 Version: .1
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
+Text Domain: pmproapp
 */
 
 class PMPro_Approvals {
@@ -24,18 +25,27 @@ class PMPro_Approvals {
 
   		//add admin menu items to 'Memberships' in WP dashboard and admin bar
   		add_action( 'admin_menu', array( 'PMPro_Approvals', 'admin_menu' ) );
-  		add_action( 'admin_bar_menu', array( 'PMPro_Approvals', 'admin_bar_menu' ) );
+  		add_action( 'admin_bar_menu', array( 'PMPro_Approvals', 'admin_bar_menu' ), 1000 );
       	add_action( 'admin_init', array( 'PMPro_Approvals', 'admin_init' ) );
 
+		//set status when user's checkout
+		add_action( 'pmpro_after_checkout', array( 'PMPro_Approvals', 'pmpro_after_checkout' ) );
+		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ) );
+		
+		//filter membership and content access
+		add_filter( 'pmpro_has_membership_level', array( 'PMPro_Approvals', 'pmpro_has_membership_level' ) );
+		add_filter( 'pmpro_has_membership_access_filter', array( 'PMPro_Approvals', 'pmpro_has_membership_access_filter' ) );
+		
   		//add settings to the edit membership level page
-  		/*
+		/*
   			Add settings to edit level page: (see pmpro-shipping)
   			* add_action pmpro_membership_level_after_other_settings
   			* add_action pmpro_save_membership_level
-  		*/
+  		*/		
 	    //load checkbox in membership level edit page for users to select.
-	    add_action( 'pmpro_membership_level_after_other_settings', array( 'PMPro_Approvals', 'membership_level_after_other_settings' ) );
-
+	    add_action( 'pmpro_membership_level_after_other_settings', array( 'PMPro_Approvals', 'pmpro_membership_level_after_other_settings' ) );
+		add_action( 'pmpro_save_membership_level', array( 'PMPro_Approvals', 'pmpro_save_membership_level' ) );
+		
 
 		//Add code for filtering checkouts, confirmation, and content filters
     }
@@ -96,8 +106,8 @@ class PMPro_Approvals {
   		//add the admin link
   		$wp_admin_bar->add_menu( array(
   			'id'    => 'pmpro-approvals',
-  			'title' => 'Approvals',
-  			'href'  => '#',
+  			'title' => __('Approvals', 'pmproapp'),
+  			'href'  => get_admin_url(NULL, '/admin.php?page=pmpro-approvals'),
   			'parent'=>'paid-memberships-pro'
   		));
 	}
@@ -114,26 +124,36 @@ class PMPro_Approvals {
 	 */
 	public static function getOptions($level_id = NULL) {
 		$options = get_option('pmproapp_options', array());
+				
 		if(!empty($level_id)) {
 			if(!empty($options[$level_id]))
-				return $options;
+				return $options[$level_id];
 			else
-				return false;
+				return array('requires_approval'=>false);
 		} else {
 			return $options;
 		}
 	}
+	
+	/**
+	 * Save options for level.
+	 */
+	public static function saveOptions($options) {
+		update_option('pmproapp_options', $options, 'no');
+	}
 
 	/**
 	* Load check box to make level require membership.
+	* Fires on pmpro_membership_level_after_other_settings
 	*/
-	public static function membership_level_after_other_settings(){
+	public static function pmpro_membership_level_after_other_settings(){
 		$level_id = $_REQUEST['edit'];
+				
 		if($level_id > 0)
 			$options = PMPro_Approvals::getOptions($level_id);
 		else
-			$options = false;
-		
+			$options = array('requires_approval'=>false);
+			
 		?>
 		<h3 class="topborder"><?php _e('Approval Settings', 'pmproapp') ?></h3>
 		<table>
@@ -150,6 +170,123 @@ class PMPro_Approvals {
 		<?php
 	}
 
+	/**
+	 * Save settings when editing the membership level
+	 * Fires on pmpro_save_membership_level
+	 */
+	public static function pmpro_save_membership_level($level_id) {
+		//get value
+		if(!empty($_REQUEST['requires_approval']))
+			$requires_approval = true;
+		else
+			$requires_approval = false;
+		
+		//get options
+		$options = PMPro_Approvals::getOptions();
+		
+		//create array if we don't have options for this level already
+		if(empty($options[$level_id]))
+			$options[$level_id] = array();
+			
+		//update requires_approval option
+		$options[$level_id]['requires_approval'] = $requires_approval;
+		
+		//save it
+		PMPro_Approvals::saveOptions($options);
+	}
+	
+	/**
+	 * Update membership status to pending_approval if the level requires approval
+	 * Fires on pmpro_after_checkout
+	 */
+	public static function pmpro_after_checkout($user_id) {
+		//get their membership level
+		
+		//check if they've already been approved or not
+		
+		//if not, query DB to change status to pending_approval
+	}
+	
+	/**
+	 * Filter hasMembershipLevel if user is not approved
+	 * Fires on pmpro_has_membership_access_filter
+	 */
+	public static function pmpro_has_membership_access_filter($access, $post, $user, $levels) {
+		//return false if already false
+		
+		//check if user's level requires approval
+		
+		//check if user is approved
+		
+		//return false if requires approval and not approved
+	}
+	
+	/**
+	 * Get levels that require approval
+	 */
+	public static function getApprovalLevels() {
+		$options = PMPro_Approvals::getOptions();
+		
+		//loop through all options and add level IDs to an array if it requires approvals
+		
+		//return the array
+	}
+	
+	/**
+	 * Get list of approvals
+	 */
+	public static function getApprovals($l = false, $s = '', $sortby = 'user_registered', $sortorder = 'ASC', $pn = 1, $limit = 15) {		
+		global $wpdb;
+		
+		$end = $pn * $limit;
+		$start = $end - $limit;				
+		
+		if($s)
+		{
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
+			
+			if($sortby == "pmpro_approval")
+				$sqlQuery .= " LEFT JOIN $wpdb->usermeta um2 ON um2.user_id = u.ID AND um2.meta_key = 'pmpro_approval' ";
+			
+			$sqlQuery .= "WHERE mu.status = 'active' AND mu.membership_id > 0 AND (u.user_login LIKE '%$s%' OR u.user_email LIKE '%$s%' OR um.meta_value LIKE '%$s%') ";
+
+			//use PMPro_Approvals::getApprovalLevels() ... AND mu.membership_id IN($levels)
+			if($l)
+				$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";											
+			
+			$sqlQuery .= "GROUP BY u.ID ";
+			
+			if($sortby == "pmpro_approval")
+				$sqlQuery .= "ORDER BY (um2.meta_value IS NULL) $sortorder ";		
+			else
+				$sqlQuery .= "ORDER BY $sortby $sortorder ";
+				
+			$sqlQuery .= "LIMIT $start, $limit";				
+		}
+		else
+		{
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
+			
+			if($sortby == "pmpro_approval")
+				$sqlQuery .= " LEFT JOIN $wpdb->usermeta um ON um.user_id = u.ID AND um.meta_key = 'pmpro_approval' ";
+						
+			$sqlQuery .= " WHERE mu.membership_id > 0  AND mu.status = 'active' ";
+			if($l)
+				$sqlQuery .= " AND mu.membership_id = '" . $l . "' ";								
+			
+			if($sortby == "pmpro_approval")
+				$sqlQuery .= "ORDER BY (um.meta_value IS NULL) $sortorder ";		
+			else
+				$sqlQuery .= "ORDER BY $sortby $sortorder ";
+				
+			$sqlQuery .= "LIMIT $start, $limit";			
+		}
+						
+		$theusers = $wpdb->get_results($sqlQuery);		
+				
+		return $theusers;		
+	}
+	
 	/**
 	 * Approve a member
 	 */

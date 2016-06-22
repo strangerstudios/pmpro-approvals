@@ -57,13 +57,11 @@
 		</tr>
 		<tr>
 			<th><label><?php _e('Membership Status', 'pmproapp');?></label></th>
-			<td>				
-			</td>
+			<td><?php //show status here or what is this even??></td>
 		</tr>
 		<tr>
 			<th><label><?php _e('Approval Status', 'pmproapp');?></label></th>
-			<td>				
-			</td>
+			<td><?php //show status here?></td>
 		</tr>
 	</table>
 	
