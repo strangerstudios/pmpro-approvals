@@ -6,7 +6,7 @@ Description: Grants administrators the ability to approve/deny memberships after
 Version: .1
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
-Text Domain: pmproapp
+Text Domain: pmpro-approvals
 */
 
 class PMPro_Approvals {
@@ -88,12 +88,12 @@ class PMPro_Approvals {
 	 * Fires during the "admin_menu" action.
 	 */
     public static function admin_menu(){
-		add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro' ), __( 'Approvals', 'pmpro' ), 'pmpro_approvals', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
+		add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro-approvals' ), __( 'Approvals', 'pmpro-approvals' ), 'pmpro_approvals', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
     }
 
 	/**
 	 * Create 'Approvals' link under the admin bar link 'Memberships'.
-	 * Fires during the admin_bar_menu action.
+	 * Fires during the "admin_bar_menu" action.
 	 */
     public static function admin_bar_menu(){
   		global $wp_admin_bar;
@@ -106,8 +106,8 @@ class PMPro_Approvals {
   		//add the admin link
   		$wp_admin_bar->add_menu( array(
   			'id'    => 'pmpro-approvals',
-  			'title' => __('Approvals', 'pmproapp'),
-  			'href'  => get_admin_url(NULL, '/admin.php?page=pmpro-approvals'),
+  			'title' => __( 'Approvals', 'pmpro-approvals' ),
+  			'href'  => get_admin_url( NULL, '/admin.php?page=pmpro-approvals' ),
   			'parent'=>'paid-memberships-pro'
   		));
 	}
@@ -116,20 +116,20 @@ class PMPro_Approvals {
 	 * Load the Approvals admin page.
 	 */
 	public static function admin_page_approvals() {
-		require_once( dirname(__FILE__) . '/adminpages/approvals.php' );
+		require_once( dirname( __FILE__ ) . '/adminpages/approvals.php' );
 	}
 
 	/**
 	 * Get options for level.
 	 */
-	public static function getOptions($level_id = NULL) {
-		$options = get_option('pmproapp_options', array());
+	public static function getOptions( $level_id = NULL ) {
+		$options = get_option( 'pmproapp_options', array() );
 				
-		if(!empty($level_id)) {
-			if(!empty($options[$level_id]))
+		if( !empty( $level_id ) ) {
+			if( !empty( $options[$level_id] ) )
 				return $options[$level_id];
 			else
-				return array('requires_approval'=>false);
+				return array( 'requires_approval' => false );
 		} else {
 			return $options;
 		}
@@ -138,8 +138,8 @@ class PMPro_Approvals {
 	/**
 	 * Save options for level.
 	 */
-	public static function saveOptions($options) {
-		update_option('pmproapp_options', $options, 'no');
+	public static function saveOptions( $options ) {
+		update_option( 'pmproapp_options', $options, 'no' );
 	}
 
 	/**
@@ -150,19 +150,19 @@ class PMPro_Approvals {
 		$level_id = $_REQUEST['edit'];
 				
 		if($level_id > 0)
-			$options = PMPro_Approvals::getOptions($level_id);
+			$options = PMPro_Approvals::getOptions( $level_id );
 		else
-			$options = array('requires_approval'=>false);
+			$options = array( 'requires_approval' => false );
 			
 		?>
-		<h3 class="topborder"><?php _e('Approval Settings', 'pmproapp') ?></h3>
+		<h3 class="topborder"><?php _e( 'Approval Settings', 'pmpro-approvals' ) ?></h3>
 		<table>
 		<tbody class="form-table">
 			<tr>
-				<th scope="row" valign="top"><label for="requires_approval"><?php _e('Requires Approval:', 'pmproapp');?></label></th>
+				<th scope="row" valign="top"><label for="requires_approval"><?php _e( 'Requires Approval:', 'pmpro-approvals' );?></label></th>
 				<td>
-					<input type="checkbox" id="requires_approval" name="requires_approval" value="1" <?php checked($options['requires_approval'], 1);?> />
-					<label for="requires_approval"><?php _e('Check this if membership requires approval before users are assigned to this membership level.', 'pmproapp');?></label>
+					<input type="checkbox" id="requires_approval" name="requires_approval" value="1" <?php checked( $options['requires_approval'], 1);?> />
+					<label for="requires_approval"><?php _e( 'Check this if membership requires approval before users are assigned to this membership level.', 'pmpro-approvals' );?></label>
 				</td>
 			</tr>
 		</tbody>
@@ -174,9 +174,9 @@ class PMPro_Approvals {
 	 * Save settings when editing the membership level
 	 * Fires on pmpro_save_membership_level
 	 */
-	public static function pmpro_save_membership_level($level_id) {
+	public static function pmpro_save_membership_level( $level_id ) {
 		//get value
-		if(!empty($_REQUEST['requires_approval']))
+		if( !empty( $_REQUEST['requires_approval'] ) )
 			$requires_approval = true;
 		else
 			$requires_approval = false;
@@ -185,33 +185,42 @@ class PMPro_Approvals {
 		$options = PMPro_Approvals::getOptions();
 		
 		//create array if we don't have options for this level already
-		if(empty($options[$level_id]))
+		if( empty( $options[$level_id] ) )
 			$options[$level_id] = array();
 			
 		//update requires_approval option
 		$options[$level_id]['requires_approval'] = $requires_approval;
 		
 		//save it
-		PMPro_Approvals::saveOptions($options);
+		PMPro_Approvals::saveOptions( $options );
 	}
 	
 	/**
 	 * Update membership status to pending_approval if the level requires approval
 	 * Fires on pmpro_after_checkout
 	 */
-	public static function pmpro_after_checkout($user_id) {
+	public static function pmpro_after_checkout( $user_id ) {
 		//get their membership level
+		if( pmpro_hasMembershipLevel() ){
+			
+			//get options
+			$options = PMPro_Approvals::getOptions();
+
+			pmpro_getMembershipLevelForUser( $user_id );
+
+			//check if they've already been approved or not
 		
-		//check if they've already been approved or not
-		
-		//if not, query DB to change status to pending_approval
+			//if not, query DB to change status to pending_approval
+
+
+		}
 	}
 	
 	/**
 	 * Filter hasMembershipLevel if user is not approved
 	 * Fires on pmpro_has_membership_access_filter
 	 */
-	public static function pmpro_has_membership_access_filter($access, $post, $user, $levels) {
+	public static function pmpro_has_membership_access_filter( $access, $post, $user, $levels ) {
 		//return false if already false
 		
 		//check if user's level requires approval
@@ -235,7 +244,7 @@ class PMPro_Approvals {
 	/**
 	 * Get list of approvals
 	 */
-	public static function getApprovals($l = false, $s = '', $sortby = 'user_registered', $sortorder = 'ASC', $pn = 1, $limit = 15) {		
+	public static function getApprovals( $l = false, $s = '', $sortby = 'user_registered', $sortorder = 'ASC', $pn = 1, $limit = 15 ) {		
 		global $wpdb;
 		
 		$end = $pn * $limit;
