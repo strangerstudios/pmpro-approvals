@@ -8,49 +8,22 @@
 
 	//vars
 	if(isset($_REQUEST['s']))
-		$s = $_REQUEST['s'];
+		$s = sanitize_text_field($_REQUEST['s']);
 	else
 		$s = "";
 	
 	if(isset($_REQUEST['l']))
-		$l = $_REQUEST['l'];
+		$l = intval($_REQUEST['l']);
 	else
 		$l = false;
 		
 	//approving or denying?
-	if(!empty($_REQUEST['approve']))
-	{
-		//TODO: move this into a PMProApprovals class method, PMPro_Approvals::approve(...);
-		if(!current_user_can("manage_options") && !current_user_can("pmpro_approvals"))
-		{						
-			$msg = -1;
-			$msgt = __("You do not have permission to perform approvals.", 'pmproapp');
-		}
-		else
-		{
-			$a_user_id = intval($_REQUEST['approve']);
-			$a_user = get_userdata($a_user_id);
-			
-			//approve
-			update_user_meta($a_user_id, "pmpro_approval", array("status"=>"approved", "timestamp"=>time(), "who" => $current_user->ID, "approver"=>$current_user->user_login));						
-			
-			//change status
-			
-			$msg = 1;
-			$msgt = __("Member was approved.", 'pmproapp');
-						
-			//send approval email to use
-			$approval_email = new PMProEmail();
-			$approval_email->email = $a_user->user_email;
-			$approval_email->subject = sprintf(__("Your membeship at %s has been approved.", 'pmproapp'), get_bloginfo('name'));
-			$approval_email->template = "application_approved";
-			$approval_email->data = array("display_name" => $a_user->display_name, "user_email" => $a_user->user_email, "login_link" => wp_login_url());
-			$approval_email->sendEmail();
-		}
+	if(!empty($_REQUEST['approve'])) {
+		PMPro_Approvals::approveMember(intval($_REQUEST['approve']), $l);		
 	}
 	elseif(!empty($_REQUEST['deny']))
 	{
-		//TODO: move this into a PMProApprovals class method, PMPro_Approvals::deny(...);
+		//TODO: move this into a PMPro_Approvals class method, PMPro_Approvals::deny(...);
 		if(!current_user_can("manage_options") && !current_user_can("pmpro_approvals"))
 		{						
 			$msg = -1;
@@ -70,7 +43,7 @@
 	}
 	elseif(!empty($_REQUEST['unapprove']))
 	{
-		//TODO: move this into a PMProApprovals class method, PMPro_Approvals::unapprove(...);
+		//TODO: move this into a PMPro_Approvals class method, PMPro_Approvals::unapprove(...);
 		if(!current_user_can("manage_options") && !current_user_can("pmpro_approvals"))
 		{						
 			$msg = -1;
@@ -122,7 +95,7 @@
 	<?php 
 		//some vars for the search
 		if(isset($_REQUEST['pn']))
-			$pn = $_REQUEST['pn'];
+			$pn = intval($_REQUEST['pn']);
 		else
 			$pn = 1;
 			
@@ -142,7 +115,7 @@
 			$sortorder = "DESC";
 			
 		if(!empty($_REQUEST['limit']))
-			$limit = $_REQUEST['limit'];
+			$limit = intval($_REQUEST['limit']);
 		else
 			$limit = 15;
 		
