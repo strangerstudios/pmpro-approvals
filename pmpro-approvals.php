@@ -44,10 +44,10 @@ class PMPro_Approvals {
   		*/		
 	    //load checkbox in membership level edit page for users to select.
 	    add_action( 'pmpro_membership_level_after_other_settings', array( 'PMPro_Approvals', 'pmpro_membership_level_after_other_settings' ) );
-		add_action( 'pmpro_save_membership_level', array( 'PMPro_Approvals', 'pmpro_save_membership_level' ) );
-		
+		add_action( 'pmpro_save_membership_level', array( 'PMPro_Approvals', 'pmpro_save_membership_level' ) );		
 
 		//Add code for filtering checkouts, confirmation, and content filters
+		add_filter( 'pmpro_non_member_text_filter', array( $this, 'change_message_protected_content' ) );
     }
 
     /**
@@ -201,19 +201,23 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_after_checkout( $user_id ) {
 		//get their membership level
-		if( pmpro_hasMembershipLevel() ){
 			
-			//get options
-			$options = PMPro_Approvals::getOptions();
-
-			pmpro_getMembershipLevelForUser( $user_id );
 
 			//check if they've already been approved or not
+			$user_approved = get_user_meta( $user_id, 'pmpro_approval', true);
+			
+			if( $user_approved == 'approved' ){
+				return false;
+			}else{
+				//get options
+				$options = PMPro_Approvals::getOptions();
+			}
+			
+			
+			
 		
 			//if not, query DB to change status to pending_approval
 
-
-		}
 	}
 	
 	/**
@@ -221,13 +225,18 @@ class PMPro_Approvals {
 	 * Fires on pmpro_has_membership_access_filter
 	 */
 	public static function pmpro_has_membership_access_filter( $access, $post, $user, $levels ) {
+		
+		$user_approved = get_user_meta( $user->id, 'pmpro_approval', true );
 		//return false if already false
-		
+		$levels = PMPro_Approvals::getApprovalLevels();
 		//check if user's level requires approval
-		
-		//check if user is approved
-		
-		//return false if requires approval and not approved
+		foreach( $levels as $level => $level_id ){
+			if( $level_id == $user->membership_level->id ){	
+				if( empty( $user_approved ) || $user_approved['status'] != 'approved'){
+					$access = false;
+				}
+			}
+		}
 		
 		return $access;
 	}
@@ -237,10 +246,15 @@ class PMPro_Approvals {
 	 */
 	public static function getApprovalLevels() {
 		$options = PMPro_Approvals::getOptions();
-		
-		//loop through all options and add level IDs to an array if it requires approvals
-		
-		//return the array
+
+		$r = array();
+
+		foreach ($options as $level_id => $level_options) {
+			if($level_options['requires_approval']){
+				$r[] = $level_id;
+			}
+		}
+		return $r;
 	}
 	
 	/**
@@ -390,6 +404,25 @@ class PMPro_Approvals {
 
 	}
 
+	/**
+	*
+	**/
+	public static function change_message_protected_content( $text ){
+
+		global $current_user, $has_access;
+
+		$user_approved = get_user_meta( $current_user->id, 'pmpro_approval', true );	
+
+		if( $user_approved != 'approved' ){
+			$text = __( 'Your membership requires approval in order to view this content.', 'pmpro-approvals' );
+		}
+
+		return $text;
+	}
+
 } // end class
 
 PMPro_Approvals::get_instance();
+
+
+//add_action('wp_footer', 'pmpro_after_checkout' );
