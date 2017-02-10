@@ -336,12 +336,32 @@ class PMPro_Approvals {
 	 */
 	public static function denyMember( $user_id, $membership_id ) {
 		global $current_user, $msg, $msgt;
+
+		//make sure they have permission
+		if(!current_user_can("manage_options") && !current_user_can("pmpro_approvals")) {
+			$msg = -1;
+			$msgt = __("You do not have permission to perform approvals.", 'pmproapp');
+			
+			return false;
+		}
 		
-		//update user meta to save timestamp and user who denied
-
+		//update user meta to save timestamp and user who approved
+		update_user_meta($user_id, "pmpro_approval", array("status"=>"denied", "timestamp"=>time(), "who" => $current_user->ID, "approver"=>$current_user->user_login));						
+		
 		//update statuses/etc
-
-		//send emails
+		$msg = 1;
+		$msgt = __("Member was denied.", 'pmproapp');
+					
+		//send email
+		$a_user = get_userdata($user_id);
+		$approval_email = new PMProEmail();
+		$approval_email->email = $a_user->user_email;
+		$approval_email->subject = sprintf(__("Your membeship at %s has been denied.", 'pmproapp'), get_bloginfo('name'));
+		$approval_email->template = "application_denied";
+		$approval_email->data = array("display_name" => $a_user->display_name, "user_email" => $a_user->user_email, "login_link" => wp_login_url()); //Update this?
+		$approval_email->sendEmail();
+		
+		return true;
  
 	}
 
@@ -351,9 +371,22 @@ class PMPro_Approvals {
 	public static function resetMember( $user_id, $membership_id ) {
 		global $current_user, $msg, $msgt;
 		
-		// update user back to "pending" status.
-
-    	//send email that user has been Reset
+    	//make sure they have permission
+		if(!current_user_can("manage_options") && !current_user_can("pmpro_approvals")) {
+			$msg = -1;
+			$msgt = __("You do not have permission to perform approvals.", 'pmproapp');
+			
+			return false;
+		}
+		
+		$d_user_id = intval($_REQUEST['unapprove']);
+						
+		delete_user_meta($d_user_id, "pmpro_approval");
+			
+		$msg = 1;
+		$msgt = __("Member has been unapproved.", 'pmproapp');	
+		
+		return true;
 
 	}
 
