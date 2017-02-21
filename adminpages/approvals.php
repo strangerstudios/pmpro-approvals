@@ -17,49 +17,17 @@
 	else
 		$l = false;
 		
-	//approving or denying?
+	//Approve, deny or reset member back to pending
 	if(!empty($_REQUEST['approve'])) {
 		PMPro_Approvals::approveMember(intval($_REQUEST['approve']), $l);		
 	}
 	elseif(!empty($_REQUEST['deny']))
 	{
-		//TODO: move this into a PMPro_Approvals class method, PMPro_Approvals::deny(...);
-		if(!current_user_can("manage_options") && !current_user_can("pmpro_approvals"))
-		{						
-			$msg = -1;
-			$msgt = __("You do not have permission to preform approvals.", 'pmproapp');
-		}
-		else
-		{
-			$d_user_id = intval($_REQUEST['deny']);
-						
-			update_user_meta($d_user_id, "executive_approval", array("status"=>"denied", "timestamp"=>time(), "who" => $current_user->ID));
-			
-			//change status
-			
-			$msg = 1;
-			$msgt = "Member was denied (executive).";		
-		}
+		PMPro_Approvals::denyMember(intval($_REQUEST['deny']), $l);
 	}
 	elseif(!empty($_REQUEST['unapprove']))
 	{
-		//TODO: move this into a PMPro_Approvals class method, PMPro_Approvals::unapprove(...);
-		if(!current_user_can("manage_options") && !current_user_can("pmpro_approvals"))
-		{						
-			$msg = -1;
-			$msgt = __("You do not have permission to preform approvals.", 'pmproapp');
-		}
-		else
-		{
-			$d_user_id = intval($_REQUEST['unapprove']);
-						
-			delete_user_meta($d_user_id, "pmpro_approval");
-			
-			//change status
-			
-			$msg = 1;
-			$msgt = __("Member has been unapproved.", 'pmproapp');		
-		}
+		PMPro_Approvals::resetMember(intval($_REQUEST['unapprove']), $l);
 	}
 	
 	require_once( PMPRO_DIR . "/adminpages/admin_header.php" );
