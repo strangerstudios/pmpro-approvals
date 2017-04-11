@@ -109,6 +109,7 @@
 				<th><?php _e('Membership', 'pmpro-approvals');?></th>					
 				<th><a href="<?php echo admin_url("admin.php?page=pmpro-approvals&s=" . esc_attr($s) . "&limit=" . $limit . "&pn=" . $pn . "&sortby=pmpro_approval");?><?php if($sortby == "pmpro_approval" && $sortorder == "DESC") { ?>&sortorder=ASC<?php } ?>"><?php _e('Approval', 'pmpro-approvals');?></a></th>
 				<th><a href="<?php echo admin_url("admin.php?page=pmpro-approvals&s=" . esc_attr($s) . "&limit=" . $limit . "&pn=" . $pn . "&sortby=user_registered");?><?php if($sortby == "user_registered" && $sortorder == "DESC") { ?>&sortorder=ASC<?php } ?>"><?php _e('Joined', 'pmpro-approvals');?></a></th>
+				<th><?php _e( 'Preview', 'pmpro-approvals' ); ?></th>
 			</tr>
 		</thead>
 		<tbody id="users" class="list:user user-list">	
@@ -123,7 +124,7 @@
 							<td><?php echo $theuser->ID?></td>
 							<td class="username column-username">
 								<?php echo get_avatar($theuser->ID, 32)?>								
-								<?php if(current_user_can("edit_users")) { ?>
+								<?php if(current_user_can("edit_users") ) { ?>
 									<strong><a href="user-edit.php?user_id=<?php echo $theuser->ID?>"><?php echo $theuser->user_login?></a></strong>
 								<?php } else { ?>
 									<strong><a href="admin.php?page=pmpro-approvals&user_id=<?php echo $theuser->ID?>"><?php echo $theuser->user_login?></a></strong>
@@ -175,7 +176,7 @@
 								?>
 							</td>
 							<td><?php echo date("m/d/Y", strtotime($theuser->user_registered))?></td>
-														
+							<td><a href="?page=pmpro-approvals&user_id=<?php echo $auser->ID; ?>"><?php _e( 'View Profile', 'pmpro-approvals' ); ?></a></td>						
 						</tr>
 					<?php
 				}

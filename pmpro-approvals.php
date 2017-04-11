@@ -80,7 +80,7 @@ class PMPro_Approvals {
 		
         //get role of administrator
         $role = get_role( 'administrator' );
-        //add custom capability
+        //add custom capability to administrator
         $role->add_cap( 'pmpro_approvals' );
     }
 
@@ -117,6 +117,9 @@ class PMPro_Approvals {
 	 * Load the Approvals admin page.
 	 */
 	public static function admin_page_approvals() {
+	if(!empty($_REQUEST['user_id']))
+		require_once( dirname( __FILE__ ) . '/adminpages/userinfo.php' );
+	else
 		require_once( dirname( __FILE__ ) . '/adminpages/approvals.php' );
 	}
 
@@ -480,8 +483,8 @@ class PMPro_Approvals {
 	}
 
 	/**
-	*
-	**/
+	 * Show a different message for users that have their membership awaiting approval.
+	 */
 	public static function change_message_protected_content( $text ){
 
 		global $current_user, $has_access;
@@ -496,6 +499,3 @@ class PMPro_Approvals {
 } // end class
 
 PMPro_Approvals::get_instance();
-
-
-//add_action('wp_footer', 'pmpro_after_checkout' );
