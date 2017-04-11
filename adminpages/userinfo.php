@@ -10,7 +10,7 @@
 	//get the user
 	if(empty($_REQUEST['user_id']))
 	{
-		wp_die(__("No user id passed in.", 'pmproapp'));
+		wp_die(__("No user id passed in.", 'pmpro-approvals'));
 	}
 	else
 	{
@@ -19,7 +19,7 @@
 		//user found?
 		if(empty($user->ID))
 		{
-			wp_die(sprintf(__("No user found with ID %d.", 'pmproapp'), intval($_REQUEST['user_id'])));
+			wp_die(sprintf(__("No user found with ID %d.", 'pmpro-approvals'), intval($_REQUEST['user_id'])));
 		}
 		
 		//if a chapter rep, make sure the user is in their chapter
@@ -29,7 +29,7 @@
 			
 			if(empty($rep_chapters) || !in_array($user->chapter, $rep_chapters))
 			{
-				wp_die(__("This user is not in one of your chapters. You cannot view this information.", 'pmproapp'));
+				wp_die(__("This user is not in one of your chapters. You cannot view this information.", 'pmpro-approvals'));
 			}
 		}
 	}
@@ -41,26 +41,26 @@
 		<?php echo $user->ID;?> - <?php echo $user->display_name;?> (<?php echo $user->user_login;?>)
 	</h2>	
 	
-	<h3><?php _e('Account Information', 'pmproapp');?></h3>
+	<h3><?php _e('Account Information', 'pmpro-approvals');?></h3>
 	<table class="form-table">
 		<tr>
-			<th><label><?php _e('User ID', 'pmproapp');?>/label></th>
+			<th><label><?php _e('User ID', 'pmpro-approvals');?>/label></th>
 			<td><?php echo $user->ID;?></td>
 		</tr>		
 		<tr>
-			<th><label><?php _e('Username', 'pmproapp');?></label></th>
+			<th><label><?php _e('Username', 'pmpro-approvals');?></label></th>
 			<td><?php echo $user->user_login;?></td>
 		</tr>
 		<tr>
-			<th><label><?php _e('Email', 'pmproapp');?></label></th>
+			<th><label><?php _e('Email', 'pmpro-approvals');?></label></th>
 			<td><?php echo $user->user_email;?></td>
 		</tr>
 		<tr>
-			<th><label><?php _e('Membership Status', 'pmproapp');?></label></th>
+			<th><label><?php _e('Membership Status', 'pmpro-approvals');?></label></th>
 			<td><?php //show status here or what is this even??></td>
 		</tr>
 		<tr>
-			<th><label><?php _e('Approval Status', 'pmproapp');?></label></th>
+			<th><label><?php _e('Approval Status', 'pmpro-approvals');?></label></th>
 			<td><?php //show status here?></td>
 		</tr>
 	</table>

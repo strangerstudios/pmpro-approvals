@@ -3,90 +3,31 @@
 	
 	//only admins can get this
 	if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_approvals" ) ) ) {
-		wp_die( __( "You do not have permissions to perform this action.", "pmproapp" ) );
+		wp_die( __( "You do not have permissions to perform this action.", 'pmpro-approvals' ) );
 	}	
 
 	//vars
 	if(isset($_REQUEST['s']))
-		$s = $_REQUEST['s'];
+		$s = sanitize_text_field($_REQUEST['s']);
 	else
 		$s = "";
 	
 	if(isset($_REQUEST['l']))
-		$l = $_REQUEST['l'];
+		$l = intval($_REQUEST['l']);
 	else
 		$l = false;
 		
-	//approving or denying?
-	if(!empty($_REQUEST['approve']))
-	{
-		//TODO: move this into a PMProApprovals class method, PMPro_Approvals::approve(...);
-		if(!current_user_can("manage_options") && !current_user_can("pmpro_approvals"))
-		{						
-			$msg = -1;
-			$msgt = __("You do not have permission to perform approvals.", 'pmproapp');
-		}
-		else
-		{
-			$a_user_id = intval($_REQUEST['approve']);
-			$a_user = get_userdata($a_user_id);
-			
-			//approve
-			update_user_meta($a_user_id, "pmpro_approval", array("status"=>"approved", "timestamp"=>time(), "who" => $current_user->ID, "approver"=>$current_user->user_login));						
-			
-			//change status
-			
-			$msg = 1;
-			$msgt = __("Member was approved.", 'pmproapp');
-						
-			//send approval email to use
-			$approval_email = new PMProEmail();
-			$approval_email->email = $a_user->user_email;
-			$approval_email->subject = sprintf(__("Your membeship at %s has been approved.", 'pmproapp'), get_bloginfo('name'));
-			$approval_email->template = "application_approved";
-			$approval_email->data = array("display_name" => $a_user->display_name, "user_email" => $a_user->user_email, "login_link" => wp_login_url());
-			$approval_email->sendEmail();
-		}
+	//Approve, deny or reset member back to pending
+	if(!empty($_REQUEST['approve'])) {
+		PMPro_Approvals::approveMember(intval($_REQUEST['approve']), $l);		
 	}
 	elseif(!empty($_REQUEST['deny']))
 	{
-		//TODO: move this into a PMProApprovals class method, PMPro_Approvals::deny(...);
-		if(!current_user_can("manage_options") && !current_user_can("pmpro_approvals"))
-		{						
-			$msg = -1;
-			$msgt = __("You do not have permission to preform approvals.", 'pmproapp');
-		}
-		else
-		{
-			$d_user_id = intval($_REQUEST['deny']);
-						
-			update_user_meta($d_user_id, "executive_approval", array("status"=>"denied", "timestamp"=>time(), "who" => $current_user->ID));
-			
-			//change status
-			
-			$msg = 1;
-			$msgt = "Member was denied (executive).";		
-		}
+		PMPro_Approvals::denyMember(intval($_REQUEST['deny']), $l);
 	}
 	elseif(!empty($_REQUEST['unapprove']))
 	{
-		//TODO: move this into a PMProApprovals class method, PMPro_Approvals::unapprove(...);
-		if(!current_user_can("manage_options") && !current_user_can("pmpro_approvals"))
-		{						
-			$msg = -1;
-			$msgt = __("You do not have permission to preform approvals.", 'pmproapp');
-		}
-		else
-		{
-			$d_user_id = intval($_REQUEST['unapprove']);
-						
-			delete_user_meta($d_user_id, "pmpro_approval");
-			
-			//change status
-			
-			$msg = 1;
-			$msgt = __("Member has been unapproved.", 'pmproapp');		
-		}
+		PMPro_Approvals::resetMember(intval($_REQUEST['unapprove']), $l);
 	}
 	
 	require_once( PMPRO_DIR . "/adminpages/admin_header.php" );
@@ -94,15 +35,15 @@
 	
 	<form id="posts-filter" method="get" action="">	
 	<h2>
-		<?php _e('Approvals', 'pmproapp');?>
+		<?php _e('Approvals', 'pmpro-approvals');?>
 	</h2>	
 	<ul class="subsubsub">
 		<li>			
-			<?php _e('Show', 'pmproapp');?> <select name="l" onchange="jQuery('#posts-filter').submit();">
-				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'pmproapp');?></option>
+			<?php _e('Show', 'pmpro-approvals');?> <select name="l" onchange="jQuery('#posts-filter').submit();">
+				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'pmpro-approvals');?></option>
 				<?php
-					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
-					//TODO: Only show levels that require approval
+					$approval_level_ids = PMPro_Approvals::getApprovalLevels();
+					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels WHERE id IN(" . implode(',', $approval_level_ids) . ") ORDER BY name");					
 					foreach($levels as $level)
 					{
 				?>
@@ -114,15 +55,15 @@
 		</li>
 	</ul>
 	<p class="search-box">
-		<label class="hidden" for="post-search-input"><?php _e('Search Approvals', 'pmproapp');?>:</label>
+		<label class="hidden" for="post-search-input"><?php _e('Search Approvals', 'pmpro-approvals');?>:</label>
 		<input type="hidden" name="page" value="pmpro-approvals" />		
 		<input id="post-search-input" type="text" value="<?php echo esc_attr($s);?>" name="s"/>
-		<input class="button" type="submit" value="<?php _e('Search Approvals', 'pmproapp');?>"/>
+		<input class="button" type="submit" value="<?php _e('Search Approvals', 'pmpro-approvals');?>"/>
 	</p>
 	<?php 
 		//some vars for the search
 		if(isset($_REQUEST['pn']))
-			$pn = $_REQUEST['pn'];
+			$pn = intval($_REQUEST['pn']);
 		else
 			$pn = 1;
 			
@@ -142,7 +83,7 @@
 			$sortorder = "DESC";
 			
 		if(!empty($_REQUEST['limit']))
-			$limit = $_REQUEST['limit'];
+			$limit = intval($_REQUEST['limit']);
 		else
 			$limit = 15;
 		
@@ -153,7 +94,7 @@
 		{
 		?>
 		<p class="clear">
-			<?php if($l == 1) { ?><?php echo $totalrows;?> <?php _e('applications awaiting review', 'pmproapp');?>.<?php } ?>
+			<?php if($l == 1) { ?><?php echo $totalrows;?> <?php _e('applications awaiting review', 'pmpro-approvals');?>.<?php } ?>
 		</p>
 		<?php
 		}		
@@ -161,13 +102,13 @@
 	<table class="widefat">
 		<thead>
 			<tr class="thead">
-				<th><?php _e('ID', 'pmproapp');?></th>
-				<th><?php _e('Username', 'pmproapp');?></th>
-				<th><?php _e('Name', 'pmproapp');?></th>				
-				<th><?php _e('Email', 'pmproapp');?></th>				
-				<th><?php _e('Membership', 'pmproapp');?></th>					
-				<th><a href="<?php echo admin_url("admin.php?page=pmpro-approvals&s=" . esc_attr($s) . "&limit=" . $limit . "&pn=" . $pn . "&sortby=pmpro_approval");?><?php if($sortby == "pmpro_approval" && $sortorder == "DESC") { ?>&sortorder=ASC<?php } ?>"><?php _e('Approval', 'pmproapp');?></a></th>
-				<th><a href="<?php echo admin_url("admin.php?page=pmpro-approvals&s=" . esc_attr($s) . "&limit=" . $limit . "&pn=" . $pn . "&sortby=user_registered");?><?php if($sortby == "user_registered" && $sortorder == "DESC") { ?>&sortorder=ASC<?php } ?>"><?php _e('Joined', 'pmproapp');?></a></th>
+				<th><?php _e('ID', 'pmpro-approvals');?></th>
+				<th><?php _e('Username', 'pmpro-approvals');?></th>
+				<th><?php _e('Name', 'pmpro-approvals');?></th>				
+				<th><?php _e('Email', 'pmpro-approvals');?></th>				
+				<th><?php _e('Membership', 'pmpro-approvals');?></th>					
+				<th><a href="<?php echo admin_url("admin.php?page=pmpro-approvals&s=" . esc_attr($s) . "&limit=" . $limit . "&pn=" . $pn . "&sortby=pmpro_approval");?><?php if($sortby == "pmpro_approval" && $sortorder == "DESC") { ?>&sortorder=ASC<?php } ?>"><?php _e('Approval', 'pmpro-approvals');?></a></th>
+				<th><a href="<?php echo admin_url("admin.php?page=pmpro-approvals&s=" . esc_attr($s) . "&limit=" . $limit . "&pn=" . $pn . "&sortby=user_registered");?><?php if($sortby == "user_registered" && $sortorder == "DESC") { ?>&sortorder=ASC<?php } ?>"><?php _e('Joined', 'pmpro-approvals');?></a></th>
 			</tr>
 		</thead>
 		<tbody id="users" class="list:user user-list">	
@@ -210,37 +151,27 @@
 							<td><a href="mailto:<?php echo $theuser->user_email?>"><?php echo $theuser->user_email?></a></td>							
 							<td>
 								<?php 
-									if($auser->membership == "Pending")
-									{
-										if(!empty($theuser->pmpro_approval))
-											echo "Approved";
-										else
-											echo "Pending Approval";
-									}
-									else
-										echo $auser->membership
+									echo $auser->membership;
 								?>
 							</td>							
 							<td>										
 								<?php									
-									if(!empty($theuser->pmpro_approval))
-									{
-										$approver_data = get_userdata($theuser->pmpro_approval['who']);
-										$executive_approver_link = '<a href="'. get_edit_user_link( $approver_data->ID ) .'">'. esc_attr( $approver_data->display_name ) .'</a>';
-										echo ucwords($theuser->pmpro_approval['status']) . " on " . date("m/d/Y", $theuser->pmpro_approval['timestamp'])." by ".$executive_approver_link;
+									if(PMPro_Approvals::isApproved($theuser->ID) || PMPro_Approvals::isDenied($theuser->ID)) {
+										$approval_data = PMPro_Approvals::getUserApproval($theuser->ID);
+										$approver = get_userdata($approval_data['who']);
+										$approver_link = '<a href="'. get_edit_user_link( $approver->ID ) .'">'. esc_attr( $approver->display_name ) .'</a>';
+										echo ucwords($approval_data['status']) . " on " . date("m/d/Y", $approval_data['timestamp'])." by ".$approver_link;
 										
 										//link to unapprove
 										?>
-										[<a href="javascript:askfirst('Are you sure you want to unapprove <?php echo $theuser->user_login;?>?', '?page=pmpro-approvals&unapprove=<?php echo $theuser->ID;?>');">X</a>]
-										<?php
-									}
-									else
-									{										
+										[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $theuser->user_login;?>?', '?page=pmpro-approvals&unapprove=<?php echo $theuser->ID;?>');">X</a>]
+										<?php									
+									} else {
 									?>										
 									<a href="?page=pmpro-approvals&s=<?php echo esc_attr($s);?>&limit=<?php echo intval($limit);?>&sortby=<?php echo $sortby;?>&sortorder=<?php echo $sortorder;?>&pn=<?php echo intval($pn);?>&approve=<?php echo $theuser->ID;?>">Approve</a> |
 									<a href="?page=pmpro-approvals&s=<?php echo esc_attr($s);?>&limit=<?php echo intval($limit);?>&sortby=<?php echo $sortby;?>&sortorder=<?php echo $sortorder;?>&pn=<?php echo intval($pn);?>&deny=<?php echo $theuser->ID;?>">Deny</a>
 									<?php
-									}									
+									}
 								?>
 							</td>
 							<td><?php echo date("m/d/Y", strtotime($theuser->user_registered))?></td>
@@ -253,7 +184,7 @@
 				{
 				?>
 				<tr>
-					<td colspan="9"><p><?php _e('No pending members found.', 'pmproapp');?></p></td>
+					<td colspan="9"><p><?php _e('No pending members found.', 'pmpro-approvals');?></p></td>
 				</tr>
 				<?php
 				}
