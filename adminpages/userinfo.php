@@ -44,7 +44,7 @@
 	<h3><?php _e('Account Information', 'pmpro-approvals');?></h3>
 	<table class="form-table">
 		<tr>
-			<th><label><?php _e('User ID', 'pmpro-approvals');?>/label></th>
+			<th><label><?php _e('User ID', 'pmpro-approvals');?></label></th>
 			<td><?php echo $user->ID;?></td>
 		</tr>		
 		<tr>
@@ -57,11 +57,18 @@
 		</tr>
 		<tr>
 			<th><label><?php _e('Membership Status', 'pmpro-approvals');?></label></th>
-			<td><?php //show status here or what is this even??></td>
+			<td><?php //show status here or what is this even?
+			$user_level = pmpro_getMembershipLevelForUser();
+
+			echo $user_level->name;
+			?></td>
 		</tr>
 		<tr>
 			<th><label><?php _e('Approval Status', 'pmpro-approvals');?></label></th>
-			<td><?php //show status here?></td>
+			<td><?php //show status here 
+			$user_status = PMPro_Approvals::getUserApproval();
+			echo $user_status['status'];
+			?></td>
 		</tr>
 	</table>
 	
@@ -83,7 +90,7 @@
 				<?php
 				//cycle through groups						
 				foreach($fields as $field)
-				{				
+				{			
 				?>
 				<tr>
 					<th><label><?php echo $field->label;?></label></th>
@@ -95,6 +102,9 @@
 				</table>
 				<?php
 			}
-		}			
+		}
+
+
 	?>	
+	<a href="?page=pmpro-approvals" class="pmpro_tag-blue">Go Back</a>
 </div>
