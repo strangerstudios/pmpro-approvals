@@ -50,6 +50,9 @@ class PMPro_Approvals {
   		add_action( 'admin_bar_menu', array( 'PMPro_Approvals', 'admin_bar_menu' ), 1000 );
       	add_action( 'admin_init', array( 'PMPro_Approvals', 'admin_init' ) );
 
+		//add user actions to the approvals page
+		add_filter( 'pmpro_approvals_user_row_actions', array( 'PMPro_Approvals', 'pmpro_approvals_user_row_actions' ), 10, 2 );
+		
 		//set status when user's checkout
 		//add_action( 'pmpro_after_checkout', array( 'PMPro_Approvals', 'pmpro_after_checkout' ), 10, 2 );
 		//add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ) );
@@ -66,8 +69,8 @@ class PMPro_Approvals {
   		*/		
 	    //load checkbox in membership level edit page for users to select.
 	    add_action( 'pmpro_membership_level_after_other_settings', array( 'PMPro_Approvals', 'pmpro_membership_level_after_other_settings' ) );
-		add_action( 'pmpro_save_membership_level', array( 'PMPro_Approvals', 'pmpro_save_membership_level' ) );		
-
+		add_action( 'pmpro_save_membership_level', array( 'PMPro_Approvals', 'pmpro_save_membership_level' ) );				
+		
 		//Add code for filtering checkouts, confirmation, and content filters
 		add_filter( 'pmpro_non_member_text_filter', array( 'PMPro_Approvals', 'change_message_protected_content' ) );
     }
@@ -494,6 +497,21 @@ class PMPro_Approvals {
 		}
 
 		return $text;
+	}
+	
+	/**
+	 * Set user action links for approvals page
+	 */
+	public static function pmpro_approvals_user_row_actions($actions, $user) {
+		$cap = apply_filters('pmpro_approvals_cap', 'pmpro_approvals');		
+	
+		if(current_user_can('edit_users') && !empty($user->ID))
+			$actions[] = '<a href="' . admin_url('user-edit.php?user_id=' . $user->ID) . '">Edit</a>';
+	
+		if(current_user_can($cap) && !empty($user->ID))
+			$actions[] = '<a href="' . admin_url('admin.php?page=pmpro-approvals&user_id=' . $user->ID) . '">Preview</a>';		
+		
+		return $actions;
 	}
 
 } // end class
