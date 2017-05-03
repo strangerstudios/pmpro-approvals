@@ -73,38 +73,38 @@
 	</table>
 	
 	<?php
-		global $pmprorh_registration_fields, $pmprorh_checkout_boxes;
-	
-		//which fields are marked for the profile	
-		$profile_fields = pmprorh_getProfileFields($user->ID, true);			
-			
-		//show the fields
-		if(!empty($profile_fields))
-		{			
-			foreach($profile_fields as $where => $fields)
-			{						
-				$box = pmprorh_getCheckoutBoxByName($where);				
-				?>
-				<h3><?php echo $box->label;?></h3>
-				<table class="form-table">
-				<?php
-				//cycle through groups						
-				foreach($fields as $field)
-				{			
-				?>
-				<tr>
-					<th><label><?php echo $field->label;?></label></th>
-					<td><?php echo get_usermeta($user->ID, $field->name, true);?></td>
-				</tr>
-				<?php				
+		if(function_exists('pmprorh_getProfileFields')) {
+			global $pmprorh_registration_fields, $pmprorh_checkout_boxes;
+		
+			//which fields are marked for the profile	
+			$profile_fields = pmprorh_getProfileFields($user->ID, true);			
+				
+			//show the fields
+			if(!empty($profile_fields))
+			{			
+				foreach($profile_fields as $where => $fields)
+				{						
+					$box = pmprorh_getCheckoutBoxByName($where);				
+					?>
+					<h3><?php echo $box->label;?></h3>
+					<table class="form-table">
+					<?php
+					//cycle through groups						
+					foreach($fields as $field)
+					{			
+					?>
+					<tr>
+						<th><label><?php echo $field->label;?></label></th>
+						<td><?php echo get_usermeta($user->ID, $field->name, true);?></td>
+					</tr>
+					<?php				
+					}
+					?>
+					</table>
+					<?php
 				}
-				?>
-				</table>
-				<?php
 			}
 		}
-
-
 	?>	
-	<a href="?page=pmpro-approvals" class="pmpro_tag-blue">Go Back</a>
+	<a href="?page=pmpro-approvals" class=""><?php _e('&laquo; Back to Approvals', 'pmpro-approvals');?></a>
 </div>
