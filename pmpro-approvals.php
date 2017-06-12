@@ -76,7 +76,7 @@ class PMPro_Approvals {
 		add_filter( 'pmpro_non_member_text_filter', array( 'PMPro_Approvals', 'change_message_protected_content' ) );
 		add_action( 'pmpro_account_bullets_top', array( 'PMPro_Approvals', 'pmpro_approvals_user_status_for_account' ) );
 		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_approvals_user_status_for_confirmation' ) );
-		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'send_admin_email_checkout' ) );
+		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'send_admin_email_checkout' ), 10, 2 );
     }
 
     /**
@@ -418,9 +418,7 @@ class PMPro_Approvals {
 		$approval_email->email = $a_user->user_email;
 		$approval_email->subject = sprintf(__("Your membership at %s has been approved.", 'pmpro-approvals'), get_bloginfo('name'));
 		$approval_email->template = "application_approved";
-		$approval_email->body .= file_get_contents( dirname( __DIR__ ) . "/paid-memberships-pro/email/header.html" );
 		$approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/application_approved.html" );
-		$approval_email->body .= file_get_contents( dirname( __DIR__ ) . "/paid-memberships-pro/email/footer.html" );
 		$approval_email->data = array("display_name" => $a_user->display_name, "user_email" => $a_user->user_email, "login_link" => wp_login_url());
 		$approval_email->sendEmail();
 		
@@ -429,9 +427,7 @@ class PMPro_Approvals {
 		$admin_approval_email->email = get_bloginfo( 'admin_email' );
 		$admin_approval_email->subject = sprintf(__("A membership at %s has been approved.", 'pmpro-approvals'), get_bloginfo('name'));
 		$admin_approval_email->template = "admin_approved";
-		$admin_approval_email->body .= file_get_contents( dirname( __DIR__ ) . "/paid-memberships-pro/email/header.html" );
 		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_approved.html" );
-		$admin_approval_email->body .= file_get_contents( dirname( __DIR__ ) . "/paid-memberships-pro/email/footer.html" );
 		$admin_approval_email->sendEmail();
 		
 		return true;
@@ -470,10 +466,8 @@ class PMPro_Approvals {
 		$approval_email->email = $a_user->user_email;
 		$approval_email->subject = sprintf(__("Your membeship at %s has been denied.", 'pmpro-approvals'), get_bloginfo('name'));
 		$approval_email->template = "application_denied";
-		$approval_email->body .= file_get_contents( dirname( __DIR__ ) . "/paid-memberships-pro/email/header.html" );
 		$approval_email->body .= file_get_contents( dirname(__FILE__) . "/email/application_denied.html" );
-		$approval_email->body .= file_get_contents( dirname( __DIR__ ) . "/paid-memberships-pro/email/footer.html" );
-
+		
 		$approval_email->data = array("display_name" => $a_user->display_name, "user_email" => $a_user->user_email, "login_link" => wp_login_url()); //Update this?
 		$approval_email->sendEmail();
 
@@ -482,9 +476,7 @@ class PMPro_Approvals {
 		$admin_approval_email->email = get_bloginfo( 'admin_email' );
 		$admin_approval_email->subject = sprintf(__("A membership at %s has been denied.", 'pmpro-approvals'), get_bloginfo('name'));
 		$admin_approval_email->template = "admin_approved";
-		$admin_approval_email->body .= file_get_contents( dirname( __DIR__ ) . "/paid-memberships-pro/email/header.html" );
 		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_denied.html" );
-		$admin_approval_email->body .= file_get_contents( dirname( __DIR__ ) . "/paid-memberships-pro/email/footer.html" );
 		$admin_approval_email->sendEmail();
 		
 		return true;
@@ -524,7 +516,7 @@ class PMPro_Approvals {
 	 * Send an email to an admin when a user has signed up for a membership level that requires approval.
 	 * TODO: $user_id returns blank, not sure why.
 	 */
-	public static function send_admin_email_checkout( $level_id, $user_id, $cancel_id ){
+	public static function send_admin_email_checkout( $level_id, $user_id ){
 
 		//check if level requires approval, if not stop executing this function and don't send email.
 		if( !PMPro_Approvals::requiresApproval( $level_id ) ){
@@ -541,8 +533,7 @@ class PMPro_Approvals {
 		$admin_approval_email->body .= __( '<p>Dear Admin</p>', 'pmpro-approvals' );
 		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_notification.html" );
 		$admin_approval_email->body .= '<p><a href=' .get_admin_url(). 'admin.php?page=pmpro-approvals&user_id=' . $user_id . '>Preview user details</a><p>';
-		$admin_approval_email->body .= file_get_contents( dirname( __DIR__ ) . "/paid-memberships-pro/email/footer.html" );
-
+		
 		$admin_approval_email->sendEmail();
 
 	}
