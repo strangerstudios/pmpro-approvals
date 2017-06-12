@@ -89,6 +89,10 @@ class PMPro_Approvals {
         $role = get_role( 'administrator' );
         //add custom capability to administrator
         $role->add_cap( 'pmpro_approvals' );
+		
+		//make sure the current user has the updated cap
+		global $current_user;
+		setup_userdata( $current_user->ID );
     }
 
 	/**
@@ -96,7 +100,7 @@ class PMPro_Approvals {
 	 * Fires during the "admin_menu" action.
 	 */
     public static function admin_menu(){
-		add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro-approvals' ), __( 'Approvals', 'pmpro-approvals' ), 'manage_options', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
+		add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro-approvals' ), __( 'Approvals', 'pmpro-approvals' ), 'pmpro_approvals', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
     }
 
 	/**
