@@ -609,7 +609,7 @@ class PMPro_Approvals {
 	 * Returns status of a given or current user. Returns 'approved', 'denied' or 'pending'.
 	 * If the users level does not require approval it will not return anything.
 	 */
-	public static function getUserApprovalStatus( $user_id = NULL){
+	public static function getUserApprovalStatus( $user_id = NULL, $level_id = NULL){
 
 		global $current_user;
 
@@ -619,8 +619,10 @@ class PMPro_Approvals {
 		}
 
 		//get the PMPro level for the user
-		$level = pmpro_getMembershipLevelForUser($user_id);
-		$level_id = $level->ID;
+		if(empty($level_id)) {
+			$level = pmpro_getMembershipLevelForUser($user_id);
+			$level_id = $level->ID;
+		}
 
 		//check if level requires approval.
 		if( !PMPro_Approvals::requiresApproval( $level_id ) ){
@@ -630,7 +632,7 @@ class PMPro_Approvals {
 		//Get the user approval status. If it's not Approved/Denied it's set to Pending.
 		if( PMPro_Approvals::isApproved( $user_id ) || PMPro_Approvals::isDenied( $user_id ) ){
 
-			$approval_data = PMPro_Approvals::getUserApproval( $current_user->ID );
+			$approval_data = PMPro_Approvals::getUserApproval( $current_user->ID, $level_id );
 
 			$status = $approval_data['status'];
 
