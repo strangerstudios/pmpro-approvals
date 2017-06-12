@@ -21,7 +21,8 @@ class PMPro_Approvals {
      */
     private function __construct() {		
 		//initialize the plugin
-  		add_action( 'init', array( 'PMPro_Approvals', 'init' ) );	
+  		add_action( 'init', array( 'PMPro_Approvals', 'init' ) );
+
     }
 
     /**
@@ -73,6 +74,8 @@ class PMPro_Approvals {
 		
 		//Add code for filtering checkouts, confirmation, and content filters
 		add_filter( 'pmpro_non_member_text_filter', array( 'PMPro_Approvals', 'change_message_protected_content' ) );
+		add_action( 'pmpro_account_bullets_top', array( 'PMPro_Approvals', 'pmpro_approvals_user_status_for_account' ) );
+		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_approvals_user_status_for_confirmation' ) );
     }
 
     /**
@@ -92,7 +95,7 @@ class PMPro_Approvals {
 	 * Fires during the "admin_menu" action.
 	 */
     public static function admin_menu(){
-		add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro-approvals' ), __( 'Approvals', 'pmpro-approvals' ), 'pmpro_approvals', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
+		add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro-approvals' ), __( 'Approvals', 'pmpro-approvals' ), 'manage_options', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
     }
 
 	/**
@@ -492,8 +495,8 @@ class PMPro_Approvals {
 
 		global $current_user, $has_access;
 
-		if(PMPro_Approvals::isApproved()) {
-			$text = __( 'Your membership requires approval in order to view this content.', 'pmpro-approvals' );
+		if( !PMPro_Approvals::isApproved() ) {
+			$text = __( 'Your membership requires approval before you are able to view this content.', 'pmpro-approvals' );
 		}
 
 		return $text;
@@ -513,6 +516,84 @@ class PMPro_Approvals {
 		
 		return $actions;
 	}
+
+	/**
+	 * Add Approvals status to Account Page.
+	 */
+	public static function pmpro_approvals_user_status_for_account(){
+
+			$approval_status = PMPro_Approvals::getUserApprovalStatus();
+
+			printf( __( '<li><strong>Status:</strong> %s</li>', 'pmpro-approvals'), $approval_status );
+
+	}
+
+
+	/**
+	 * Custom confirmation message for levels that requires approval.
+	 */
+
+	public static function pmpro_approvals_user_status_for_confirmation( $confirmation_message ){
+
+		global $current_user;
+
+		$approval_status = PMPro_Approvals::getUserApprovalStatus( $current_user );
+
+		$users_level = pmpro_getMembershipLevelForUser($current_user->ID);
+		$level_id = $users_level->ID;
+
+		//if current level does not require approval keep confirmation message the same.
+		if( !PMPro_Approvals::requiresApproval( $level_id ) ){
+			return $confirmation_message;
+		}
+
+		$confirmation_message = "<p>" . sprintf(__('Thank you for your membership to %s. Your %s membership status is: <b>%s</b>.', 'pmpro-approvals' ), get_bloginfo("name"), $current_user->membership_level->name, $approval_status) . "</p>";
+
+		$confirmation_message .= "<p>" . sprintf(__('Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s.', 'paid-memberships-pro' ), $current_user->user_email) . "</p>"; 
+
+		return $confirmation_message;
+	}
+
+
+	/**
+	 * Returns status of a given or current user. Returns 'approved', 'denied' or 'pending'.
+	 * If the users level does not require approval it will not return anything.
+	 */
+	public static function getUserApprovalStatus( $user_id = NULL){
+
+		global $current_user;
+
+		//check if user ID is blank, set to current user ID.
+		if( empty( $user_id ) ){
+			$user_id = $current_user->ID;
+		}
+
+		//get the PMPro level for the user
+		$level = pmpro_getMembershipLevelForUser($user_id);
+		$level_id = $level->ID;
+
+		//check if level requires approval.
+		if( !PMPro_Approvals::requiresApproval( $level_id ) ){
+			return;
+		}
+
+		//Get the user approval status. If it's not Approved/Denied it's set to Pending.
+		if( PMPro_Approvals::isApproved( $user_id ) || PMPro_Approvals::isDenied( $user_id ) ){
+
+			$approval_data = PMPro_Approvals::getUserApproval( $current_user->ID );
+
+			$status = $approval_data['status'];
+
+		}else{
+
+			$status = __( 'pending', 'pmpro-approvals' );
+
+		}
+
+		return $status;
+	}
+
+
 
 } // end class
 

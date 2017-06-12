@@ -6,6 +6,23 @@
 	{		
 		die("You do not have permission to perform this action.");
 	}
+
+	if(isset($_REQUEST['l']))
+		$l = intval($_REQUEST['l']);
+	else
+		$l = false;
+
+	if(!empty($_REQUEST['approve'])) {
+		PMPro_Approvals::approveMember(intval($_REQUEST['approve']), $l);		
+	}
+	elseif(!empty($_REQUEST['deny']))
+	{
+		PMPro_Approvals::denyMember(intval($_REQUEST['deny']), $l);
+	}
+	elseif(!empty($_REQUEST['unapprove']))
+	{
+		PMPro_Approvals::resetMember(intval($_REQUEST['unapprove']), $l);
+	}
 	
 	//get the user
 	if(empty($_REQUEST['user_id']))
@@ -56,18 +73,30 @@
 			<td><?php echo $user->user_email;?></td>
 		</tr>
 		<tr>
-			<th><label><?php _e('Membership Status', 'pmpro-approvals');?></label></th>
-			<td><?php //show status here or what is this even?
-			$user_level = pmpro_getMembershipLevelForUser();
+			<th><label><?php _e('Membership Level', 'pmpro-approvals');?></label></th>
+			<td><?php //Changed this to show Membership Level Name now, so approvers don't need to go back and forth to see what level the user is applying for.
+			 $level_details = pmpro_getMembershipLevelForUser( $user->ID );
 
-			echo $user_level->name;
+			 echo $level_details->name;
 			?></td>
 		</tr>
 		<tr>
 			<th><label><?php _e('Approval Status', 'pmpro-approvals');?></label></th>
 			<td><?php //show status here 
-			$user_status = PMPro_Approvals::getUserApproval();
-			echo $user_status['status'];
+			if(PMPro_Approvals::isApproved($user->ID) || PMPro_Approvals::isDenied($user->ID)) {
+				$approval_data = PMPro_Approvals::getUserApproval($user->ID);
+				$approver = get_userdata($approval_data['who']);
+				$approver_link = '<a href="'. get_edit_user_link( $approver->ID ) .'">'. esc_attr( $approver->display_name ) .'</a>';
+				echo ucwords($approval_data['status']) . " on " . date("m/d/Y", $approval_data['timestamp'])." by ".$approver_link;
+				?>
+					[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $user->user_login;?>?', '?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID;?>');">X</a>]
+										<?php									
+									} else {
+									?>										
+									<a href="?page=pmpro-approvals&user_id=<?php echo $user->ID ?>&approve=<?php echo $user->ID;?>">Approve</a> |
+									<a href="?page=pmpro-approvals&user_id=<?php echo $user->ID ?>&deny=<?php echo $user->ID;?>">Deny</a>
+									<?php
+									}
 			?></td>
 		</tr>
 	</table>
@@ -95,7 +124,7 @@
 					?>
 					<tr>
 						<th><label><?php echo $field->label;?></label></th>
-						<td><?php echo get_usermeta($user->ID, $field->name, true);?></td>
+						<td><?php echo get_user_meta($user->ID, $field->name, true);?></td>
 					</tr>
 					<?php				
 					}
