@@ -529,8 +529,6 @@ class PMPro_Approvals {
 		//get admin email address to email admin.
 		$admin_email = get_bloginfo( 'admin_email' );
 
-		apply_filters( 'pmpro_approvals_admin_email_address', $admin_email );
-
 		$admin_approval_email = new PMProEmail();
 
 		$admin_approval_email->email = $admin_email;
