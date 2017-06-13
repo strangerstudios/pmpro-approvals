@@ -76,6 +76,7 @@ class PMPro_Approvals {
 		add_filter( 'pmpro_non_member_text_filter', array( 'PMPro_Approvals', 'change_message_protected_content' ) );
 		add_action( 'pmpro_account_bullets_top', array( 'PMPro_Approvals', 'pmpro_approvals_user_status_for_account' ) );
 		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_approvals_user_status_for_confirmation' ) );
+		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'send_admin_email_checkout' ), 10, 2 );
     }
 
     /**
@@ -88,6 +89,10 @@ class PMPro_Approvals {
         $role = get_role( 'administrator' );
         //add custom capability to administrator
         $role->add_cap( 'pmpro_approvals' );
+		
+		//make sure the current user has the updated cap
+		global $current_user;
+		setup_userdata( $current_user->ID );
     }
 
 	/**
@@ -95,7 +100,7 @@ class PMPro_Approvals {
 	 * Fires during the "admin_menu" action.
 	 */
     public static function admin_menu(){
-		add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro-approvals' ), __( 'Approvals', 'pmpro-approvals' ), 'manage_options', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
+		add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro-approvals' ), __( 'Approvals', 'pmpro-approvals' ), 'pmpro_approvals', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
     }
 
 	/**
@@ -411,10 +416,19 @@ class PMPro_Approvals {
 		$a_user = get_userdata($user_id);
 		$approval_email = new PMProEmail();
 		$approval_email->email = $a_user->user_email;
-		$approval_email->subject = sprintf(__("Your membeship at %s has been approved.", 'pmpro-approvals'), get_bloginfo('name'));
+		$approval_email->subject = sprintf(__("Your membership at %s has been approved.", 'pmpro-approvals'), get_bloginfo('name'));
 		$approval_email->template = "application_approved";
+		$approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/application_approved.html" );
 		$approval_email->data = array("display_name" => $a_user->display_name, "user_email" => $a_user->user_email, "login_link" => wp_login_url());
 		$approval_email->sendEmail();
+		
+		//Send approval email to admin too
+		$admin_approval_email = new PMProEmail();
+		$admin_approval_email->email = get_bloginfo( 'admin_email' );
+		$admin_approval_email->subject = sprintf(__("A membership at %s has been approved.", 'pmpro-approvals'), get_bloginfo('name'));
+		$admin_approval_email->template = "admin_approved";
+		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_approved.html" );
+		$admin_approval_email->sendEmail();
 		
 		return true;
 	}
@@ -452,8 +466,18 @@ class PMPro_Approvals {
 		$approval_email->email = $a_user->user_email;
 		$approval_email->subject = sprintf(__("Your membeship at %s has been denied.", 'pmpro-approvals'), get_bloginfo('name'));
 		$approval_email->template = "application_denied";
+		$approval_email->body .= file_get_contents( dirname(__FILE__) . "/email/application_denied.html" );
+		
 		$approval_email->data = array("display_name" => $a_user->display_name, "user_email" => $a_user->user_email, "login_link" => wp_login_url()); //Update this?
 		$approval_email->sendEmail();
+
+		//Send denied email to admin too
+		$admin_approval_email = new PMProEmail();
+		$admin_approval_email->email = get_bloginfo( 'admin_email' );
+		$admin_approval_email->subject = sprintf(__("A membership at %s has been denied.", 'pmpro-approvals'), get_bloginfo('name'));
+		$admin_approval_email->template = "admin_approved";
+		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_denied.html" );
+		$admin_approval_email->sendEmail();
 		
 		return true;
  
@@ -485,6 +509,32 @@ class PMPro_Approvals {
 		$msgt = __("Approval reset.", 'pmpro-approvals');	
 		
 		return true;
+
+	}
+
+	/**
+	 * Send an email to an admin when a user has signed up for a membership level that requires approval.
+	 * TODO: $user_id returns blank, not sure why.
+	 */
+	public static function send_admin_email_checkout( $level_id, $user_id ){
+
+		//check if level requires approval, if not stop executing this function and don't send email.
+		if( !PMPro_Approvals::requiresApproval( $level_id ) ){
+			return;
+		}
+		//get admin email address to email admin.
+		$admin_email = get_bloginfo( 'admin_email' );
+
+		$admin_approval_email = new PMProEmail();
+
+		$admin_approval_email->email = $admin_email;
+		$admin_approval_email->subject = __( 'A user is pending approval for a level', 'pmpro-approvals' );
+		$admin_approval_email->template = 'admin_notification'; //Update email template for admins.
+		$admin_approval_email->body .= __( '<p>Dear Admin</p>', 'pmpro-approvals' );
+		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_notification.html" );
+		$admin_approval_email->body .= '<p><a href=' .get_admin_url(). 'admin.php?page=pmpro-approvals&user_id=' . $user_id . '>Preview user details</a><p>';
+		
+		$admin_approval_email->sendEmail();
 
 	}
 
@@ -537,7 +587,7 @@ class PMPro_Approvals {
 
 		global $current_user;
 
-		$approval_status = PMPro_Approvals::getUserApprovalStatus( $current_user );
+		$approval_status = PMPro_Approvals::getUserApprovalStatus();
 
 		$users_level = pmpro_getMembershipLevelForUser($current_user->ID);
 		$level_id = $users_level->ID;
@@ -559,7 +609,7 @@ class PMPro_Approvals {
 	 * Returns status of a given or current user. Returns 'approved', 'denied' or 'pending'.
 	 * If the users level does not require approval it will not return anything.
 	 */
-	public static function getUserApprovalStatus( $user_id = NULL){
+	public static function getUserApprovalStatus( $user_id = NULL, $level_id = NULL){
 
 		global $current_user;
 
@@ -569,8 +619,10 @@ class PMPro_Approvals {
 		}
 
 		//get the PMPro level for the user
-		$level = pmpro_getMembershipLevelForUser($user_id);
-		$level_id = $level->ID;
+		if(empty($level_id)) {
+			$level = pmpro_getMembershipLevelForUser($user_id);
+			$level_id = $level->ID;
+		}
 
 		//check if level requires approval.
 		if( !PMPro_Approvals::requiresApproval( $level_id ) ){
@@ -580,7 +632,7 @@ class PMPro_Approvals {
 		//Get the user approval status. If it's not Approved/Denied it's set to Pending.
 		if( PMPro_Approvals::isApproved( $user_id ) || PMPro_Approvals::isDenied( $user_id ) ){
 
-			$approval_data = PMPro_Approvals::getUserApproval( $current_user->ID );
+			$approval_data = PMPro_Approvals::getUserApproval( $current_user->ID, $level_id );
 
 			$status = $approval_data['status'];
 
