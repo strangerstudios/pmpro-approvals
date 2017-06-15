@@ -58,11 +58,11 @@ class PMPro_Approvals {
 		$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 		if(current_user_can($membership_level_capability))
 			//current user can change membership levels
-			add_action('pmpro_after_membership_level_profile_fields', array( 'PMPro_Approvals', 'pmpro_approvals_edit_user' ), 5 );
+			add_action('pmpro_after_membership_level_profile_fields', array( 'PMPro_Approvals', 'show_user_profile_status' ), 5 );
 		else {
 			//current user can't change membership level; use different hooks
-			add_action('edit_user_profile', array( 'PMPro_Approvals', 'pmpro_approvals_edit_user' ) );
-			add_action('show_user_profile', array( 'PMPro_Approvals', 'pmpro_approvals_edit_user' ) );
+			add_action('edit_user_profile', array( 'PMPro_Approvals', 'show_user_profile_status' ) );
+			add_action('show_user_profile', array( 'PMPro_Approvals', 'show_user_profile_status' ) );
 		}
 		
 		//set status when user's checkout
@@ -84,13 +84,13 @@ class PMPro_Approvals {
 		add_action( 'pmpro_save_membership_level', array( 'PMPro_Approvals', 'pmpro_save_membership_level' ) );				
 		
 		//Add code for filtering checkouts, confirmation, and content filters
-		add_filter( 'pmpro_non_member_text_filter', array( 'PMPro_Approvals', 'change_message_protected_content' ) );
-		add_action( 'pmpro_account_bullets_top', array( 'PMPro_Approvals', 'pmpro_approvals_user_status_for_account' ) );
-		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_approvals_user_status_for_confirmation' ) );
-		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'send_admin_email_checkout' ), 10, 2 );
+		add_filter( 'pmpro_non_member_text_filter', array( 'PMPro_Approvals', 'pmpro_non_member_text_filter' ) );
+		add_action( 'pmpro_account_bullets_top', array( 'PMPro_Approvals', 'pmpro_account_bullets_top' ) );
+		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_confirmation_message' ) );
+		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 2 );
 
 		//add support for PMPro Email Templates Add-on
-		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmpro_approvals_integrate_email_templates' ) );
+		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
     }
 
     /**
@@ -663,7 +663,7 @@ class PMPro_Approvals {
 	 * Send an email to an admin when a user has signed up for a membership level that requires approval.
 	 * TODO: $user_id returns blank, not sure why.
 	 */
-	public static function send_admin_email_checkout( $level_id, $user_id ){
+	public static function pmpro_after_change_membership_level( $level_id, $user_id ){
 
 		//check if level requires approval, if not stop executing this function and don't send email.
 		if( !PMPro_Approvals::requiresApproval( $level_id ) ){
@@ -688,7 +688,7 @@ class PMPro_Approvals {
 	/**
 	 * Show a different message for users that have their membership awaiting approval.
 	 */
-	public static function change_message_protected_content( $text ){
+	public static function pmpro_non_member_text_filter( $text ){
 
 		global $current_user, $has_access;
 
@@ -717,7 +717,7 @@ class PMPro_Approvals {
 	/**
 	 * Add Approvals status to Account Page.
 	 */
-	public static function pmpro_approvals_user_status_for_account(){
+	public static function pmpro_account_bullets_top(){
 
 			$approval_status = PMPro_Approvals::getUserApprovalStatus();
 
@@ -729,7 +729,7 @@ class PMPro_Approvals {
 	 * Custom confirmation message for levels that requires approval.
 	 */
 
-	public static function pmpro_approvals_user_status_for_confirmation( $confirmation_message ){
+	public static function pmpro_confirmation_message( $confirmation_message ){
 
 		global $current_user;
 
@@ -753,7 +753,7 @@ class PMPro_Approvals {
 	/**
 	 * Add email templates support for PMPro Edit Email Templates Add-on.
 	 */
-	public static function pmpro_approvals_integrate_email_templates( $pmproet_email_defaults ){
+	public static function pmproet_templates( $pmproet_email_defaults ){
 
 		//Add admin emails to the PMPro Edit Email Templates Add-on list.
         $pmproet_email_defaults['admin_approved'] = array(
@@ -789,7 +789,7 @@ class PMPro_Approvals {
 
 
     //Approve members from edit profile in WordPress.
-    public static function pmpro_approvals_edit_user( $user ){
+    public static function show_user_profile_status( $user ){
 
 		//get some info about the user's level
 		if(isset($_REQUEST['membership_level'])) {
