@@ -320,9 +320,10 @@ class PMPro_Approvals {
 		}
 
 		//Get the user approval status. If it's not Approved/Denied it's set to Pending.		
-		if( !PMPro_Approvals::isPending( $user_id ) ){
+		if( !PMPro_Approvals::isPending( $user_id, $level_id ) ){
 
 			$approval_data = PMPro_Approvals::getUserApproval( $user_id, $level_id );						
+						
 			if($short) {
 				if(!empty($approval_data))
 					$status = $approval_data['status'];
@@ -383,12 +384,24 @@ class PMPro_Approvals {
 	 * Check if a user is approved.
 	 */
 	public static function isApproved($user_id = NULL, $level_id = NULL) {	
+		//default to the current user
+		if(empty($user_id)) {
+			global $current_user;
+			$user_id = $current_user->ID;
+		}		
+		
 		//get approval for this user/level
 		$user_approval = PMPro_Approvals::getUserApproval($user_id, $level_id);
-		
-		//if no array, return false					//TODO: we want to change this to return true
-		if(empty($user_approval) || !is_array($user_approval))
-			return false;
+				
+		//if no array, check if they already have the level
+		if(empty($user_approval) || !is_array($user_approval)) {			
+			$level = pmpro_getMembershipLevelForUser($user_id);
+			
+			if(empty($level) || (!empty($level_id) && $level->id != $level_id))
+				return false;
+			else
+				return true;
+		}
 		
 		//otherwise, let's check the status		
 		if($user_approval['status'] == 'approved')
@@ -419,12 +432,24 @@ class PMPro_Approvals {
 	 * Check if a user is pending
 	 */
 	public static function isPending($user_id = NULL, $level_id = NULL) {
+		//default to the current user
+		if(empty($user_id)) {
+			global $current_user;
+			$user_id = $current_user->ID;
+		}						
+		
 		//get approval for this user/level
 		$user_approval = PMPro_Approvals::getUserApproval($user_id, $level_id);
-		
-		//if no array, return false				//TODO we want this to return false
-		if(empty($user_approval) || !is_array($user_approval))
-			return true;
+				
+		//if no array, check if they already had the level
+		if(empty($user_approval) || !is_array($user_approval)) {
+			$level = pmpro_getMembershipLevelForUser($user_id);
+
+			if(empty($level) || (!empty($level_id) && $level->id != $level_id))
+				return true;
+			else
+				return false;
+		}
 				
 		//otherwise, let's check the status		
 		if($user_approval['status'] == 'pending')
@@ -876,4 +901,3 @@ class PMPro_Approvals {
 } // end class
 
 PMPro_Approvals::get_instance();
-
