@@ -77,6 +77,9 @@ class PMPro_Approvals {
 		add_action( 'pmpro_account_bullets_top', array( 'PMPro_Approvals', 'pmpro_approvals_user_status_for_account' ) );
 		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_approvals_user_status_for_confirmation' ) );
 		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'send_admin_email_checkout' ), 10, 2 );
+
+		//add support for PMPro Email Templates Add-on
+		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmpro_approvals_integrate_email_templates' ) );
     }
 
     /**
@@ -475,7 +478,7 @@ class PMPro_Approvals {
 		$admin_approval_email = new PMProEmail();
 		$admin_approval_email->email = get_bloginfo( 'admin_email' );
 		$admin_approval_email->subject = sprintf(__("A membership at %s has been denied.", 'pmpro-approvals'), get_bloginfo('name'));
-		$admin_approval_email->template = "admin_approved";
+		$admin_approval_email->template = "admin_denied";
 		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_denied.html" );
 		$admin_approval_email->sendEmail();
 		
@@ -529,7 +532,7 @@ class PMPro_Approvals {
 
 		$admin_approval_email->email = $admin_email;
 		$admin_approval_email->subject = __( 'A user is pending approval for a level', 'pmpro-approvals' );
-		$admin_approval_email->template = 'admin_notification'; //Update email template for admins.
+		$admin_approval_email->template = 'admin_notification_approved'; //Update email template for admins.
 		$admin_approval_email->body .= __( '<p>Dear Admin</p>', 'pmpro-approvals' );
 		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_notification.html" );
 		$admin_approval_email->body .= '<p><a href=' .get_admin_url(). 'admin.php?page=pmpro-approvals&user_id=' . $user_id . '>Preview user details</a><p>';
@@ -644,6 +647,42 @@ class PMPro_Approvals {
 
 		return $status;
 	}
+
+	/**
+	 * Add email templates support for PMPro Edit Email Templates Add-on.
+	 */
+	public static function pmpro_approvals_integrate_email_templates( $pmproet_email_defaults ){
+
+		//Add admin emails to the PMPro Edit Email Templates Add-on list.
+        $pmproet_email_defaults['admin_approved'] = array(
+            'subject' => __( 'A user has been approved for !!membership_level_name!!', 'pmpro-approvals'),
+            'description' => __( 'Approved Email (admin)', 'pmpro-approvals')
+            );
+
+        $pmproet_email_defaults['admin_denied'] = array(
+            'subject' => __( 'A user has been denied for !!membership_level_name!!', 'pmpro-approvals'),
+            'description' => __( 'Denied Email (admin)', 'pmpro-approvals')
+            );
+
+        $pmproet_email_defaults['admin_notification_approved'] = array(
+            'subject' => __( 'A user requires approval', 'pmpro-approvals'),
+            'description' => __( 'Requires Approval (admin)', 'pmpro-approvals')
+            );
+
+        //Add user emails to the PMPro Edit Email Templates Add-on list.
+        $pmproet_email_defaults['application_approved'] = array(
+            'subject' => __( 'Your membership to !!sitename!! has been approved.', 'pmpro-approvals'),
+            'description' => __( 'Approved Email', 'pmpro-approvals')
+            );
+
+        $pmproet_email_defaults['application_denied'] = array(
+            'subject' => __( 'Your membership to !!sitename!! has been denied.', 'pmpro-approvals'),
+            'description' => __( 'Denied Email', 'pmpro-approvals')
+            );
+
+
+        return $pmproet_email_defaults;
+    }
 
 
 
