@@ -319,26 +319,32 @@ class PMPro_Approvals {
 			return;
 		}
 
-		//Get the user approval status. If it's not Approved/Denied it's set to Pending.
-		if( PMPro_Approvals::isApproved( $user_id ) || PMPro_Approvals::isDenied( $user_id ) ){
+		//Get the user approval status. If it's not Approved/Denied it's set to Pending.		
+		if( !PMPro_Approvals::isPending( $user_id ) ){
 
-			$approval_data = PMPro_Approvals::getUserApproval( $user_id, $level_id );
-			
+			$approval_data = PMPro_Approvals::getUserApproval( $user_id, $level_id );						
 			if($short) {
-				$status = $approval_data['status'];
-			} else {				
-				$approver = get_userdata($approval_data['who']);
-				if(current_user_can('edit_users'))
-					$approver_text = '<a href="'. get_edit_user_link( $approver->ID ) .'">'. esc_attr( $approver->display_name ) .'</a>';
-				elseif(current_user_can('pmpro_approvals'))
-					$approver_text = $approver->display_name;
+				if(!empty($approval_data))
+					$status = $approval_data['status'];
 				else
-					$approver_text = '';
+					$status = 'approved';
+			} else {
+				if(!empty($approval_data)) {
+					$approver = get_userdata($approval_data['who']);
+					if(current_user_can('edit_users'))
+						$approver_text = '<a href="'. get_edit_user_link( $approver->ID ) .'">'. esc_attr( $approver->display_name ) .'</a>';
+					elseif(current_user_can('pmpro_approvals'))
+						$approver_text = $approver->display_name;
+					else
+						$approver_text = '';
 
-				if($approver_text)
-					$status = sprintf(__('%s on %s by %s', 'pmpro-approvals'), ucwords($approval_data['status']), date_i18n(get_option('date_format'), $approval_data['timestamp']), $approver_text);
-				else
-					$status = sprintf(__('%s on %s', 'pmpro-approvals'), ucwords($approval_data['status']), date_i18n(get_option('date_format'), $approval_data['timestamp']));
+					if($approver_text)
+						$status = sprintf(__('%s on %s by %s', 'pmpro-approvals'), ucwords($approval_data['status']), date_i18n(get_option('date_format'), $approval_data['timestamp']), $approver_text);
+					else
+						$status = sprintf(__('%s on %s', 'pmpro-approvals'), ucwords($approval_data['status']), date_i18n(get_option('date_format'), $approval_data['timestamp']));
+				} else {
+					$status = __('Approved', 'pmpro-approvals');
+				}
 			}
 
 		}else{
@@ -811,25 +817,26 @@ class PMPro_Approvals {
 		</table>
 		<script>
 			var pmpro_approval_levels = <?php echo json_encode(PMPro_Approvals::getApprovalLevels());?>;
-			var pmpro_approval_user_status_per_level = <?php echo json_encode(PMPro_Approvals::getUserApprovalStatuses($user->ID));?>;
+			var pmpro_approval_user_status_per_level = <?php echo json_encode(PMPro_Approvals::getUserApprovalStatuses($user->ID, true));?>;
 			var pmpro_approval_user_status_full_per_level = <?php echo json_encode(PMPro_Approvals::getUserApprovalStatuses($user->ID));?>;
 			
 			function pmpro_approval_updateApprovalStatus() {
 				//get the level from the dropdown
+				var olevel = <?php echo json_encode($level_id); ?>;
 				var level = jQuery('[name=membership_level]').val();
 				
 				//no level field, default to the user's level id
-				if(typeof(level) == 'undefined')
-					level = <?php echo json_encode($level_id);?>;
+				if(typeof(level) === 'undefined')
+					level = olevel;
 				
 				//if no level, hide it
 				if(level == '') {
 					//no level, so hide everything
 					jQuery('#pmpro_approvals_status_table').hide();
 				} else if(pmpro_approval_levels.indexOf(parseInt(level)) < 0) {
-					//show the field, but hide the actions									
+					//show the field, but hide the actions
 					jQuery('#pmpro_approvals_reset_link').hide();
-					jQuery('#pmpro_approvals_approve_deny_links').hide();					
+					jQuery('#pmpro_approvals_approve_deny_links').hide();
 					
 					jQuery('#pmpro_approvals_status_text').html(<?php echo json_encode(__('The chosen level does not require approval.', 'pmpro-approvals'));?>);
 					
@@ -838,11 +845,17 @@ class PMPro_Approvals {
 					//show the status and action links
 					jQuery('#pmpro_approvals_status_text').html(pmpro_approval_user_status_full_per_level[level]);
 					jQuery('#pmpro_approvals_status_table').show();
-					if(pmpro_approval_user_status_per_level[level] == 'pending') {
-						jQuery('#pmpro_approvals_reset_link').hide();
-						jQuery('#pmpro_approvals_approve_deny_links').show();
+					
+					if(level == olevel) {
+						if(pmpro_approval_user_status_per_level[level] == 'pending') {
+							jQuery('#pmpro_approvals_reset_link').hide();
+							jQuery('#pmpro_approvals_approve_deny_links').show();
+						} else {
+							jQuery('#pmpro_approvals_reset_link').show();
+							jQuery('#pmpro_approvals_approve_deny_links').hide();
+						}
 					} else {
-						jQuery('#pmpro_approvals_reset_link').show();
+						jQuery('#pmpro_approvals_reset_link').hide();
 						jQuery('#pmpro_approvals_approve_deny_links').hide();
 					}
 				}				
