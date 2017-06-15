@@ -54,8 +54,16 @@ class PMPro_Approvals {
 		//add user actions to the approvals page
 		add_filter( 'pmpro_approvals_user_row_actions', array( 'PMPro_Approvals', 'pmpro_approvals_user_row_actions' ), 10, 2 );
 		
-		add_action('show_user_profile', array( 'PMPro_Approvals', 'pmpro_approvals_edit_user' ) );
-		add_action('edit_user_profile', array( 'PMPro_Approvals', 'pmpro_approvals_edit_user' ) );
+		//add approval section to edit user page
+		$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
+		if(current_user_can($membership_level_capability))
+			//current user can change membership levels
+			add_action('pmpro_after_membership_level_profile_fields', array( 'PMPro_Approvals', 'pmpro_approvals_edit_user' ) );
+		else {
+			//current user can't change membership level; use different hooks
+			add_action('edit_user_profile', array( 'PMPro_Approvals', 'pmpro_approvals_edit_user' ) );
+			add_action('show_user_profile', array( 'PMPro_Approvals', 'pmpro_approvals_edit_user' ) );
+		}
 		
 		//set status when user's checkout
 		//add_action( 'pmpro_after_checkout', array( 'PMPro_Approvals', 'pmpro_after_checkout' ), 10, 2 );
@@ -692,50 +700,75 @@ class PMPro_Approvals {
     //Approve members from edit profile in WordPress.
     public static function pmpro_approvals_edit_user( $user ){
 
-    if(isset($_REQUEST['l']))
-		$l = intval($_REQUEST['l']);
-	else
-		$l = false;
+		//get some info about the user's level
+		if(isset($_REQUEST['membership_level'])) {
+			$level_id = intval($_REQUEST['membership_level']);
+			$level = pmpro_getMembershipLevel($level_id);
+		}
+		else {				
+			$level = pmpro_getMembershipLevelForUser($user->ID);
+			if(!empty($level))
+				$level_id = $level->id;
+			else
+				$level_id = NULL;
+		}			
+	
+		//process any approve/deny/reset click
+		if(current_user_can('pmpro_approvals')) {
+			if(!empty($_REQUEST['approve'])) {
+				PMPro_Approvals::approveMember(intval($_REQUEST['approve']), $level_id);		
+			}
+			elseif(!empty($_REQUEST['deny']))
+			{
+				PMPro_Approvals::denyMember(intval($_REQUEST['deny']), $level_id);
+			}
+			elseif(!empty($_REQUEST['unapprove']))
+			{
+				PMPro_Approvals::resetMember(intval($_REQUEST['unapprove']), $level_id);
+			}
+		}
+		
+		//show info
+		?>
+		<table class="form-table">
+			<tr>
+				<th><?php _e('Approval Status', 'pmpro-approvals');?></th>
+				<td>
+				<?php 
+					//show status here 
+					if(PMPro_Approvals::isApproved($user->ID) || PMPro_Approvals::isDenied($user->ID)) {
+						$approval_data = PMPro_Approvals::getUserApproval($user->ID);
+						$approver = get_userdata($approval_data['who']);
+						$approver_link = '<a href="'. get_edit_user_link( $approver->ID ) .'">'. esc_attr( $approver->display_name ) .'</a>';
 
-	if(!empty($_REQUEST['approve'])) {
-		PMPro_Approvals::approveMember(intval($_REQUEST['approve']), $l);		
-	}
-	elseif(!empty($_REQUEST['deny']))
-	{
-		PMPro_Approvals::denyMember(intval($_REQUEST['deny']), $l);
-	}
-	elseif(!empty($_REQUEST['unapprove']))
-	{
-		PMPro_Approvals::resetMember(intval($_REQUEST['unapprove']), $l);
-	}?>
-
-	<table class="form-table">
-		<tr>
-			<th><?php _e('Approval Status', 'pmpro-approvals');?></th>
-			<td>
-			<?php //show status here 
-				if(PMPro_Approvals::isApproved($user->ID) || PMPro_Approvals::isDenied($user->ID)) {
-					$approval_data = PMPro_Approvals::getUserApproval($user->ID);
-					$approver = get_userdata($approval_data['who']);
-					$approver_link = '<a href="'. get_edit_user_link( $approver->ID ) .'">'. esc_attr( $approver->display_name ) .'</a>';
-
-					echo ucwords($approval_data['status']) . " on " . date("m/d/Y", $approval_data['timestamp'])." by ".$approver_link;
+						echo ucwords($approval_data['status']) . " on " . date("m/d/Y", $approval_data['timestamp'])." by ".$approver_link;
+						
+						if(current_user_can('pmpro_approvals')) { 
+						?>
+						[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $user->user_login;?>?', '?&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID;?>');">X</a>]
+						<?php 
+						}
+					} else {
+						//if not approved or denied (Show buttons to approve | deny user)
+						if(current_user_can('pmpro_approvals')) { 
+						?>
+						<a href="?user_id=<?php echo $user->ID ?>&approve=<?php echo $user->ID;?>">Approve</a> |
+						<a href="?user_id=<?php echo $user->ID ?>&deny=<?php echo $user->ID;?>">Deny</a>
+						<?php
+						} else {
+							if(!empty($level)) {
+								printf(__('Pending Approval for %s', 'pmpro-approvals'), $level->name);
+							} else {
+								//shouldn't get here
+								echo __('Pending Approval', 'pmpro-approvals');
+							}
+						}				
+					}
 				?>
-					[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $user->user_login;?>?', '?&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID;?>');">X</a>]						
-			<?php 
-			//if not approved or denied (Show buttons to approve | deny user)
-				} else { 
-			?>		
-					<a href="?user_id=<?php echo $user->ID ?>&approve=<?php echo $user->ID;?>">Approve</a> |
-					<a href="?user_id=<?php echo $user->ID ?>&deny=<?php echo $user->ID;?>">Deny</a>
-			<?php
-				}
-			?>
-			</td>
-		</tr>
-	</table>
-
-	<?php
+				</td>
+			</tr>
+		</table>
+		<?php
     }
   
 
