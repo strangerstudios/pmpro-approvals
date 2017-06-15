@@ -87,7 +87,8 @@ class PMPro_Approvals {
 		add_filter( 'pmpro_non_member_text_filter', array( 'PMPro_Approvals', 'pmpro_non_member_text_filter' ) );
 		add_action( 'pmpro_account_bullets_top', array( 'PMPro_Approvals', 'pmpro_account_bullets_top' ) );
 		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_confirmation_message' ) );
-		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 2 );
+		add_action( 'pmpro_before_change_membership_level', array( 'PMPro_Approvals', 'pmpro_before_change_membership_level' ), 10, 2 );
+		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 2 );		
 
 		//add support for PMPro Email Templates Add-on
 		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
@@ -553,7 +554,7 @@ class PMPro_Approvals {
 		}
 		
 		//update user meta to save timestamp and user who approved
-		update_user_meta($user_id, "pmpro_approval_" . $level_id, array("status"=>"approved", "timestamp"=>time(), "who" => $current_user->ID, "approver"=>$current_user->user_login));						
+		update_user_meta($user_id, 'pmpro_approval_' . $level_id, array('status'=>'approved', 'timestamp'=>current_time('timestamp'), 'who' => $current_user->ID, 'approver'=>$current_user->user_login));
 		
 		//update statuses/etc
 		$msg = 1;
@@ -601,7 +602,7 @@ class PMPro_Approvals {
 		}
 		
 		//update user meta to save timestamp and user who approved
-		update_user_meta($user_id, "pmpro_approval_" . $level_id, array("status"=>"denied", "timestamp"=>time(), "who" => $current_user->ID, "approver"=>$current_user->user_login));						
+		update_user_meta( $user_id, 'pmpro_approval_' . $level_id, array( "status"=>"denied", "timestamp"=>time(), "who" => $current_user->ID, "approver"=>$current_user->user_login ) );
 		
 		//update statuses/etc
 		$msg = 1;
@@ -650,7 +651,7 @@ class PMPro_Approvals {
 			$level_id = $user_level->id;
 		}
 		
-		delete_user_meta($user_id, "pmpro_approval_" . $level_id);
+		update_user_meta($user_id, "pmpro_approval_" . $level_id, array('status'=>'pending', 'timestamp'=>current_time('timestamp'), 'who' => '', 'approver'=>''));
 			
 		$msg = 1;
 		$msgt = __("Approval reset.", 'pmpro-approvals');	
@@ -660,15 +661,41 @@ class PMPro_Approvals {
 	}
 
 	/**
-	 * Send an email to an admin when a user has signed up for a membership level that requires approval.
-	 * TODO: $user_id returns blank, not sure why.
+	 * Set approval status to pending for new members
+	 */
+	public static function pmpro_before_change_membership_level( $level_id, $user_id ) {
+				
+		//check if level requires approval, if not stop executing this function and don't send email.
+		if( !PMPro_Approvals::requiresApproval( $level_id ) ){
+			return;
+		}	
+				
+		//if they are already approved, keep them approved
+		if(PMPro_Approvals::isApproved($user_id, $level_id))
+			return;
+		
+		//if they are denied, keep them denied (we're blocking checkouts elsewhere, so this is an admin change/etc)
+		if(PMPro_Approvals::isDenied($user_id, $level_id))
+			return;
+		
+		//if this is their current level, assume they were grandfathered in and leave it alone		
+		if(pmpro_hasMembershipLevel($level_id, $user_id))
+			return;
+		
+		//else, we need to set their status to pending
+		update_user_meta($user_id, "pmpro_approval_" . $level_id, array('status'=>'pending', 'timestamp'=>current_time('timestamp'), 'who' => '', 'approver'=>''));
+	}
+	
+	/**
+	 * Send an email to an admin when a user has signed up for a membership level that requires approval.	 
 	 */
 	public static function pmpro_after_change_membership_level( $level_id, $user_id ){
 
 		//check if level requires approval, if not stop executing this function and don't send email.
 		if( !PMPro_Approvals::requiresApproval( $level_id ) ){
 			return;
-		}
+		}				
+		
 		//get admin email address to email admin.
 		$admin_email = get_bloginfo( 'admin_email' );
 
