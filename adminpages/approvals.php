@@ -2,7 +2,7 @@
 	global $wpdb, $current_user;
 	
 	//only admins can get this
-	if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_approvals" ) ) ) {
+	if ( ! function_exists( "current_user_can" ) || ! current_user_can( "pmpro_approvals" ) ) {
 		wp_die( __( "You do not have permissions to perform this action.", 'pmpro-approvals' ) );
 	}	
 
