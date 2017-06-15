@@ -83,11 +83,8 @@
 		<tr>
 			<th><label><?php _e('Approval Status', 'pmpro-approvals');?></label></th>
 			<td><?php //show status here 
-			if(PMPro_Approvals::isApproved($user->ID) || PMPro_Approvals::isDenied($user->ID)) {
-				$approval_data = PMPro_Approvals::getUserApproval($user->ID);
-				$approver = get_userdata($approval_data['who']);
-				$approver_link = '<a href="'. get_edit_user_link( $approver->ID ) .'">'. esc_attr( $approver->display_name ) .'</a>';
-				echo ucwords($approval_data['status']) . " on " . date("m/d/Y", $approval_data['timestamp'])." by ".$approver_link;
+			if(PMPro_Approvals::isApproved($user->ID) || PMPro_Approvals::isDenied($user->ID)) {				
+				echo PMPro_Approvals::getUserApprovalStatus($user->ID, NULL, false);
 				?>
 					[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $user->user_login;?>?', '?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID;?>');">X</a>]
 										<?php									

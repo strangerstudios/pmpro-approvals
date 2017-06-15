@@ -58,7 +58,7 @@ class PMPro_Approvals {
 		$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 		if(current_user_can($membership_level_capability))
 			//current user can change membership levels
-			add_action('pmpro_after_membership_level_profile_fields', array( 'PMPro_Approvals', 'pmpro_approvals_edit_user' ) );
+			add_action('pmpro_after_membership_level_profile_fields', array( 'PMPro_Approvals', 'pmpro_approvals_edit_user' ), 5 );
 		else {
 			//current user can't change membership level; use different hooks
 			add_action('edit_user_profile', array( 'PMPro_Approvals', 'pmpro_approvals_edit_user' ) );
@@ -116,7 +116,7 @@ class PMPro_Approvals {
     public static function admin_menu(){
 		add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro-approvals' ), __( 'Approvals', 'pmpro-approvals' ), 'pmpro_approvals', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
     }
-
+	
 	/**
 	 * Create 'Approvals' link under the admin bar link 'Memberships'.
 	 * Fires during the "admin_bar_menu" action.
@@ -153,7 +153,7 @@ class PMPro_Approvals {
 	 */
 	public static function getOptions( $level_id = NULL ) {
 		$options = get_option( 'pmproapp_options', array() );
-				
+		
 		if( !empty( $level_id ) ) {
 			if( !empty( $options[$level_id] ) )
 				return $options[$level_id];
@@ -290,15 +290,99 @@ class PMPro_Approvals {
 	}
 	
 	/**
+	 * Returns status of a given or current user. Returns 'approved', 'denied' or 'pending'.
+	 * If the users level does not require approval it will not return anything.
+	 */
+	public static function getUserApprovalStatus( $user_id = NULL, $level_id = NULL, $short = true){
+
+		global $current_user;
+
+		//check if user ID is blank, set to current user ID.
+		if( empty( $user_id ) ){
+			$user_id = $current_user->ID;
+		}
+
+		//get the PMPro level for the user
+		if(empty($level_id)) {
+			$level = pmpro_getMembershipLevelForUser($user_id);
+			$level_id = $level->ID;
+		} else {
+			$level = pmpro_getLevel($level_id);
+		}
+
+		//make sure we have a user and level by this point
+		if(empty($user_id) || empty($level_id))
+			return false;
+		
+		//check if level requires approval.
+		if( !PMPro_Approvals::requiresApproval( $level_id ) ){
+			return;
+		}
+
+		//Get the user approval status. If it's not Approved/Denied it's set to Pending.
+		if( PMPro_Approvals::isApproved( $user_id ) || PMPro_Approvals::isDenied( $user_id ) ){
+
+			$approval_data = PMPro_Approvals::getUserApproval( $user_id, $level_id );
+			
+			if($short) {
+				$status = $approval_data['status'];
+			} else {				
+				$approver = get_userdata($approval_data['who']);
+				if(current_user_can('edit_users'))
+					$approver_text = '<a href="'. get_edit_user_link( $approver->ID ) .'">'. esc_attr( $approver->display_name ) .'</a>';
+				elseif(current_user_can('pmpro_approvals'))
+					$approver_text = $approver->display_name;
+				else
+					$approver_text = '';
+
+				if($approver_text)
+					$status = sprintf(__('%s on %s by %s', 'pmpro-approvals'), ucwords($approval_data['status']), date_i18n(get_option('date_format'), $approval_data['timestamp']), $approver_text);
+				else
+					$status = sprintf(__('%s on %s', 'pmpro-approvals'), ucwords($approval_data['status']), date_i18n(get_option('date_format'), $approval_data['timestamp']));
+			}
+
+		}else{
+
+			if($short)
+				$status = __( 'pending', 'pmpro-approvals' );
+			else
+				$status = sprintf(__('Pending Approval for %s', 'pmpro-approvals'), $level->name);
+
+		}
+
+		return $status;
+	}
+	
+	/**
+	 * Get user approval statuses for all levels that require approval
+	 * Level IDs are used for the index the array
+	 */
+	public static function getUserApprovalStatuses( $user_id = NULL, $short = false ) {
+		//default to current user
+		if(empty($user_id)) {
+			global $current_user;
+			$user_id = $current_user->ID;
+		}
+		
+		$approval_levels = PMPro_Approvals::getApprovalLevels();
+		$r = array();
+		foreach($approval_levels as $level_id) {
+			$r[$level_id] = PMPro_Approvals::getUserApprovalStatus( $user_id, $level_id, $short );			
+		}
+		
+		return $r;
+	}
+		
+	/**
 	 * Check if a user is approved.
 	 */
 	public static function isApproved($user_id = NULL, $level_id = NULL) {	
 		//get approval for this user/level
 		$user_approval = PMPro_Approvals::getUserApproval($user_id, $level_id);
 		
-		//if no array, return false
+		//if no array, return false					//TODO: we want to change this to return true
 		if(empty($user_approval) || !is_array($user_approval))
-			return false;				
+			return false;
 		
 		//otherwise, let's check the status		
 		if($user_approval['status'] == 'approved')
@@ -320,6 +404,24 @@ class PMPro_Approvals {
 		
 		//otherwise, let's check the status		
 		if($user_approval['status'] == 'denied')
+			return true;
+		else
+			return false;
+	}
+	
+	/**
+	 * Check if a user is pending
+	 */
+	public static function isPending($user_id = NULL, $level_id = NULL) {
+		//get approval for this user/level
+		$user_approval = PMPro_Approvals::getUserApproval($user_id, $level_id);
+		
+		//if no array, return false				//TODO we want this to return false
+		if(empty($user_approval) || !is_array($user_approval))
+			return true;
+				
+		//otherwise, let's check the status		
+		if($user_approval['status'] == 'pending')
 			return true;
 		else
 			return false;
@@ -592,7 +694,6 @@ class PMPro_Approvals {
 
 	}
 
-
 	/**
 	 * Custom confirmation message for levels that requires approval.
 	 */
@@ -617,48 +718,7 @@ class PMPro_Approvals {
 
 		return $confirmation_message;
 	}
-
-
-	/**
-	 * Returns status of a given or current user. Returns 'approved', 'denied' or 'pending'.
-	 * If the users level does not require approval it will not return anything.
-	 */
-	public static function getUserApprovalStatus( $user_id = NULL, $level_id = NULL){
-
-		global $current_user;
-
-		//check if user ID is blank, set to current user ID.
-		if( empty( $user_id ) ){
-			$user_id = $current_user->ID;
-		}
-
-		//get the PMPro level for the user
-		if(empty($level_id)) {
-			$level = pmpro_getMembershipLevelForUser($user_id);
-			$level_id = $level->ID;
-		}
-
-		//check if level requires approval.
-		if( !PMPro_Approvals::requiresApproval( $level_id ) ){
-			return;
-		}
-
-		//Get the user approval status. If it's not Approved/Denied it's set to Pending.
-		if( PMPro_Approvals::isApproved( $user_id ) || PMPro_Approvals::isDenied( $user_id ) ){
-
-			$approval_data = PMPro_Approvals::getUserApproval( $current_user->ID, $level_id );
-
-			$status = $approval_data['status'];
-
-		}else{
-
-			$status = __( 'pending', 'pmpro-approvals' );
-
-		}
-
-		return $status;
-	}
-
+	
 	/**
 	 * Add email templates support for PMPro Edit Email Templates Add-on.
 	 */
@@ -703,7 +763,7 @@ class PMPro_Approvals {
 		//get some info about the user's level
 		if(isset($_REQUEST['membership_level'])) {
 			$level_id = intval($_REQUEST['membership_level']);
-			$level = pmpro_getMembershipLevel($level_id);
+			$level = pmpro_getLevel($level_id);
 		}
 		else {				
 			$level = pmpro_getMembershipLevelForUser($user->ID);
@@ -730,44 +790,70 @@ class PMPro_Approvals {
 		
 		//show info
 		?>
-		<table class="form-table">
+		<table id="pmpro_approvals_status_table" class="form-table">
 			<tr>
 				<th><?php _e('Approval Status', 'pmpro-approvals');?></th>
 				<td>
-				<?php 
-					//show status here 
-					if(PMPro_Approvals::isApproved($user->ID) || PMPro_Approvals::isDenied($user->ID)) {
-						$approval_data = PMPro_Approvals::getUserApproval($user->ID);
-						$approver = get_userdata($approval_data['who']);
-						$approver_link = '<a href="'. get_edit_user_link( $approver->ID ) .'">'. esc_attr( $approver->display_name ) .'</a>';
-
-						echo ucwords($approval_data['status']) . " on " . date("m/d/Y", $approval_data['timestamp'])." by ".$approver_link;
-						
-						if(current_user_can('pmpro_approvals')) { 
-						?>
+					<span id="pmpro_approvals_status_text">
+						<?php echo PMPro_Approvals::getUserApprovalStatus( $user->ID, NULL, false ); ?>
+					</span>
+					<?php if(current_user_can('pmpro_approvals')) { ?>
+					<span id="pmpro_approvals_reset_link" <?php if(PMPro_Approvals::isPending($user->ID, $level_id)) { ?>style="display: none;"<?php } ?>>
 						[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $user->user_login;?>?', '?&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID;?>');">X</a>]
-						<?php 
-						}
-					} else {
-						//if not approved or denied (Show buttons to approve | deny user)
-						if(current_user_can('pmpro_approvals')) { 
-						?>
+					</span>
+					<span id="pmpro_approvals_approve_deny_links" <?php if(!PMPro_Approvals::isPending($user->ID, $level_id)) { ?>style="display: none;"<?php } ?>>
 						<a href="?user_id=<?php echo $user->ID ?>&approve=<?php echo $user->ID;?>">Approve</a> |
 						<a href="?user_id=<?php echo $user->ID ?>&deny=<?php echo $user->ID;?>">Deny</a>
-						<?php
-						} else {
-							if(!empty($level)) {
-								printf(__('Pending Approval for %s', 'pmpro-approvals'), $level->name);
-							} else {
-								//shouldn't get here
-								echo __('Pending Approval', 'pmpro-approvals');
-							}
-						}				
-					}
-				?>
+					</span>
+					<?php } ?>
 				</td>
 			</tr>
 		</table>
+		<script>
+			var pmpro_approval_levels = <?php echo json_encode(PMPro_Approvals::getApprovalLevels());?>;
+			var pmpro_approval_user_status_per_level = <?php echo json_encode(PMPro_Approvals::getUserApprovalStatuses($user->ID));?>;
+			var pmpro_approval_user_status_full_per_level = <?php echo json_encode(PMPro_Approvals::getUserApprovalStatuses($user->ID));?>;
+			
+			function pmpro_approval_updateApprovalStatus() {
+				//get the level from the dropdown
+				var level = jQuery('[name=membership_level]').val();
+				
+				//no level field, default to the user's level id
+				if(typeof(level) == 'undefined')
+					level = <?php echo json_encode($level_id);?>;
+				
+				//if no level, hide it
+				if(level == '') {
+					//no level, so hide everything
+					jQuery('#pmpro_approvals_status_table').hide();
+				} else if(pmpro_approval_levels.indexOf(parseInt(level)) < 0) {
+					//show the field, but hide the actions									
+					jQuery('#pmpro_approvals_reset_link').hide();
+					jQuery('#pmpro_approvals_approve_deny_links').hide();					
+					
+					jQuery('#pmpro_approvals_status_text').html(<?php echo json_encode(__('The chosen level does not require approval.', 'pmpro-approvals'));?>);
+					
+					jQuery('#pmpro_approvals_status_table').show();
+				} else {
+					//show the status and action links
+					jQuery('#pmpro_approvals_status_text').html(pmpro_approval_user_status_full_per_level[level]);
+					jQuery('#pmpro_approvals_status_table').show();
+					if(pmpro_approval_user_status_per_level[level] == 'pending') {
+						jQuery('#pmpro_approvals_reset_link').hide();
+						jQuery('#pmpro_approvals_approve_deny_links').show();
+					} else {
+						jQuery('#pmpro_approvals_reset_link').show();
+						jQuery('#pmpro_approvals_approve_deny_links').hide();
+					}
+				}				
+			}
+			
+			//update approval status when the membership level select changes
+			jQuery('[name=membership_level]').change(function(){pmpro_approval_updateApprovalStatus();});
+			
+			//call this once on load just in case
+			pmpro_approval_updateApprovalStatus();
+		</script>
 		<?php
     }
   
