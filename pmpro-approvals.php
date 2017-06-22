@@ -247,7 +247,22 @@ class PMPro_Approvals {
 		if(!$access)
 			return $access;
 		
+		//no user, this must be open to everyone
+		if(empty($user) || empty($user->ID))
+			return $access;
+		
+		//no levels, must be open
+		if(empty($levels))
+			return $access;
+		
 		//now we need to check if the user is approved for ANY of the $levels
+		$access = false;	//assume no access
+		foreach($levels as $level) {			
+			if(PMPro_Approvals::isApproved($user->ID, $level->id)) {
+				$access = true;
+				break;
+			}
+		}
 		
 		return $access;
 	}
