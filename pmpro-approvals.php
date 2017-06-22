@@ -765,8 +765,10 @@ class PMPro_Approvals {
 
 		global $current_user, $has_access;
 
-		if( !PMPro_Approvals::isApproved() ) {
+		if( PMPro_Approvals::isPending() ) {
 			$text = __( 'Your membership requires approval before you are able to view this content.', 'pmpro-approvals' );
+		} elseif( PMPro_Approvals::isDenied() ) {
+			$text = __( 'Your membership application has been denied. Contact the site owners if you believe this is an error.', 'pmpro-approvals' );
 		}
 
 		return $text;
