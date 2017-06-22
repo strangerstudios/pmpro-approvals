@@ -70,7 +70,7 @@ class PMPro_Approvals {
 		//add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ) );
 		
 		//filter membership and content access
-		//add_filter( 'pmpro_has_membership_level', array( 'PMPro_Approvals', 'pmpro_has_membership_level' ), 10, 3 );
+		add_filter( 'pmpro_has_membership_level', array( 'PMPro_Approvals', 'pmpro_has_membership_level' ), 10, 3 );
 		add_filter( 'pmpro_has_membership_access_filter', array( 'PMPro_Approvals', 'pmpro_has_membership_access_filter' ), 10, 4 );
 		
   		//add settings to the edit membership level page
@@ -238,7 +238,7 @@ class PMPro_Approvals {
 	}
 	
 	/**
-	 * Filter hasMembershipLevel if user is not approved
+	 * Deny access to member content if user is not approved
 	 * Fires on pmpro_has_membership_access_filter
 	 */
 	public static function pmpro_has_membership_access_filter( $access, $post, $user, $levels ) {
@@ -265,6 +265,37 @@ class PMPro_Approvals {
 		}
 		
 		return $access;
+	}
+	
+	/**
+	 * Filter hasMembershipLevel to return false
+	 * if a user is not approved.
+	 * Fires on pmpro_has_membership_level filter
+	 */
+	public static function pmpro_has_membership_level( $haslevel, $user_id, $levels ) {
+		
+		//if already false, skip
+		if(!$haslevel)
+			return $haslevel;
+		
+		//no user, skip
+		if(empty($user_id))
+			return $haslevel;
+		
+		//no levels, skip
+		if(empty($levels))
+			return $haslevel;
+		
+		//now we need to check if the user is approved for ANY of the $levels
+		$haslevel = false;
+		foreach($levels as $level) {
+			if(PMPro_Approvals::isApproved($user_id, $level)) {
+				$haslevel = true;
+				break;
+			}
+		}
+		
+		return $haslevel;
 	}
 	
 	/**
