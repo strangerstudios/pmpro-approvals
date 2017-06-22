@@ -65,10 +65,9 @@ class PMPro_Approvals {
 			add_action('show_user_profile', array( 'PMPro_Approvals', 'show_user_profile_status' ) );
 		}
 		
-		//set status when user's checkout
-		//add_action( 'pmpro_after_checkout', array( 'PMPro_Approvals', 'pmpro_after_checkout' ), 10, 2 );
-		//add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ) );
-		
+		//check approval status at checkout
+		add_action('pmpro_checkout_preheader', array( 'PMPro_Approvals', 'pmpro_checkout_preheader_block_denied_members' ));
+				
 		//filter membership and content access
 		add_filter( 'pmpro_has_membership_level', array( 'PMPro_Approvals', 'pmpro_has_membership_level' ), 10, 3 );
 		add_filter( 'pmpro_has_membership_access_filter', array( 'PMPro_Approvals', 'pmpro_has_membership_access_filter' ), 10, 4 );
@@ -297,6 +296,18 @@ class PMPro_Approvals {
 		
 		return $haslevel;
 	}
+	
+	/**
+	 * Show an error if a denied member is attempting to checkout for a level they are already denied for.
+	 * Note that the precense of this error will halt checkout as well.
+	 */
+	public static function pmpro_checkout_preheader_block_denied_members() {
+		global $pmpro_level;
+		
+		if(PMPro_Approvals::isDenied(NULL, $pmpro_level->id)) {
+			pmpro_setMessage(__('Your previous application for this level has been denied. You will not be allowed to check out.', 'pmpro-approvals'), 'pmpro_error');
+		}
+	}		
 	
 	/**
 	 * Get User Approval Meta
