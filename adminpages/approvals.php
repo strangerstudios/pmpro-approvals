@@ -29,14 +29,17 @@
 		
 	//Approve, deny or reset member back to pending
 	if(!empty($_REQUEST['approve'])) {
+		check_admin_referer('pmpro_approvals', 'pmpro_approvals_nonce');
 		PMPro_Approvals::approveMember(intval($_REQUEST['approve']), $l);		
 	}
 	elseif(!empty($_REQUEST['deny']))
 	{
+		check_admin_referer('pmpro_approvals', 'pmpro_approvals_nonce');
 		PMPro_Approvals::denyMember(intval($_REQUEST['deny']), $l);
 	}
 	elseif(!empty($_REQUEST['unapprove']))
 	{
+		check_admin_referer('pmpro_approvals', 'pmpro_approvals_nonce');
 		PMPro_Approvals::resetMember(intval($_REQUEST['unapprove']), $l);
 	}
 	
@@ -172,17 +175,18 @@
 							</td>							
 							<td>										
 								<?php									
+									$pmpro_approvals_nonce = wp_create_nonce('pmpro_approvals');
 									if(PMPro_Approvals::isApproved($theuser->ID) || PMPro_Approvals::isDenied($theuser->ID)) {										
 										echo PMPro_Approvals::getUserApprovalStatus($theuser->ID, $theuser->membership_level->id, false);
 										
 										//link to unapprove
 										?>
-										[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $theuser->user_login;?>?', '?page=pmpro-approvals&s=<?php echo esc_attr($s);?>&l=<?php echo $l;?>&limit=<?php echo intval($limit);?>&status=<?php echo $status;?>&sortby=<?php echo $sortby;?>&sortorder=<?php echo $sortorder;?>&pn=<?php echo intval($pn);?>&unapprove=<?php echo $theuser->ID;?>');">X</a>]
+										[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $theuser->user_login;?>?', '?page=pmpro-approvals&s=<?php echo esc_attr($s);?>&l=<?php echo $l;?>&limit=<?php echo intval($limit);?>&status=<?php echo $status;?>&sortby=<?php echo $sortby;?>&sortorder=<?php echo $sortorder;?>&pn=<?php echo intval($pn);?>&unapprove=<?php echo $theuser->ID;?>&pmpro_approvals_nonce=<?php echo urlencode($pmpro_approvals_nonce);?>');">X</a>]
 										<?php									
 									} else {
 									?>										
-									<a href="?page=pmpro-approvals&s=<?php echo esc_attr($s);?>&l=<?php echo $l;?>&limit=<?php echo intval($limit);?>&status=<?php echo $status;?>&sortby=<?php echo $sortby;?>&sortorder=<?php echo $sortorder;?>&pn=<?php echo intval($pn);?>&approve=<?php echo $theuser->ID;?>">Approve</a> |
-									<a href="?page=pmpro-approvals&s=<?php echo esc_attr($s);?>&l=<?php echo $l;?>&limit=<?php echo intval($limit);?>&status=<?php echo $status;?>&sortby=<?php echo $sortby;?>&sortorder=<?php echo $sortorder;?>&pn=<?php echo intval($pn);?>&deny=<?php echo $theuser->ID;?>">Deny</a>
+									<a href="?page=pmpro-approvals&s=<?php echo esc_attr($s);?>&l=<?php echo $l;?>&limit=<?php echo intval($limit);?>&status=<?php echo $status;?>&sortby=<?php echo $sortby;?>&sortorder=<?php echo $sortorder;?>&pn=<?php echo intval($pn);?>&approve=<?php echo $theuser->ID;?>&pmpro_approvals_nonce=<?php echo urlencode($pmpro_approvals_nonce);?>">Approve</a> |
+									<a href="?page=pmpro-approvals&s=<?php echo esc_attr($s);?>&l=<?php echo $l;?>&limit=<?php echo intval($limit);?>&status=<?php echo $status;?>&sortby=<?php echo $sortby;?>&sortorder=<?php echo $sortorder;?>&pn=<?php echo intval($pn);?>&deny=<?php echo $theuser->ID;?>&pmpro_approvals_nonce=<?php echo urlencode($pmpro_approvals_nonce);?>">Deny</a>
 									<?php
 									}
 								?>
