@@ -776,10 +776,18 @@ class PMPro_Approvals {
 
 		global $current_user, $has_access;
 
-		if( PMPro_Approvals::isPending() ) {
-			$text = __( 'Your membership requires approval before you are able to view this content.', 'pmpro-approvals' );
-		} elseif( PMPro_Approvals::isDenied() ) {
+		//if a user does not have a membership level, return default text.
+		if( !pmpro_hasMembershipLevel() ){
+			return $text;
+		}else{
+			//get current user's level ID
+			$users_level = pmpro_getMembershipLevelForUser($current_user->ID);
+			$level_id = $users_level->ID;
+				if( PMPro_Approvals::requiresApproval( $level_id ) && PMPro_Approvals::isPending() ){
+					$text = __( 'Your membership requires approval before you are able to view this content.', 'pmpro-approvals' );
+				}elseif( PMPro_Approvals::requiresApproval( $level_id ) && PMPro_Approvals::isDenied() ) {
 			$text = __( 'Your membership application has been denied. Contact the site owners if you believe this is an error.', 'pmpro-approvals' );
+			}
 		}
 
 		return $text;
