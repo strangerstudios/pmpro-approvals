@@ -2,7 +2,7 @@
 	global $wpdb, $current_user;
 	
 	//only admins can get this
-	if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_approvals" ) ) ) {
+	if ( ! function_exists( "current_user_can" ) || ! current_user_can( "pmpro_approvals" ) ) {
 		wp_die( __( "You do not have permissions to perform this action.", 'pmpro-approvals' ) );
 	}	
 
@@ -118,6 +118,7 @@
 				{
 					//get meta
 					$theuser = get_userdata($auser->ID);
+					$theuser->membership_level = pmpro_getMembershipLevelForUser($theuser->ID);
 					?>
 						<tr <?php if($count++ % 2 == 0) { ?>class="alternate"<?php } ?>>
 							<td><?php echo $theuser->ID?></td>
@@ -156,11 +157,8 @@
 							</td>							
 							<td>										
 								<?php									
-									if(PMPro_Approvals::isApproved($theuser->ID) || PMPro_Approvals::isDenied($theuser->ID)) {
-										$approval_data = PMPro_Approvals::getUserApproval($theuser->ID);
-										$approver = get_userdata($approval_data['who']);
-										$approver_link = '<a href="'. get_edit_user_link( $approver->ID ) .'">'. esc_attr( $approver->display_name ) .'</a>';
-										echo ucwords($approval_data['status']) . " on " . date("m/d/Y", $approval_data['timestamp'])." by ".$approver_link;
+									if(PMPro_Approvals::isApproved($theuser->ID) || PMPro_Approvals::isDenied($theuser->ID)) {										
+										echo PMPro_Approvals::getUserApprovalStatus($theuser->ID, $theuser->membership_level->id, false);
 										
 										//link to unapprove
 										?>
@@ -174,7 +172,7 @@
 									}
 								?>
 							</td>
-							<td><?php echo date("m/d/Y", strtotime($theuser->user_registered))?></td>							
+							<td><?php echo date_i18n(get_option('date_format'), strtotime($theuser->user_registered))?></td>							
 						</tr>
 					<?php
 				}
