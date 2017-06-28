@@ -38,6 +38,11 @@
 		<?php _e('Approvals', 'pmpro-approvals');?>
 	</h2>	
 	<ul class="subsubsub">
+	<li class="all"><a href="<?php echo admin_url("admin.php?page=pmpro-approvals") ?>">All</a></li> |
+	<li class="approved"><a href="<?php echo admin_url("admin.php?page=pmpro-approvals&s=approved") ?>">Approved</a></li> |
+	<li class="denied"><a href="<?php echo admin_url("admin.php?page=pmpro-approvals&s=denied") ?>">Denied</a></li> |
+	<li class="pending"><a href="<?php echo admin_url("admin.php?page=pmpro-approvals&s=pending") ?>">Pending</a></li>
+	<br><br>
 		<li>			
 			<?php _e('Show', 'pmpro-approvals');?> <select name="l" onchange="jQuery('#posts-filter').submit();">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'pmpro-approvals');?></option>
@@ -107,7 +112,7 @@
 				<th><?php _e('Name', 'pmpro-approvals');?></th>				
 				<th><?php _e('Email', 'pmpro-approvals');?></th>				
 				<th><?php _e('Membership', 'pmpro-approvals');?></th>					
-				<th><a href="<?php echo admin_url("admin.php?page=pmpro-approvals&s=" . esc_attr($s) . "&limit=" . $limit . "&pn=" . $pn . "&sortby=pmpro_approval");?><?php if($sortby == "pmpro_approval" && $sortorder == "DESC") { ?>&sortorder=ASC<?php } ?>"><?php _e('Approval', 'pmpro-approvals');?></a></th>
+				<th><?php _e('Approval', 'pmpro-approvals');?></th>
 				<th><a href="<?php echo admin_url("admin.php?page=pmpro-approvals&s=" . esc_attr($s) . "&limit=" . $limit . "&pn=" . $pn . "&sortby=user_registered");?><?php if($sortby == "user_registered" && $sortorder == "DESC") { ?>&sortorder=ASC<?php } ?>"><?php _e('Joined', 'pmpro-approvals');?></a></th>				
 			</tr>
 		</thead>
