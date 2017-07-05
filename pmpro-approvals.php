@@ -91,6 +91,7 @@ class PMPro_Approvals {
 
 		//add support for PMPro Email Templates Add-on
 		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
+		add_filter( 'pmpro_email_filter', array( 'PMPro_Approvals', 'pmpro_email_filter' ) );
     }
 
     /**
@@ -863,6 +864,25 @@ class PMPro_Approvals {
         return $pmproet_email_defaults;
     }
 
+	/**
+	 * Adjust default emails to show that the user is pending.
+	 */
+    public static function pmpro_email_filter( $email ){
+
+    	//build an array to hold the email templates to adjust if a level is pending. (User templates only.)
+    	$email_templates = array( 'checkout_free', 'checkout_check', 'checkout_express', 'checkout_freetrial', 'checkout_paid', 'checkout_trial' );
+
+    	//if the level requires approval and is in the above array.
+    	if( in_array( $email->template, $email_templates ) && PMPro_Approvals::requiresApproval( $email->data['membership_id'] ) ){
+
+    	//Change the body text to show pending by default.
+    	$email->body = str_replace( 'Your membership account is now active.', __( 'Your membership account is now pending. You will be notified once your account has been approved/denied.', 'pmpro-approvals' ), $email->body );
+
+    	}
+
+    	return $email;
+
+    }
 
 
     //Approve members from edit profile in WordPress.
