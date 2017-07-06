@@ -826,7 +826,7 @@ class PMPro_Approvals {
 		$admin_approval_email->template = 'admin_notification_approved'; //Update email template for admins.
 		$admin_approval_email->body .= __( '<p>Dear Admin</p>', 'pmpro-approvals' );
 		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_notification.html" );
-		$admin_approval_email->body .= '<p><a href=' .get_admin_url(). 'admin.php?page=pmpro-approvals&user_id=' . $user_id . '>Preview user details</a><p>';
+		$admin_approval_email->body .= '<p><a href=' .get_admin_url(). 'admin.php?page=pmpro-approvals&user_id=' . $user_id . '>View user details</a><p>';
 		
 		$admin_approval_email->sendEmail();
 
@@ -866,7 +866,7 @@ class PMPro_Approvals {
 			$actions[] = '<a href="' . admin_url('user-edit.php?user_id=' . $user->ID) . '">Edit</a>';
 	
 		if(current_user_can($cap) && !empty($user->ID))
-			$actions[] = '<a href="' . admin_url('admin.php?page=pmpro-approvals&user_id=' . $user->ID) . '">Preview</a>';		
+			$actions[] = '<a href="' . admin_url('admin.php?page=pmpro-approvals&user_id=' . $user->ID) . '">View</a>';		
 		
 		return $actions;
 	}
