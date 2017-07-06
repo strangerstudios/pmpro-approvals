@@ -20,9 +20,12 @@ class PMPro_Approvals {
      * Initializes the plugin by setting localization, filters, and administration functions.
      */
     private function __construct() {		
+		//activation/deactivation
+		register_activation_hook( __FILE__, array( 'PMPro_Approvals', 'activation' ) );
+		register_deactivation_hook( __FILE__, array( 'PMPro_Approvals', 'deactivation' ) );
+		
 		//initialize the plugin
   		add_action( 'init', array( 'PMPro_Approvals', 'init' ) );
-
     }
 
     /**
@@ -33,8 +36,8 @@ class PMPro_Approvals {
     public static function get_instance() {
         if ( null == self::$instance ) {
             self::$instance = new self;
-        }
-
+        }		
+		
         return self::$instance;
     }
 
@@ -94,9 +97,7 @@ class PMPro_Approvals {
     /**
     * Run code on admin init
     */
-    public static function admin_init(){
-    	//TODO: Add Approver role (maybe in activation/deactivation)
-		
+    public static function admin_init(){		
         //get role of administrator
         $role = get_role( 'administrator' );
         //add custom capability to administrator
@@ -106,7 +107,29 @@ class PMPro_Approvals {
 		global $current_user;
 		setup_userdata( $current_user->ID );
     }
-
+	
+	/**
+	* Run code on activation
+	*/
+	public static function activation() {
+		//add Membership Approver role
+		remove_role('pmpro_approver');	//in case we updated the caps below
+		add_role('pmpro_approver', 'Membership Approver', array(
+			'read' => true,
+			'pmpro_memberships_menu' => true,
+			'pmpro_memberslist' => true,
+			'pmpro_approvals' => true,
+		));
+	}		
+	
+	/**
+	* Run code on deactivation
+	*/
+	public static function deactivation() {
+		//remove Membership Approver role
+		remove_role('pmpro_approver');		
+	}
+		
 	/**
 	 * Create the submenu item 'Approvals' under the 'Memberships' link in WP dashboard.
 	 * Fires during the "admin_menu" action.
