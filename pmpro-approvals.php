@@ -58,26 +58,23 @@ class PMPro_Approvals {
 		$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 		if(current_user_can($membership_level_capability))
 			//current user can change membership levels
-			add_action('pmpro_after_membership_level_profile_fields', array( 'PMPro_Approvals', 'show_user_profile_status' ), 5 );
+			add_action( 'pmpro_after_membership_level_profile_fields', array( 'PMPro_Approvals', 'show_user_profile_status' ), 5 );
 		else {
 			//current user can't change membership level; use different hooks
-			add_action('edit_user_profile', array( 'PMPro_Approvals', 'show_user_profile_status' ) );
-			add_action('show_user_profile', array( 'PMPro_Approvals', 'show_user_profile_status' ) );
+			add_action( 'edit_user_profile', array( 'PMPro_Approvals', 'show_user_profile_status' ) );
+			add_action( 'show_user_profile', array( 'PMPro_Approvals', 'show_user_profile_status' ) );
 		}
 		
 		//check approval status at checkout
-		add_action('pmpro_checkout_preheader', array( 'PMPro_Approvals', 'pmpro_checkout_preheader_block_denied_members' ));
-				
+		add_action( 'pmpro_checkout_preheader', array( 'PMPro_Approvals', 'pmpro_checkout_preheader_block_denied_members' ) );
+		
+		//add approval status to members list
+		add_action( 'pmpro_members_list_user', array( 'PMPro_Approvals', 'pmpro_members_list_user' ) );
+		
 		//filter membership and content access
 		add_filter( 'pmpro_has_membership_level', array( 'PMPro_Approvals', 'pmpro_has_membership_level' ), 10, 3 );
 		add_filter( 'pmpro_has_membership_access_filter', array( 'PMPro_Approvals', 'pmpro_has_membership_access_filter' ), 10, 4 );
-		
-  		//add settings to the edit membership level page
-		/*
-  			Add settings to edit level page: (see pmpro-shipping)
-  			* add_action pmpro_membership_level_after_other_settings
-  			* add_action pmpro_save_membership_level
-  		*/		
+		  		
 	    //load checkbox in membership level edit page for users to select.
 	    add_action( 'pmpro_membership_level_after_other_settings', array( 'PMPro_Approvals', 'pmpro_membership_level_after_other_settings' ) );
 		add_action( 'pmpro_save_membership_level', array( 'PMPro_Approvals', 'pmpro_save_membership_level' ) );				
@@ -156,12 +153,17 @@ class PMPro_Approvals {
 		
 		if( !empty( $level_id ) ) {
 			if( !empty( $options[$level_id] ) )
-				return $options[$level_id];
+				$r = $options[$level_id];
 			else
-				return array( 'requires_approval' => false );
+				$r = array();
 		} else {
-			return $options;
+			$r = $options;
 		}
+		
+		//make sure defaults are set		
+		$r = array_merge(array( 'requires_approval' => 0, 'restrict_checkout' => 0 ), $r);
+		
+		return $r;
 	}
 	
 	/**
@@ -193,21 +195,74 @@ class PMPro_Approvals {
 		if($level_id > 0)
 			$options = PMPro_Approvals::getOptions( $level_id );
 		else
-			$options = array( 'requires_approval' => false );
-			
+			$options = array( 'requires_approval' => false, 'restrict_checkout' => false );
+
+		//figure out approval_setting from the actual options
+		if(!$options['requires_approval'] && !$options['restrict_checkout'])
+			$approval_setting = 0;
+		elseif($options['requires_approval'] && !$options['restrict_checkout'])
+			$approval_setting = 1;
+		elseif(!$options['requires_approval'] && $options['restrict_checkout'])
+			$approval_setting = 2;
+		else
+			$approval_setting = 3;
+		
+		//get all levels for which level option
+		$levels = pmpro_getAllLevels(true, true);
+		if(isset($levels[$level_id]))
+			unset($levels[$level_id])	//remove this level
 		?>
 		<h3 class="topborder"><?php _e( 'Approval Settings', 'pmpro-approvals' ) ?></h3>
 		<table>
-		<tbody class="form-table">
+		<tbody class="form-table">			
 			<tr>
-				<th scope="row" valign="top"><label for="requires_approval"><?php _e( 'Requires Approval:', 'pmpro-approvals' );?></label></th>
+				<th scope="row" valign="top"><label for="approval_setting"><?php _e( 'Requires Approval?', 'pmpro-approvals' );?></label></th>
 				<td>
-					<input type="checkbox" id="requires_approval" name="requires_approval" value="1" <?php checked( $options['requires_approval'], 1);?> />
-					<label for="requires_approval"><?php _e( 'Check this if membership requires approval before users are assigned to this membership level.', 'pmpro-approvals' );?></label>
+					<select id="approval_setting" name="approval_setting">
+						<option value="0" <?php selected($approval_setting, 0);?>><?php _e('No.', 'pmpro-approvals');?></option>
+						<option value="1" <?php selected($approval_setting, 1);?>><?php _e('Yes. Admin must approve new members for this level.', 'pmpro-approvals');?></option>
+						<?php if(!empty($levels)) { ?>
+							<option value="2" <?php selected($approval_setting, 2);?>><?php _e('Yes. User must have an approved membership for a different level.', 'pmpro-approvals');?></option>
+							<option value="3" <?php selected($approval_setting, 3);?>><?php _e('Yes. User must have an approved membership for a different level AND admin must approve new members for this level.', 'pmpro-approvals');?></option>
+						<?php } ?>
+					</select>								
 				</td>
 			</tr>
+			<?php if(!empty($levels)) { ?>
+			<tr <?php if($approval_setting < 2) {?>style="display: none;"<?php } ?>>
+				<th scope="row" valign="top"><label for="approval_restrict_level"><?php _e( 'Which Level?', 'pmpro-approvals' );?></label></th>
+				<td>
+					<select id="approval_restrict_level" name="approval_restrict_level">					
+					<?php						
+						foreach($levels as $level) {
+							?>
+							<option value="<?php echo $level->id;?>" <?php selected($options['restrict_checkout'], $level->id);?>><?php echo $level->name;?></option>
+							<?php
+						}
+					?>
+				</td>
+			</tr>
+			<?php } ?>
 		</tbody>
 		</table>
+		<?php if(!empty($levels)) { ?>
+		<script>
+			jQuery(document).ready(function() {
+				function pmproap_toggleWhichLevel() {
+					if(jQuery('#approval_setting').val() > 1)
+						jQuery('#approval_restrict_level').closest('tr').show();
+					else
+						jQuery('#approval_restrict_level').closest('tr').hide();
+				}
+				
+				//bind to approval setting change
+				jQuery('#approval_setting').change(function() { pmproap_toggleWhichLevel(); });
+				
+				//run on load
+				pmproap_toggleWhichLevel();
+			});
+		</script>
+		<?php } ?>
 		<?php
 	}
 
@@ -216,11 +271,34 @@ class PMPro_Approvals {
 	 * Fires on pmpro_save_membership_level
 	 */
 	public static function pmpro_save_membership_level( $level_id ) {
+		global $msg, $msgt, $saveid, $edit;
+		
 		//get value
-		if( !empty( $_REQUEST['requires_approval'] ) )
-			$requires_approval = true;
+		if( !empty( $_REQUEST['approval_setting'] ) )
+			$approval_setting = intval($_REQUEST['approval_setting']);
 		else
-			$requires_approval = false;
+			$approval_setting = 0;
+				
+		if( !empty( $_REQUEST['approval_restrict_level'] ) )
+			$restrict_checkout = intval($_REQUEST['approval_restrict_level']);
+		else
+			$restrict_checkout = 0;			
+			
+		//figure out requires_approval and restrict_checkout value from setting
+		if($approval_setting == 1) {
+			$requires_approval = 1;
+			$restrict_content = 0;
+		} elseif($approval_setting == 2) {
+			$requires_approval = 0;
+			//restrict_content set correctly above from input, but check that a level was chosen			
+		} elseif($approval_setting == 3) {
+			$requires_approval = 1;
+			//restrict_content set correctly above from input, but check that a level was chosen			
+		} else {
+			//assume 0, all off
+			$requires_approval = 0;
+			$restrict_checkout = 0;
+		}		
 		
 		//get options
 		$options = PMPro_Approvals::getOptions();
@@ -229,8 +307,9 @@ class PMPro_Approvals {
 		if( empty( $options[$level_id] ) )
 			$options[$level_id] = array();
 			
-		//update requires_approval option
+		//update options
 		$options[$level_id]['requires_approval'] = $requires_approval;
+		$options[$level_id]['restrict_checkout'] = $restrict_checkout;
 		
 		//save it
 		PMPro_Approvals::saveOptions( $options );
@@ -803,9 +882,18 @@ class PMPro_Approvals {
 	}
 
 	/**
+	 * Add approval status to the members list in the dashboard
+	 */
+	public static function pmpro_members_list_user($user) {		
+		if(current_user_can('pmpro_approvals') && PMPro_Approvals::isPending($user->ID, $user->membership_id))
+			$user->membership .= ' (<a href="' . admin_url('admin.php?page=pmpro-approvals&s=' . urlencode($user->user_email)) . '">' . __('Pending', 'pmpro-approvals') . '</a>)';
+		
+		return $user;
+	}
+	
+	/**
 	 * Custom confirmation message for levels that requires approval.
 	 */
-
 	public static function pmpro_confirmation_message( $confirmation_message ){
 
 		global $current_user;
@@ -835,35 +923,38 @@ class PMPro_Approvals {
 		//Add admin emails to the PMPro Edit Email Templates Add-on list.
         $pmproet_email_defaults['admin_approved'] = array(
             'subject' => __( 'A user has been approved for !!membership_level_name!!', 'pmpro-approvals'),
-            'description' => __( 'Approved Email (admin)', 'pmpro-approvals')
+            'description' => __( 'Approved Email (admin)', 'pmpro-approvals'),
+			'body' => __('<p>This is email for admin</p>', 'pmpro-approvals'),
             );
 
         $pmproet_email_defaults['admin_denied'] = array(
             'subject' => __( 'A user has been denied for !!membership_level_name!!', 'pmpro-approvals'),
-            'description' => __( 'Denied Email (admin)', 'pmpro-approvals')
-            );
+            'description' => __( 'Denied Email (admin)', 'pmpro-approvals'),
+            'body' => __('<p>Admin email for denies</p>', 'pmpro-approvals'),
+			);
 
         $pmproet_email_defaults['admin_notification_approved'] = array(
             'subject' => __( 'A user requires approval', 'pmpro-approvals'),
-            'description' => __( 'Requires Approval (admin)', 'pmpro-approvals')
-            );
+            'description' => __( 'Requires Approval (admin)', 'pmpro-approvals'),
+            'body' => __('<p>You have a new user !!display_name!! (!!user_email!!) pending approval</p>', 'pmpro-approvals'),
+			);
 
         //Add user emails to the PMPro Edit Email Templates Add-on list.
         $pmproet_email_defaults['application_approved'] = array(
             'subject' => __( 'Your membership to !!sitename!! has been approved.', 'pmpro-approvals'),
-            'description' => __( 'Approved Email', 'pmpro-approvals')
-            );
+            'description' => __( 'Approved Email', 'pmpro-approvals'),
+            'body' => __('<p>Your membership account has been approved.</p>', 'pmpro-approvals'),
+			);
 
         $pmproet_email_defaults['application_denied'] = array(
             'subject' => __( 'Your membership to !!sitename!! has been denied.', 'pmpro-approvals'),
-            'description' => __( 'Denied Email', 'pmpro-approvals')
-            );
+            'description' => __( 'Denied Email', 'pmpro-approvals'),
+            'body' => __('<p>Your membership account has been denied</p>', 'pmpro-approvals'),
+			);
 
 
         return $pmproet_email_defaults;
     }
-
-
 
     //Approve members from edit profile in WordPress.
     public static function show_user_profile_status( $user ){
