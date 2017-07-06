@@ -66,7 +66,7 @@ class PMPro_Approvals {
 		}
 		
 		//check approval status at checkout
-		add_action( 'pmpro_checkout_preheader', array( 'PMPro_Approvals', 'pmpro_checkout_preheader_block_denied_members' ) );
+		add_action( 'pmpro_checkout_preheader', array( 'PMPro_Approvals', 'pmpro_checkout_preheader' ) );
 		
 		//add approval status to members list
 		add_action( 'pmpro_members_list_user', array( 'PMPro_Approvals', 'pmpro_members_list_user' ) );
@@ -378,16 +378,42 @@ class PMPro_Approvals {
 	}
 	
 	/**
-	 * Show an error if a denied member is attempting to checkout for a level they are already denied for.
-	 * Note that the precense of this error will halt checkout as well.
+	 * Show potential errors on the checkout page.
+	 * Note that the precense of these errors will halt checkout as well.
 	 */
-	public static function pmpro_checkout_preheader_block_denied_members() {
-		global $pmpro_level;
+	public static function pmpro_checkout_preheader() {
+		global $pmpro_level, $current_user;
 		
+		//are they denied for this level?
 		if(PMPro_Approvals::isDenied(NULL, $pmpro_level->id)) {
-			pmpro_setMessage(__('Your previous application for this level has been denied. You will not be allowed to check out.', 'pmpro-approvals'), 'pmpro_error');
+			pmpro_setMessage(__('Your previous application for this level has been denied. You will not be allowed to check out.', 'pmpro-approvals'), 'pmpro_error');			
 		}
-	}		
+		
+		//does this level require approval of another level?
+		$options = PMPro_Approvals::getOptions($pmpro_level->id);		
+		if($options['restrict_checkout']) {
+			$other_level = pmpro_getLevel($options['restrict_checkout']);
+			
+			//check that they are approved and not denied for that other level
+			if(PMPro_Approvals::isDenied(NULL, $options['restrict_checkout'])) {				
+				pmpro_setMessage(sprintf(__('Since your application to the %s level has been denied, you may not check out for this level.', 'pmpro-approvals'), $other_level->name), 'pmpro_error');
+			} elseif(PMPro_Approvals::isPending(NULL, $options['restrict_checkout'])) {
+				//note we use pmpro_getMembershipLevelForUser instead of pmpro_hasMembershipLevel because the latter is filtered
+				$user_level = pmpro_getMembershipLevelForUser($current_user->ID);				
+				if(!empty($user_level) && $user_level->id == $other_level->id) {
+					//already applied but still pending
+					pmpro_setMessage(sprintf(__('Your application to %s is still pending.', 'pmpro-approvals'), $other_level->name), 'pmpro_error');					
+				} else {
+					//haven't applied yet, check if the level is hidden
+					if($other_level->hidden) {
+						pmpro_setMessage(sprintf(__('You must be approved for %s before checking out here.', 'pmpro-approvals'), $other_level->name), 'pmpro_error');	
+					} else {
+						pmpro_setMessage(sprintf(__('You must register and be approved for <a href="%s">%s</a> before checking out here.', 'pmpro-approvals'), pmpro_url('checkout', '?level=' . $other_level->id), $other_level->name), 'pmpro_error');
+					}
+				}
+			}
+		}
+	}	
 	
 	/**
 	 * Get User Approval Meta
