@@ -30,6 +30,9 @@ More information can be found on the add on website here: https://www.paidmember
 
 == Changelog ==
 
+= 1.0.2 =
+* BUG/ENHANCEMENT: If you set a level to require another level's approval, that level will automatically be set to require approval.
+
 = 1.0.1 =
 * BUG FIX: The Approval Settings on the edit membership level page now allow you to choose the first Yes option to require approval for this specific level.
 

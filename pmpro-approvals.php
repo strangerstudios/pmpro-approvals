@@ -297,7 +297,7 @@ class PMPro_Approvals {
 	public static function pmpro_save_membership_level( $level_id ) {
 		global $msg, $msgt, $saveid, $edit;
 		
-		//get value
+		//get values
 		if( !empty( $_REQUEST['approval_setting'] ) )
 			$approval_setting = intval($_REQUEST['approval_setting']);
 		else
@@ -330,7 +330,16 @@ class PMPro_Approvals {
 		//create array if we don't have options for this level already
 		if( empty( $options[$level_id] ) )
 			$options[$level_id] = array();
-			
+
+		//if we're requiring approval from another level, let's make sure that level requires approval
+		if( !empty($restrict_checkout) ) {
+			if(empty($options[$restrict_checkout])) {
+				$options[$restrict_checkout] = array('requires_approval'=>1, 'restrict_checkout'=>0);
+			} else {
+				$options[$restrict_checkout]['requires_approval'] = 1;
+			}
+		}
+
 		//update options
 		$options[$level_id]['requires_approval'] = $requires_approval;
 		$options[$level_id]['restrict_checkout'] = $restrict_checkout;
