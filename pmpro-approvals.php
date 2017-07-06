@@ -260,7 +260,9 @@ class PMPro_Approvals {
 			if(PMPro_Approvals::isApproved($user->ID, $level->id)) {
 				$access = true;
 				break;
-			}
+			}else{
+				$access = false;
+				break;
 		}
 		
 		return $access;
