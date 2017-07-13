@@ -37,18 +37,7 @@
 		if(empty($user->ID))
 		{
 			wp_die(sprintf(__("No user found with ID %d.", 'pmpro-approvals'), intval($_REQUEST['user_id'])));
-		}
-		
-		//if a chapter rep, make sure the user is in their chapter
-		if(!current_user_can("edit_users"))
-		{
-			$rep_chapters = htcia_getRepChapters();
-			
-			if(empty($rep_chapters) || !in_array($user->chapter, $rep_chapters))
-			{
-				wp_die(__("This user is not in one of your chapters. You cannot view this information.", 'pmpro-approvals'));
-			}
-		}
+		}				
 	}
 ?>
 <div class="wrap pmpro_admin">	
