@@ -437,7 +437,7 @@ class PMPro_Approvals {
 					pmpro_setMessage(sprintf(__('Your application to %s is still pending.', 'pmpro-approvals'), $other_level->name), 'pmpro_error');					
 				} else {
 					//haven't applied yet, check if the level is hidden
-					if($other_level->hidden) {
+					if( isset($other_level->hidden) && true == $other_level->hidden) {
 						pmpro_setMessage(sprintf(__('You must be approved for %s before checking out here.', 'pmpro-approvals'), $other_level->name), 'pmpro_error');	
 					} else {
 						pmpro_setMessage(sprintf(__('You must register and be approved for <a href="%s">%s</a> before checking out here.', 'pmpro-approvals'), pmpro_url('checkout', '?level=' . $other_level->id), $other_level->name), 'pmpro_error');
