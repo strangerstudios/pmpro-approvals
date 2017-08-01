@@ -3,7 +3,7 @@ Contributors: strangerstudios, andrewza
 Tags: paid memberships pro, pmpro, approval, approvals, workflow
 Requires at least: 3.5
 Tested up to: 4.8
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 
 Grants administrators the ability to approve/deny memberships after signup.
 
@@ -31,7 +31,9 @@ More information can be found on the add on website here: https://www.paidmember
 == Changelog ==
 
 = 1.0.2 =
+* BUG FIX: Fixed warning when checking if a level is hidden.
 * BUG/ENHANCEMENT: If you set a level to require another level's approval, that level will automatically be set to require approval.
+* ENHANCEMENT: Showing a count of pending approvals in the menu now.
 
 = 1.0.1 =
 * BUG FIX: The Approval Settings on the edit membership level page now allow you to choose the first Yes option to require approval for this specific level.
