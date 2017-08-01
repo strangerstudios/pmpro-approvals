@@ -129,13 +129,35 @@ class PMPro_Approvals {
 		//remove Membership Approver role
 		remove_role('pmpro_approver');		
 	}
-		
+	
 	/**
 	 * Create the submenu item 'Approvals' under the 'Memberships' link in WP dashboard.
 	 * Fires during the "admin_menu" action.
 	 */
     public static function admin_menu(){
+    	global $menu, $submenu;
+
 		add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro-approvals' ), __( 'Approvals', 'pmpro-approvals' ), 'pmpro_approvals', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
+
+		$user_count = PMPro_Approvals::getApprovalCount();
+
+		if ( $user_count > 0 ) {
+			
+			foreach ($menu as $key => $value) {
+				if ( $menu[$key][1] === 'pmpro_memberships_menu' ){
+					$menu[$key][0] .= ' <span class="update-plugins"><span class="update-count"> ' . $user_count . '</span></span>';
+				}
+			}
+
+			//loop through sub-menus.
+			$i = 0;
+			foreach ( $submenu as $key => $value ) {
+			   if ( $submenu['pmpro-membershiplevels'][++$i][0] === 'Approvals' ) {
+			    	$submenu['pmpro-membershiplevels'][$i][0] .= ' <span class="update-plugins"><span class="update-count"> ' . $user_count . '</span></span>';		
+			   	}
+			}
+
+		}
     }
 	
 	/**
@@ -149,14 +171,23 @@ class PMPro_Approvals {
   		if ( ! is_super_admin() && ! current_user_can( 'pmpro_approvals' ) || ! is_admin_bar_showing() ){
   			return;
       	}
+      	//default title for admin bar menu
+      	$title = __( 'Approvals', 'pmpro-approvals' );
+
+      	$user_count = PMPro_Approvals::getApprovalCount();
+
+      	//if returned data contains pending users, adjust the title of the admin bar menu.
+      	if( $user_count != 0 ){
+      		$title .= ' <span class="wp-core-ui wp-ui-notification pmpro-issue-counter" style="display: inline; padding: 1px 7px 1px 6px!important; border-radius: 50%; color: #fff; ">' . $user_count . '</span>';
+      	}
 
   		//add the admin link
   		$wp_admin_bar->add_menu( array(
   			'id'    => 'pmpro-approvals',
-  			'title' => __( 'Approvals', 'pmpro-approvals' ),
+  			'title' => $title,
   			'href'  => get_admin_url( NULL, '/admin.php?page=pmpro-approvals' ),
   			'parent'=>'paid-memberships-pro'
-  		));
+  		)); 			 		
 	}
 
 	/**
@@ -297,7 +328,7 @@ class PMPro_Approvals {
 	public static function pmpro_save_membership_level( $level_id ) {
 		global $msg, $msgt, $saveid, $edit;
 		
-		//get values
+		//get value
 		if( !empty( $_REQUEST['approval_setting'] ) )
 			$approval_setting = intval($_REQUEST['approval_setting']);
 		else
@@ -330,16 +361,7 @@ class PMPro_Approvals {
 		//create array if we don't have options for this level already
 		if( empty( $options[$level_id] ) )
 			$options[$level_id] = array();
-
-		//if we're requiring approval from another level, let's make sure that level requires approval
-		if( !empty($restrict_checkout) ) {
-			if(empty($options[$restrict_checkout])) {
-				$options[$restrict_checkout] = array('requires_approval'=>1, 'restrict_checkout'=>0);
-			} else {
-				$options[$restrict_checkout]['requires_approval'] = 1;
-			}
-		}
-
+			
 		//update options
 		$options[$level_id]['requires_approval'] = $requires_approval;
 		$options[$level_id]['restrict_checkout'] = $restrict_checkout;
@@ -755,6 +777,8 @@ class PMPro_Approvals {
 		$admin_approval_email->template = "admin_approved";
 		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_approved.html" );
 		$admin_approval_email->sendEmail();
+
+		PMPro_Approvals::updateUserLog( $user_id, $level_id );
 		
 		return true;
 	}
@@ -804,6 +828,8 @@ class PMPro_Approvals {
 		$admin_approval_email->template = "admin_denied";
 		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_denied.html" );
 		$admin_approval_email->sendEmail();
+
+		PMPro_Approvals::updateUserLog( $user_id, $level_id );
 		
 		return true;
  
@@ -833,6 +859,8 @@ class PMPro_Approvals {
 			
 		$msg = 1;
 		$msgt = __("Approval reset.", 'pmpro-approvals');	
+
+		PMPro_Approvals::updateUserLog( $user_id, $level_id );
 		
 		return true;
 
@@ -1071,6 +1099,7 @@ class PMPro_Approvals {
 		<table id="pmpro_approvals_status_table" class="form-table">
 			<tr>
 				<th><?php _e('Approval Status', 'pmpro-approvals');?></th>
+
 				<td>
 					<span id="pmpro_approvals_status_text">
 						<?php echo PMPro_Approvals::getUserApprovalStatus( $user->ID, NULL, false ); ?>
@@ -1086,6 +1115,20 @@ class PMPro_Approvals {
 					<?php } ?>
 				</td>
 			</tr>
+			<?php 
+			//only show user approval log if user can edit or has pmpro_approvals.
+			if( current_user_can( 'edit_users' ) || current_user_can( 'pmpro_approvals' ) ){
+			?>
+			<tr>
+				<th><?php _e( 'User Approval Log', 'pmpro-approvals' ); ?></th>
+					<td>
+					<?php 
+					echo PMPro_Approvals::showUserLog($user->ID);
+					?>
+					</td>
+			</tr>
+
+			<?php } ?>
 		</table>
 		<script>
 			var pmpro_approval_levels = <?php echo json_encode(PMPro_Approvals::getApprovalLevels());?>;
@@ -1141,6 +1184,90 @@ class PMPro_Approvals {
 		</script>
 		<?php
     }
+
+    /**
+     * Code generates user log for all users that require approval.
+     * @since 1.0.2
+     */
+    public static function updateUserLog( $user_id, $level_id ){
+
+    	//get user's approval status
+    	$user_meta_stuff = get_user_meta( $user_id, 'pmpro_approval_'.$level_id, true);
+
+    	$data = get_user_meta( $user_id, 'pmpro_approval_log', true );
+
+    	if( !array( $data ) || empty( $data ) ){
+    		$data = array();
+    	}
+
+    	$data[] = $user_meta_stuff['status'] . ' by ' . $user_meta_stuff['approver'] . ' on ' . date_i18n(get_option('date_format'), $user_meta_stuff['timestamp'] ); 
+
+    	update_user_meta( $user_id, 'pmpro_approval_log', $data );
+
+    	return true;
+
+    }
+
+    /**
+     * Show the user's approval log in <ul> form
+     * @since 1.0.2
+     */
+    public static function showUserLog( $user_id = NULL ){
+    	
+    	//If no user ID is available revert back to current user ID.
+    	if( empty( $user_id ) ){
+    		global $current_user;
+  			$user_id = $current_user->ID;
+    	}
+
+    	//create a variable to generate the unordered list and populate according to meta.
+    	$generated_list = '<ul id="pmpro-approvals-log">';
+
+    	//Get the approval log array meta.
+    	$approval_log_meta = get_user_meta( $user_id, 'pmpro_approval_log', true );
+
+    	if( !empty( $approval_log_meta ) ){
+
+
+    	$approval_log = array_reverse($approval_log_meta);
+
+
+    	foreach ($approval_log as $key => $value) {
+    		$generated_list .= '<li><pre>' . $value . '</pre></li>';
+    	}
+
+    	$generated_list .= '</ul>';
+
+    }else{
+    	$generated_list = __( 'No approval history found.', 'pmpro-approvals' );
+    }
+
+    	return $generated_list;
+    }
+
+    /**
+	 * Calculate how many members are currently pending, approved or denied.
+	 * @return (int) Numeric value of members.
+	 * @since 1.0.2
+	 */
+	public static function getApprovalCount( $approval_status = NULL ){
+
+		global $wpdb, $menu, $submenu;
+
+		if ( empty( $approval_status ) ){
+			$approval_status = 'pending';
+		}
+
+		//get all users with 'pending' status.
+		$sqlQuery = $wpdb->prepare( "SELECT COUNT(u.ID) as count FROM wp_users u LEFT JOIN wp_pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN wp_pmpro_membership_levels m ON mu.membership_id = m.id LEFT JOIN wp_usermeta um ON um.user_id = u.ID AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) WHERE mu.status = 'active' AND mu.membership_id > 0 AND um.meta_value LIKE '%s'", '%' . $approval_status . '%' );
+
+		$results = $wpdb->get_results($sqlQuery);
+
+		$number_of_users = (int) $results[0]->count;
+		
+		return $number_of_users;
+
+	}	
   
 } // end class
 
