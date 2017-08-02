@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Paid Memberships Pro - Approvals Add On
-Plugin URI: http://www.paidmembershipspro.com/
+Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
 Version: 1.0.2
 Author: Stranger Studios
-Author URI: http://www.strangerstudios.com
+Author URI: http://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
 */
 
@@ -92,6 +92,9 @@ class PMPro_Approvals {
 		//add support for PMPro Email Templates Add-on
 		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
 		add_filter( 'pmpro_email_filter', array( 'PMPro_Approvals', 'pmpro_email_filter' ) );
+		
+		//plugin row meta
+		add_filter('plugin_row_meta', array('PMPro_Approvals', 'plugin_row_meta'), 10, 2);
     }
 
     /**
@@ -1267,8 +1270,22 @@ class PMPro_Approvals {
 		
 		return $number_of_users;
 
-	}	
-  
+	}
+	
+	/**
+	 * Add links to the plugin row meta
+	 */
+	public static function plugin_row_meta($links, $file) {
+		if(strpos($file, 'pmpro-approvals') !== false)
+		{
+			$new_links = array(
+				'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/approval-process-membership/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-approvals' ) ) . '">' . __( 'Docs', 'pmpro-approvals' ) . '</a>',
+				'<a href="' . esc_url('https://paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-approvals' ) ) . '">' . __( 'Support', 'pmpro-approvals' ) . '</a>',
+			);
+			$links = array_merge($links, $new_links);
+		}
+		return $links;
+	}  
 } // end class
 
 PMPro_Approvals::get_instance();
