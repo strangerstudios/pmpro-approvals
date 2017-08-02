@@ -152,7 +152,8 @@ class PMPro_Approvals {
 			//loop through sub-menus.
 			$i = 0;
 			foreach ( $submenu as $key => $value ) {
-			   if ( $submenu['pmpro-membershiplevels'][++$i][0] === 'Approvals' ) {
+			    ++$i;
+			    if ( !empty($submenu['pmpro-membershiplevels'][$i][0]) && $submenu['pmpro-membershiplevels'][$i][0] === 'Approvals' ) {
 			    	$submenu['pmpro-membershiplevels'][$i][0] .= ' <span class="update-plugins"><span class="update-count"> ' . $user_count . '</span></span>';		
 			   	}
 			}
