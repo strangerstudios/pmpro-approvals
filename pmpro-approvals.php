@@ -5,7 +5,7 @@ Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membersh
 Description: Grants administrators the ability to approve/deny memberships after signup.
 Version: 1.0.2
 Author: Stranger Studios
-Author URI: http://www.paidmembershipspro.com
+Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
 */
 
