@@ -9,7 +9,13 @@ Grants administrators the ability to approve/deny memberships after signup.
 
 == Description ==
 
-Grants administrators the ability to approve/deny memberships after signup.
+Set up a unique approval or application process for your membership site. After a member signs up, the Admin, Membership Manager, or new Approver roles will have the ability to approve their membership or deny the application. The member will be charged the initial payment and subscription configured (if applicable) based on the level’s settings at checkout.
+
+Additionally, you can set a level to require an approved membership from another level in order to complete checkout. This allows you to offer a two-step membership application and full membership registration model. You can place an application fee on the application level, and then charge your full recurring membership fee on the primary membership for approved members.
+
+The applying member and the admin will receive email notifications along the process to alert them of the application status.
+
+Members pending approval will not have access to view members-only content until their membership has been approved. After a member is approved, they will be able to access all members-only content.
 
 == Installation ==
 
@@ -23,10 +29,10 @@ Grants administrators the ability to approve/deny memberships after signup.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 
 = How to Use =
+1. To set a level's approval requirements, edit your membership level and adjust the settings under "Approval Settings".
+1. To process membership approvals, navigate to the Approvals Dashboard under Memberships > Approvals.
 
-1. Edit a membership level, and adjust the settings under "Approvals".
-
-More information can be found on the add on website here: https://www.paidmembershipspro.com/add-ons/plus-add-ons/approval-process-membership/
+View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
 
