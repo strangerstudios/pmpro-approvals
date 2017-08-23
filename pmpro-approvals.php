@@ -496,7 +496,7 @@ class PMPro_Approvals {
 			}
 				
 			//if we have a level, check if it requires approval and if so check user meta
-			if(!empty($level_id)) {
+			if(!empty($level_id) && PMPro_Approvals::hasMembershipLevelSansApproval($level_id, $user_id)) {
 				//if the level doesn't require approval, then the user is approved
 				if(!PMPro_Approvals::requiresApproval($level_id)) {
 					//approval not required, so return status approved
@@ -1270,6 +1270,22 @@ class PMPro_Approvals {
 		
 		return $number_of_users;
 
+	}
+	
+	/**
+	 * Call pmpro_hasMembershipLevel without our filters enabled
+	 */
+	public static function hasMembershipLevelSansApproval($level_id = NULL, $user_id = NULL) {
+		//unhook our stuff
+		remove_filter( 'pmpro_has_membership_level', array( 'PMPro_Approvals', 'pmpro_has_membership_level' ), 10, 3 );
+		
+		//ask PMPro
+		$r = pmpro_hasMembershipLevel($level_id, $user_id);
+		
+		//hook our stuff back up
+		add_filter( 'pmpro_has_membership_level', array( 'PMPro_Approvals', 'pmpro_has_membership_level' ), 10, 3 );
+		
+		return $r;
 	}
 	
 	/**
