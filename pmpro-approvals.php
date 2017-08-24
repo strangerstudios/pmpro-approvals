@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Paid Memberships Pro - Approvals Add On
-Plugin URI: http://www.paidmembershipspro.com/
+Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.0.1
+Version: 1.0.2
 Author: Stranger Studios
-Author URI: http://www.strangerstudios.com
+Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
 */
 
@@ -92,6 +92,9 @@ class PMPro_Approvals {
 		//add support for PMPro Email Templates Add-on
 		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
 		add_filter( 'pmpro_email_filter', array( 'PMPro_Approvals', 'pmpro_email_filter' ) );
+		
+		//plugin row meta
+		add_filter('plugin_row_meta', array('PMPro_Approvals', 'plugin_row_meta'), 10, 2);
     }
 
     /**
@@ -152,7 +155,8 @@ class PMPro_Approvals {
 			//loop through sub-menus.
 			$i = 0;
 			foreach ( $submenu as $key => $value ) {
-			   if ( $submenu['pmpro-membershiplevels'][++$i][0] === 'Approvals' ) {
+			    ++$i;
+			    if ( !empty($submenu['pmpro-membershiplevels'][$i][0]) && $submenu['pmpro-membershiplevels'][$i][0] === 'Approvals' ) {
 			    	$submenu['pmpro-membershiplevels'][$i][0] .= ' <span class="update-plugins"><span class="update-count"> ' . $user_count . '</span></span>';		
 			   	}
 			}
@@ -459,7 +463,7 @@ class PMPro_Approvals {
 					pmpro_setMessage(sprintf(__('Your application to %s is still pending.', 'pmpro-approvals'), $other_level->name), 'pmpro_error');					
 				} else {
 					//haven't applied yet, check if the level is hidden
-					if($other_level->hidden) {
+					if( isset($other_level->hidden) && true == $other_level->hidden) {
 						pmpro_setMessage(sprintf(__('You must be approved for %s before checking out here.', 'pmpro-approvals'), $other_level->name), 'pmpro_error');	
 					} else {
 						pmpro_setMessage(sprintf(__('You must register and be approved for <a href="%s">%s</a> before checking out here.', 'pmpro-approvals'), pmpro_url('checkout', '?level=' . $other_level->id), $other_level->name), 'pmpro_error');
@@ -492,7 +496,7 @@ class PMPro_Approvals {
 			}
 				
 			//if we have a level, check if it requires approval and if so check user meta
-			if(!empty($level_id)) {
+			if(!empty($level_id) && PMPro_Approvals::hasMembershipLevelSansApproval($level_id, $user_id)) {
 				//if the level doesn't require approval, then the user is approved
 				if(!PMPro_Approvals::requiresApproval($level_id)) {
 					//approval not required, so return status approved
@@ -1259,16 +1263,45 @@ class PMPro_Approvals {
 		}
 
 		//get all users with 'pending' status.
-		$sqlQuery = $wpdb->prepare( "SELECT COUNT(u.ID) as count FROM wp_users u LEFT JOIN wp_pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN wp_pmpro_membership_levels m ON mu.membership_id = m.id LEFT JOIN wp_usermeta um ON um.user_id = u.ID AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) WHERE mu.status = 'active' AND mu.membership_id > 0 AND um.meta_value LIKE '%s'", '%' . $approval_status . '%' );
+		$sqlQuery = $wpdb->prepare( "SELECT COUNT(u.ID) as count FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id LEFT JOIN $wpdb->usermeta um ON um.user_id = u.ID AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) WHERE mu.status = 'active' AND mu.membership_id > 0 AND um.meta_value LIKE '%s'", '%' . $approval_status . '%' );
 
-		$results = $wpdb->get_results($sqlQuery);
-
+		$results = $wpdb->get_results($sqlQuery);		
 		$number_of_users = (int) $results[0]->count;
 		
 		return $number_of_users;
 
-	}	
-  
+	}
+	
+	/**
+	 * Call pmpro_hasMembershipLevel without our filters enabled
+	 */
+	public static function hasMembershipLevelSansApproval($level_id = NULL, $user_id = NULL) {
+		//unhook our stuff
+		remove_filter( 'pmpro_has_membership_level', array( 'PMPro_Approvals', 'pmpro_has_membership_level' ), 10, 3 );
+		
+		//ask PMPro
+		$r = pmpro_hasMembershipLevel($level_id, $user_id);
+		
+		//hook our stuff back up
+		add_filter( 'pmpro_has_membership_level', array( 'PMPro_Approvals', 'pmpro_has_membership_level' ), 10, 3 );
+		
+		return $r;
+	}
+	
+	/**
+	 * Add links to the plugin row meta
+	 */
+	public static function plugin_row_meta($links, $file) {
+		if(strpos($file, 'pmpro-approvals') !== false)
+		{
+			$new_links = array(
+				'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/approval-process-membership/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-approvals' ) ) . '">' . __( 'Docs', 'pmpro-approvals' ) . '</a>',
+				'<a href="' . esc_url('https://paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-approvals' ) ) . '">' . __( 'Support', 'pmpro-approvals' ) . '</a>',
+			);
+			$links = array_merge($links, $new_links);
+		}
+		return $links;
+	}  
 } // end class
 
 PMPro_Approvals::get_instance();
