@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.0.2
+Version: 1.0.4
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -209,19 +209,22 @@ class PMPro_Approvals {
 	 */
 	public static function getOptions( $level_id = NULL ) {
 		$options = get_option( 'pmproapp_options', array() );
-		
+
 		if( !empty( $level_id ) ) {
 			if( !empty( $options[$level_id] ) )
 				$r = $options[$level_id];
 			else
-				$r = array();
+				$r = array('requires_approval'=>0, 'restrict_checkout'=>0);
 		} else {
 			$r = $options;
-		}
-		
-		//make sure defaults are set		
-		$r = array_merge(array( 'requires_approval' => 0, 'restrict_checkout' => 0 ), $r);
-		
+
+			//clean up extra values that were accidentally stored in here in old versions
+			if(isset($r['requires_approval']))
+				unset($r['requires_approval']);
+			if(isset($r['restrict_checkout']))
+				unset($r['restrict_checkout']);
+		}		
+
 		return $r;
 	}
 	
