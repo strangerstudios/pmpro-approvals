@@ -422,8 +422,10 @@ class PMPro_Approvals {
 		if(empty($user_id))
 			return $haslevel;
 		
-		//no levels, skip
-		if(empty($levels))
+		$level = pmpro_getMembershipLevelForUser( $user_id );
+
+		//If no levels but user is approved, return true.
+		if( empty( $levels ) && PMPro_Approvals::isApproved( $user_id, $level->ID ) ) 
 			return $haslevel;
 		
 		//now we need to check if the user is approved for ANY of the $levels
