@@ -774,7 +774,7 @@ class PMPro_Approvals {
 		$approval_email->subject = sprintf(__("Your membership at %s has been approved.", 'pmpro-approvals'), get_bloginfo('name'));
 		$approval_email->template = "application_approved";
 		$approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/application_approved.html" );
-		$approval_email->data = array("user_login" => $a_user->display_name, "user_email" => $a_user->user_email, "login_link" => wp_login_url());
+		$approval_email->data = array("user_login" => $a_user->user_login, "user_email" => $a_user->user_email, "login_link" => wp_login_url());
 		$approval_email->sendEmail();
 		
 		//Send approval email to admin too
