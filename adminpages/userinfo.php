@@ -87,32 +87,30 @@
 		</tr>
 	</table>
 	
-	<?php
-		if(function_exists('pmprorh_getProfileFields')) {
+		<?php
+		if( function_exists( 'pmprorh_getProfileFields' ) ) {
 			global $pmprorh_registration_fields, $pmprorh_checkout_boxes;
-		
-			//which fields are marked for the profile	
-			$profile_fields = pmprorh_getProfileFields($user->ID, true);			
-				
+
 			//show the fields
-			if(!empty($profile_fields))
-			{			
-				foreach($profile_fields as $where => $fields)
-				{						
-					$box = pmprorh_getCheckoutBoxByName($where);				
+			if( !empty( $pmprorh_registration_fields ) ) {			
+				foreach( $pmprorh_registration_fields as $where => $fields ) {						
+					$box = pmprorh_getCheckoutBoxByName( $where );				
 					?>
 					<h3><?php echo $box->label;?></h3>
 					<table class="form-table">
 					<?php
 					//cycle through groups						
-					foreach($fields as $field)
-					{			
-					?>
-					<tr>
-						<th><label><?php echo $field->label;?></label></th>
-						<td><?php echo get_user_meta($user->ID, $field->name, true);?></td>
-					</tr>
-					<?php				
+					foreach( $fields as $field ) {	
+
+						// show field as long as it's not false
+						if( false != $field->profile ) {
+						?>
+						<tr>
+							<th><label><?php echo $field->label;?></label></th>
+							<td><?php echo get_user_meta($user->ID, $field->name, true);?></td>
+						</tr>
+						<?php	
+						}	//endif			
 					}
 					?>
 					</table>
@@ -120,6 +118,6 @@
 				}
 			}
 		}
-	?>	
+	?>
 	<a href="?page=pmpro-approvals" class=""><?php _e('&laquo; Back to Approvals', 'pmpro-approvals');?></a>
 </div>
