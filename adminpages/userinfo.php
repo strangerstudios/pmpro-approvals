@@ -107,7 +107,15 @@
 						?>
 						<tr>
 							<th><label><?php echo $field->label;?></label></th>
-							<td><?php echo get_user_meta($user->ID, $field->name, true);?></td>
+							<?php if( is_array( get_user_meta( $user->ID, $field->name, true ) ) && 'file' === $field->type) {
+								$field = get_user_meta( $user->ID, $field->name, true ); ?>
+
+								<td><a href="<?php echo $field['fullurl']; ?>" target="_blank" rel="noopener noreferrer"><?php _e( 'View File', 'pmpro-approvals' ); ?></a> (<?php echo $field['filename'];?>)</td>
+
+
+							<?php } else { ?>
+								<td><?php echo get_user_meta( $user->ID, $field->name, true );?></td>
+							<?php } ?>
 						</tr>
 						<?php	
 						}	//endif			
