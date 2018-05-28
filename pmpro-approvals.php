@@ -7,6 +7,7 @@ Version: 1.0.4
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
+Domain Path: /languages
 */
 
 class PMPro_Approvals {
@@ -95,6 +96,7 @@ class PMPro_Approvals {
 		
 		//plugin row meta
 		add_filter('plugin_row_meta', array('PMPro_Approvals', 'plugin_row_meta'), 10, 2);
+		add_action( 'plugins_loaded', array( 'PMPro_Approvals', 'text_domain' ) );
     }
 
     /**
@@ -1304,7 +1306,17 @@ class PMPro_Approvals {
 			$links = array_merge($links, $new_links);
 		}
 		return $links;
-	}  
+	}
+
+	/**
+	 * Load the languages folder for i18n.
+	 * Translations can be found within 'languages' folder.
+	 * @since 1.0.5
+	 */
+	public static function text_domain(){
+      load_plugin_textdomain( 'pmpro-approvals', false, basename( dirname( __FILE__ ) ) . '/languages' );
+    }
+    
 } // end class
 
 PMPro_Approvals::get_instance();
