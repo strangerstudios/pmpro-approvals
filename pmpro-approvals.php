@@ -555,7 +555,7 @@ class PMPro_Approvals {
 				if(!empty($approval_data))
 					$status = $approval_data['status'];
 				else
-					$status = 'approved';
+					$status = __( 'approved', 'pmpro-approvals' );
 			} else {
 				if(!empty($approval_data)) {
 					$approver = get_userdata($approval_data['who']);
