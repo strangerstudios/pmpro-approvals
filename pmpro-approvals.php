@@ -628,11 +628,17 @@ class PMPro_Approvals {
 				return true;
 		}
 		
-		//otherwise, let's check the status		
-		if($user_approval['status'] == 'approved')
-			return true;
-		else
-			return false;
+		/**
+		 * @filter pmproap_user_is_approved - Filter to override whether the user ID is approved for access to for the level ID
+		 * 
+		 * @param bool		$is_approved - Whether the $user_id is approved for the specified $level_id
+		 * @param int		$user_id - The ID of the User being tested for approval
+		 * @param int		$level_id - The ID of the Membership Level the $user_id is being thested for approval
+		 * @param array		$user_approval - The approval status information for the user_id/level_id
+		 *
+		 * @return bool
+		 */
+		return apply_filters( 'pmproap_user_is_approved', ( 'approved' == $user_approval['status'] ? true : false ), $user_id, $level_id, $user_approval );
 	}
 	
 	/**
@@ -646,11 +652,17 @@ class PMPro_Approvals {
 		if(empty($user_approval) || !is_array($user_approval))
 			return false;
 		
-		//otherwise, let's check the status		
-		if($user_approval['status'] == 'denied')
-			return true;
-		else
-			return false;
+		/**
+		 * @filter pmproap_user_is_denied - Filter to override whether the user ID is denied for access to the level ID
+		 * 
+		 * @param bool		$is_denied - Whether the $user_id is denied for the specified $level_id
+		 * @param int		$user_id - The ID of the User being tested for approval
+		 * @param int		$level_id - The ID of the Membership Level the $user_id is being thested for approval
+		 * @param array		$user_approval - The approval status information for the user_id/level_id
+		 *
+		 * @return bool
+		 */
+		return apply_filters( 'pmproap_user_is_denied', ( 'denied' == $user_approval['status'] ? true : false ), $user_id, $level_id, $user_approval );
 	}
 	
 	/**
@@ -676,11 +688,17 @@ class PMPro_Approvals {
 				return false;
 		}
 				
-		//otherwise, let's check the status		
-		if($user_approval['status'] == 'pending')
-			return true;
-		else
-			return false;
+		/**
+		 * @filter pmproap_user_is_pending - Filter to override whether the user ID is pending access to the level ID
+		 * 
+		 * @param bool		$is_pending - Whether the $user_id is pending for the specified $level_id
+		 * @param int		$user_id - The ID of the User being tested for approval
+		 * @param int		$level_id - The ID of the Membership Level the $user_id is being thested for approval
+		 * @param array		$user_approval - The approval status information for the user_id/level_id
+		 *
+		 * @return bool
+		 */
+		return apply_filters( 'pmproap_user_is_pending', ( 'pending' == $user_approval['status'] ? true : false ), $user_id, $level_id, $user_approval );
 	}
 	
 	/**
