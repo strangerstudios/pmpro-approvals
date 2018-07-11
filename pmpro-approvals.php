@@ -787,6 +787,8 @@ class PMPro_Approvals {
 
 		PMPro_Approvals::updateUserLog( $user_id, $level_id );
 		
+		do_action( 'pmpro_approvals_user_approved', $user_id, $level_id );
+		
 		return true;
 	}
 
@@ -838,6 +840,8 @@ class PMPro_Approvals {
 
 		PMPro_Approvals::updateUserLog( $user_id, $level_id );
 		
+		do_action( 'pmpro_approvals_user_denied', $user_id, $level_id );
+		
 		return true;
  
 	}
@@ -868,6 +872,8 @@ class PMPro_Approvals {
 		$msgt = __("Approval reset.", 'pmpro-approvals');	
 
 		PMPro_Approvals::updateUserLog( $user_id, $level_id );
+		
+		do_action( 'pmpro_approvals_user_approval_reset', $user_id, $level_id );
 		
 		return true;
 
