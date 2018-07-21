@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.0.4
+Version: 1.1
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -759,6 +759,8 @@ class PMPro_Approvals {
 			$user_level = pmpro_getMembershipLevelForUser($user_id);
 			$level_id = $user_level->id;
 		}
+
+		do_action( 'pmpro_approvals_before_approve_member', $user_id, $level_id );
 		
 		//update user meta to save timestamp and user who approved
 		update_user_meta($user_id, 'pmpro_approval_' . $level_id, array('status'=>'approved', 'timestamp'=>current_time('timestamp'), 'who' => $current_user->ID, 'approver'=>$current_user->user_login));
@@ -787,6 +789,8 @@ class PMPro_Approvals {
 
 		PMPro_Approvals::updateUserLog( $user_id, $level_id );
 		
+		do_action( 'pmpro_approvals_after_approve_member', $user_id, $level_id );
+
 		return true;
 	}
 
@@ -810,6 +814,8 @@ class PMPro_Approvals {
 			$level_id = $user_level->id;
 		}
 		
+		do_action( 'pmpro_approvals_before_deny_member', $user_id, $level_id );
+
 		//update user meta to save timestamp and user who approved
 		update_user_meta( $user_id, 'pmpro_approval_' . $level_id, array( "status"=>"denied", "timestamp"=>time(), "who" => $current_user->ID, "approver"=>$current_user->user_login ) );
 		
@@ -838,6 +844,8 @@ class PMPro_Approvals {
 
 		PMPro_Approvals::updateUserLog( $user_id, $level_id );
 		
+		do_action( 'pmpro_approvals_after_deny_member', $user_id, $level_id );
+
 		return true;
  
 	}
@@ -862,12 +870,16 @@ class PMPro_Approvals {
 			$level_id = $user_level->id;
 		}
 		
+		do_action( 'pmpro_approvals_before_reset_member', $user_id, $level_id );
+
 		update_user_meta($user_id, "pmpro_approval_" . $level_id, array('status'=>'pending', 'timestamp'=>current_time('timestamp'), 'who' => '', 'approver'=>''));
 			
 		$msg = 1;
 		$msgt = __("Approval reset.", 'pmpro-approvals');	
 
 		PMPro_Approvals::updateUserLog( $user_id, $level_id );
+
+		do_action( 'pmpro_approvals_after_reset_member', $user_id, $level_id );
 		
 		return true;
 
