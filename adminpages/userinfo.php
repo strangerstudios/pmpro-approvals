@@ -72,17 +72,23 @@
 		<tr>
 			<th><label><?php _e('Approval Status', 'pmpro-approvals');?></label></th>
 			<td><?php //show status here 
-			if(PMPro_Approvals::isApproved($user->ID) || PMPro_Approvals::isDenied($user->ID)) {				
+
+				// get the user validation key
+				$validated = get_user_meta( $theuser->ID, 'pmpro_email_confirmation_key', true );
+
+				if ( ! empty( $validated ) && 'validated' !== $validated ) {
+					_e( 'Awaiting Email Confirmation', 'pmpro-approvals');
+				}elseif(PMPro_Approvals::isApproved($user->ID) || PMPro_Approvals::isDenied($user->ID)) {						
 				echo PMPro_Approvals::getUserApprovalStatus($user->ID, NULL, false);
 				?>
-					[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $user->user_login;?>?', '?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID;?>');">X</a>]
-										<?php									
-									} else {
-									?>										
-									<a href="?page=pmpro-approvals&user_id=<?php echo $user->ID ?>&approve=<?php echo $user->ID;?>">Approve</a> |
-									<a href="?page=pmpro-approvals&user_id=<?php echo $user->ID ?>&deny=<?php echo $user->ID;?>">Deny</a>
-									<?php
-									}
+				[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $user->user_login;?>?', '?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID;?>');">X</a>]
+									<?php									
+				} else {
+				?>										
+					<a href="?page=pmpro-approvals&user_id=<?php echo $user->ID ?>&approve=<?php echo $user->ID;?>"><?php _e( 'Approve', 'pmpro-approvals' ); ?></a> |
+					<a href="?page=pmpro-approvals&user_id=<?php echo $user->ID ?>&deny=<?php echo $user->ID;?>"><?php _e( 'Deny', 'pmpro-approvals' ); ?></a>
+				<?php
+				}
 			?></td>
 		</tr>
 	</table>

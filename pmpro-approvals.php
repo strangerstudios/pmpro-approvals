@@ -1096,7 +1096,12 @@ class PMPro_Approvals {
 				$level_id = $level->id;
 			else
 				$level_id = NULL;
-		}			
+		}	
+
+		// Bail if the user doesn't have a level.
+		if ( empty( $level_id ) ) {
+			return;
+		}		
 	
 		//process any approve/deny/reset click
 		if(current_user_can('pmpro_approvals')) {
@@ -1121,17 +1126,26 @@ class PMPro_Approvals {
 
 				<td>
 					<span id="pmpro_approvals_status_text">
-						<?php echo PMPro_Approvals::getUserApprovalStatus( $user->ID, NULL, false ); ?>
+					<?php
+					// get the user validation key
+					$validated = get_user_meta( $user->ID, 'pmpro_email_confirmation_key', true );
+		
+					if ( 'validated' !== $validated && !empty( $validated ) ) {
+						_e( 'Awaiting Email Confirmation', 'pmpro-approvals');
+					}else{
+						echo PMPro_Approvals::getUserApprovalStatus( $user->ID, NULL, false ); ?>
+
+						</span>
+							<?php if(current_user_can('pmpro_approvals')) { ?>
+							<span id="pmpro_approvals_reset_link" <?php if(PMPro_Approvals::isPending($user->ID, $level_id)) { ?>style="display: none;"<?php } ?>>
+								[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $user->user_login;?>?', '?&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID;?>');">X</a>]
+							</span>
+							<span id="pmpro_approvals_approve_deny_links" <?php if(!PMPro_Approvals::isPending($user->ID, $level_id)) { ?>style="display: none;"<?php } ?>>
+								<a href="?user_id=<?php echo $user->ID ?>&approve=<?php echo $user->ID;?>"><?php _e( 'Approve', 'pmpro-approvals' ); ?></a> |
+								<a href="?user_id=<?php echo $user->ID ?>&deny=<?php echo $user->ID;?>"><?php _e( 'Deny', 'pmpro-approvals' ); ?></a>
+							</span>
+					<?php } } ?>
 					</span>
-					<?php if(current_user_can('pmpro_approvals')) { ?>
-					<span id="pmpro_approvals_reset_link" <?php if(PMPro_Approvals::isPending($user->ID, $level_id)) { ?>style="display: none;"<?php } ?>>
-						[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $user->user_login;?>?', '?&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID;?>');">X</a>]
-					</span>
-					<span id="pmpro_approvals_approve_deny_links" <?php if(!PMPro_Approvals::isPending($user->ID, $level_id)) { ?>style="display: none;"<?php } ?>>
-						<a href="?user_id=<?php echo $user->ID ?>&approve=<?php echo $user->ID;?>">Approve</a> |
-						<a href="?user_id=<?php echo $user->ID ?>&deny=<?php echo $user->ID;?>">Deny</a>
-					</span>
-					<?php } ?>
 				</td>
 			</tr>
 			<?php 
@@ -1149,6 +1163,13 @@ class PMPro_Approvals {
 
 			<?php } ?>
 		</table>
+
+		<?php 
+
+		// only load if the user has a membership level and not requiring email validation.
+		if ( ! empty( $level_id ) && ( 'validated' == $validated || empty( $validated ) ) ) {
+
+		?>
 		<script>
 			var pmpro_approval_levels = <?php echo json_encode(PMPro_Approvals::getApprovalLevels());?>;
 			var pmpro_approval_user_status_per_level = <?php echo json_encode(PMPro_Approvals::getUserApprovalStatuses($user->ID, true));?>;
@@ -1202,6 +1223,7 @@ class PMPro_Approvals {
 			pmpro_approval_updateApprovalStatus();
 		</script>
 		<?php
+		}
     }
 
     /**
