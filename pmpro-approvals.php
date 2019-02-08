@@ -26,6 +26,10 @@ class PMPro_Approvals {
 		
 		//initialize the plugin
   		add_action( 'init', array( 'PMPro_Approvals', 'init' ) );
+        
+        //add support for PMPro Email Templates Add-on
+		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
+		add_filter( 'pmpro_email_filter', array( 'PMPro_Approvals', 'pmpro_email_filter' ) );
     }
 
     /**
@@ -87,11 +91,7 @@ class PMPro_Approvals {
 		add_action( 'pmpro_account_bullets_top', array( 'PMPro_Approvals', 'pmpro_account_bullets_top' ) );
 		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_confirmation_message' ) );
 		add_action( 'pmpro_before_change_membership_level', array( 'PMPro_Approvals', 'pmpro_before_change_membership_level' ), 10, 2 );
-		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 2 );		
-
-		//add support for PMPro Email Templates Add-on
-		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
-		add_filter( 'pmpro_email_filter', array( 'PMPro_Approvals', 'pmpro_email_filter' ) );
+		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 2 );
 		
 		//plugin row meta
 		add_filter('plugin_row_meta', array('PMPro_Approvals', 'plugin_row_meta'), 10, 2);
