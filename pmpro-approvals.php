@@ -140,28 +140,31 @@ class PMPro_Approvals {
     public static function admin_menu(){
     	global $menu, $submenu;
 
-		add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro-approvals' ), __( 'Approvals', 'pmpro-approvals' ), 'pmpro_approvals', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
+    	$approval_menu_text = __( 'Approvals', 'pmpro-approvals' );
 
-		$user_count = PMPro_Approvals::getApprovalCount();
+    	$user_count = PMPro_Approvals::getApprovalCount();
 
-		if ( $user_count > 0 ) {
-			
-			foreach ($menu as $key => $value) {
+
+    	if ( $user_count > 0 ) {
+    		 $approval_menu_text .= ' <span class="wp-core-ui wp-ui-notification pmpro-issue-counter" style="display: inline; padding: 1px 7px 1px 6px!important; border-radius: 50%; color: #fff; ">' . $user_count . '</span>';
+
+    		 foreach ($menu as $key => $value) {
 				if ( $menu[$key][1] === 'pmpro_memberships_menu' ){
 					$menu[$key][0] .= ' <span class="update-plugins"><span class="update-count"> ' . $user_count . '</span></span>';
 				}
 			}
+    	}
 
-			//loop through sub-menus.
-			$i = 0;
-			foreach ( $submenu as $key => $value ) {
-			    ++$i;
-			    if ( !empty($submenu['pmpro-membershiplevels'][$i][0]) && $submenu['pmpro-membershiplevels'][$i][0] === 'Approvals' ) {
-			    	$submenu['pmpro-membershiplevels'][$i][0] .= ' <span class="update-plugins"><span class="update-count"> ' . $user_count . '</span></span>';		
-			   	}
-			}
-
+    	if ( ! defined( 'PMPRO_VERSION' ) ) {
+        	return;
+    	}
+    
+    	if ( version_compare( PMPRO_VERSION, '2.0' ) >= 0 ) {
+			add_submenu_page( 'pmpro-dashboard', __( 'Approvals', 'pmpro-approvals' ), $approval_menu_text, 'pmpro_approvals', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
+    	} else {
+			add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro-approvals' ), $approval_menu_text, 'pmpro_approvals', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
 		}
+
     }
 	
 	/**
@@ -181,8 +184,8 @@ class PMPro_Approvals {
       	$user_count = PMPro_Approvals::getApprovalCount();
 
       	//if returned data contains pending users, adjust the title of the admin bar menu.
-      	if( $user_count != 0 ){
-      		$title .= ' <span class="wp-core-ui wp-ui-notification pmpro-issue-counter" style="display: inline; padding: 1px 7px 1px 6px!important; border-radius: 50%; color: #fff; ">' . $user_count . '</span>';
+      	if( $user_count > 0 ){
+      		$title .= ' <span class="wp-core-ui wp-ui-notification pmpro-issue-counter" style="display: inline; padding: 1px 7px 1px 6px!important; border-radius: 50%; color: #fff; background:red; background:#CA4A1E;">' . $user_count . '</span>';
       	}
 
   		//add the admin link
