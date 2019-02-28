@@ -425,6 +425,11 @@ class PMPro_Approvals {
 		//no levels, skip
 		if(empty($levels))
 			return $haslevel;
+
+		// If the user is not approved, they do not have access to anything.
+		if( ! PMPro_Approvals::isApproved( $user_id ) ) {
+			return false;
+		}
 		
 		//now we need to check if the user is approved for ANY of the $levels
 		$haslevel = false;
