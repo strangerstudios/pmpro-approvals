@@ -24,6 +24,8 @@ private static $instance;
 			$member = get_user_by( 'ID', $member );
 		}
 
+		$level = pmpro_getMembershipLevelForUser( $member->ID );
+
 		$this->email = $member->user_email;
 	  	$this->subject = sprintf( __( "Your membership at %s has been approved.", 'pmpro-approvals' ), get_bloginfo( 'name' ) );
 	  	$this->template = 'application_approved';
@@ -33,15 +35,15 @@ private static $instance;
 	  		"name" => $member->display_name, 
 	  		"user_login" => $member->user_login, 
 	  		"sitename" => get_option( "blogname" ), 
-	  		"membership_id" => !empty($member->membership_level->id) ? $member->membership_level->id : '', 
-	  		// "membership_level_name" => $member->membership_level->name, 
+	  		"membership_id" => $level->id, 
+	  		"membership_level_name" => $level->name, 
 	  		"siteemail" => pmpro_getOption( "from_email" ), 
 	  		"login_link" => wp_login_url()
 	  	);
 	  	$this->from = pmpro_getOption( "from");
 	  	$this->fromname = pmpro_getOption( "from_name" );
 
-	  	$this->data = apply_filters( 'pmpro_approvals_member_approved_email_data', $this->data, $member );
+	  	$this->data = apply_filters( 'pmpro_approvals_member_approved_email_data', $this->data, $member, $level );
 
 
 	  	return $this->sendEmail();
@@ -61,6 +63,8 @@ private static $instance;
 			$member = get_user_by( 'ID', $member );
 		}
 
+		$level = pmpro_getMembershipLevelForUser( $member->ID );
+
 		$this->email = $member->user_email;
 	  	$this->subject = sprintf( __( "Your membership at %s has been denied.", 'pmpro-approvals' ), get_bloginfo( 'name' ) );
 	  	$this->template = 'application_denied';
@@ -70,8 +74,8 @@ private static $instance;
 	  		"name" => $member->display_name, 
 	  		"user_login" => $member->user_login, 
 	  		"sitename" => get_option( "blogname" ), 
-	  		"membership_id" => $member->membership_level->id, 
-	  		"membership_level_name" => $member->membership_level->name, 
+	  		"membership_id" => $level->id, 
+	  		"membership_level_name" => $level->name, 
 	  		"siteemail" => pmpro_getOption( "from_email" ), 
 	  		"login_link" => wp_login_url()
 	  	);
@@ -161,8 +165,6 @@ private static $instance;
 	  		"name" => $admin->display_name, 
 	  		"user_login" => $admin->user_login, 
 	  		"sitename" => get_option( "blogname" ), 
-	  		"membership_id" => $admin->membership_level->id, 
-	  		"membership_level_name" => $admin->membership_level->name, 
 	  		"siteemail" => pmpro_getOption( "from_email" ), 
 	  		"login_link" => wp_login_url()
 	  	);
@@ -178,6 +180,10 @@ private static $instance;
   				$member = get_user_by( 'email', $member );
   			}
 
+  			$level = pmpro_getMembershipLevelForUser( $member->ID );
+  			
+  			$this->data["membership_id"] = $level->id;
+	  		$this->data["membership_level_name"] = $level->name;
 	  		$this->data['member_name'] = $member->display_name;
 	  		$this->data['view_profile'] = admin_url( "admin.php/?page=pmpro-approvals&user_id=" . $member->ID );
 	  	}
@@ -211,8 +217,6 @@ private static $instance;
 	  		"name" => $admin->display_name, 
 	  		"user_login" => $admin->user_login, 
 	  		"sitename" => get_option( "blogname" ), 
-	  		"membership_id" => $admin->membership_level->id, 
-	  		"membership_level_name" => $admin->membership_level->name, 
 	  		"siteemail" => pmpro_getOption( "from_email" ), 
 	  		"login_link" => wp_login_url()
 	  	);
@@ -228,6 +232,10 @@ private static $instance;
   				$member = get_user_by( 'email', $member );
   			}
 
+  			$level = pmpro_getMembershipLevelForUser( $member->ID );
+
+  			$this->data["membership_id"] = $level->id; 
+	  		$this->data["membership_level_name"] = $level->name;
 	  		$this->data['member_name'] = $member->display_name;
 	  		$this->data['view_profile'] = admin_url( "admin.php/?page=pmpro-approvals&user_id=" . $member->ID );
 	  	}
