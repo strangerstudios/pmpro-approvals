@@ -9,6 +9,11 @@ Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
 */
 
+
+define( 'PMPRO_APP_DIR', dirname( __FILE__ ) );
+
+include( PMPRO_APP_DIR . '/classes/class.approvalemails.php' );
+
 class PMPro_Approvals {
     /*
 		Attributes
@@ -769,23 +774,10 @@ class PMPro_Approvals {
 		$msg = 1;
 		$msgt = __("Member was approved.", 'pmpro-approvals');
 					
-		//send email
-		$a_user = get_userdata($user_id);
-		$approval_email = new PMProEmail();
-		$approval_email->email = $a_user->user_email;
-		$approval_email->subject = sprintf(__("Your membership at %s has been approved.", 'pmpro-approvals'), get_bloginfo('name'));
-		$approval_email->template = "application_approved";
-		$approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/application_approved.html" );
-		$approval_email->data = array("display_name" => $a_user->display_name, "user_email" => $a_user->user_email, "login_link" => wp_login_url());
-		$approval_email->sendEmail();
-		
-		//Send approval email to admin too
-		$admin_approval_email = new PMProEmail();
-		$admin_approval_email->email = get_bloginfo( 'admin_email' );
-		$admin_approval_email->subject = sprintf(__("A membership at %s has been approved.", 'pmpro-approvals'), get_bloginfo('name'));
-		$admin_approval_email->template = "admin_approved";
-		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_approved.html" );
-		$admin_approval_email->sendEmail();
+		//send email to user and admin.
+		$approval_email = new PMPro_Approvals_Email();
+		$approval_email->sendMemberApproved( $user_id );
+		$approval_email->sendAdminApproval( $user_id );
 
 		PMPro_Approvals::updateUserLog( $user_id, $level_id );
 		
@@ -823,24 +815,10 @@ class PMPro_Approvals {
 		$msg = 1;
 		$msgt = __("Member was denied.", 'pmpro-approvals');
 					
-		//send email
-		$a_user = get_userdata($user_id);
-		$approval_email = new PMProEmail();
-		$approval_email->email = $a_user->user_email;
-		$approval_email->subject = sprintf(__("Your membeship at %s has been denied.", 'pmpro-approvals'), get_bloginfo('name'));
-		$approval_email->template = "application_denied";
-		$approval_email->body .= file_get_contents( dirname(__FILE__) . "/email/application_denied.html" );
-		
-		$approval_email->data = array("display_name" => $a_user->display_name, "user_email" => $a_user->user_email, "login_link" => wp_login_url()); //Update this?
-		$approval_email->sendEmail();
-
-		//Send denied email to admin too
-		$admin_approval_email = new PMProEmail();
-		$admin_approval_email->email = get_bloginfo( 'admin_email' );
-		$admin_approval_email->subject = sprintf(__("A membership at %s has been denied.", 'pmpro-approvals'), get_bloginfo('name'));
-		$admin_approval_email->template = "admin_denied";
-		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_denied.html" );
-		$admin_approval_email->sendEmail();
+		// Send email to member and admin.
+		$denied_email = new PMPro_Approvals_Email();
+		$denied_email->sendMemberDenied( $user_id );
+		$denied_email->sendAdminDenied( $user_id );
 
 		PMPro_Approvals::updateUserLog( $user_id, $level_id );
 		
@@ -921,19 +899,9 @@ class PMPro_Approvals {
 			return;
 		}				
 		
-		//get admin email address to email admin.
-		$admin_email = get_bloginfo( 'admin_email' );
-
-		$admin_approval_email = new PMProEmail();
-
-		$admin_approval_email->email = $admin_email;
-		$admin_approval_email->subject = __( 'A user is pending approval for a level', 'pmpro-approvals' );
-		$admin_approval_email->template = 'admin_notification_approved'; //Update email template for admins.
-		$admin_approval_email->body .= __( '<p>Dear Admin</p>', 'pmpro-approvals' );
-		$admin_approval_email->body .= file_get_contents( dirname( __FILE__ ) . "/email/admin_notification.html" );
-		$admin_approval_email->body .= '<p><a href=' .get_admin_url(). 'admin.php?page=pmpro-approvals&user_id=' . $user_id . '>View user details</a><p>';
-		
-		$admin_approval_email->sendEmail();
+		//send email to admin that a new member requires approval.
+		$email = new PMPro_Approvals_Email();
+		$email->sendAdminPending( $user_id );
 
 	}
 
@@ -1030,38 +998,38 @@ class PMPro_Approvals {
         $pmproet_email_defaults['admin_approved'] = array(
             'subject' => __( 'A user has been approved for !!membership_level_name!!', 'pmpro-approvals'),
             'description' => __( 'Approved Email (admin)', 'pmpro-approvals'),
-			'body' => __('<p>This is email for admin</p>', 'pmpro-approvals'),
+			'body' => file_get_contents( PMPRO_APP_DIR . "/email/admin_approved.html" ),
             );
 
         $pmproet_email_defaults['admin_denied'] = array(
             'subject' => __( 'A user has been denied for !!membership_level_name!!', 'pmpro-approvals'),
             'description' => __( 'Denied Email (admin)', 'pmpro-approvals'),
-            'body' => __('<p>Admin email for denies</p>', 'pmpro-approvals'),
+            'body' => file_get_contents( PMPRO_APP_DIR . "/email/admin_denied.html" ),
 			);
 
-        $pmproet_email_defaults['admin_notification_approved'] = array(
+        $pmproet_email_defaults['admin_notification_approval'] = array(
             'subject' => __( 'A user requires approval', 'pmpro-approvals'),
             'description' => __( 'Requires Approval (admin)', 'pmpro-approvals'),
-            'body' => __('<p>You have a new user !!display_name!! (!!user_email!!) pending approval</p>', 'pmpro-approvals'),
+            'body' => file_get_contents( PMPRO_APP_DIR . "/email/admin_notification.html" ),
 			);
 
         //Add user emails to the PMPro Edit Email Templates Add-on list.
         $pmproet_email_defaults['application_approved'] = array(
             'subject' => __( 'Your membership to !!sitename!! has been approved.', 'pmpro-approvals'),
             'description' => __( 'Approved Email', 'pmpro-approvals'),
-            'body' => __('<p>Your membership account has been approved.</p>', 'pmpro-approvals'),
+            'body' => file_get_contents( PMPRO_APP_DIR . "/email/application_approved.html" ),
 			);
 
         $pmproet_email_defaults['application_denied'] = array(
             'subject' => __( 'Your membership to !!sitename!! has been denied.', 'pmpro-approvals'),
             'description' => __( 'Denied Email', 'pmpro-approvals'),
-            'body' => __('<p>Your membership account has been denied</p>', 'pmpro-approvals'),
+        	'body' => file_get_contents( PMPRO_APP_DIR . "/email/application_denied.html" ),
 			);
 
 
         return $pmproet_email_defaults;
     }
-
+    
 	/**
 	 * Adjust default emails to show that the user is pending.
 	 */
