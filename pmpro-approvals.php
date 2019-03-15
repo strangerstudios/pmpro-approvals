@@ -394,6 +394,11 @@ class PMPro_Approvals {
 		//no levels, must be open
 		if(empty($levels))
 			return $access;
+
+		// If the current user doesn't have a level, bail.
+		if ( ! pmpro_hasMembershipLevel() ) {
+			return $access;
+		}
 		
 		//now we need to check if the user is approved for ANY of the $levels
 		$access = false;	//assume no access
@@ -425,6 +430,11 @@ class PMPro_Approvals {
 		//no levels, skip
 		if(empty($levels))
 			return $haslevel;
+
+		// If the current user doesn't have a level, bail.
+		if ( ! pmpro_hasMembershipLevel() ) {
+			return $haslevel;
+		}
 		
 		//now we need to check if the user is approved for ANY of the $levels
 		$haslevel = false;
