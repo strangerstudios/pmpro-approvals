@@ -7,6 +7,7 @@ Version: 1.1
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
+Domain Path: /languages
 */
 
 class PMPro_Approvals {
@@ -26,8 +27,9 @@ class PMPro_Approvals {
 		
 		//initialize the plugin
   		add_action( 'init', array( 'PMPro_Approvals', 'init' ) );
+  		add_action( 'plugins_loaded', array( 'PMPro_Approvals', 'text_domain' ) );
         
-        //add support for PMPro Email Templates Add-on
+    //add support for PMPro Email Templates Add-on
 		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
 		add_filter( 'pmpro_email_filter', array( 'PMPro_Approvals', 'pmpro_email_filter' ) );
     }
@@ -553,7 +555,7 @@ class PMPro_Approvals {
 				if(!empty($approval_data))
 					$status = $approval_data['status'];
 				else
-					$status = 'approved';
+					$status = __( 'approved', 'pmpro-approvals' );
 			} else {
 				if(!empty($approval_data)) {
 					$approver = get_userdata($approval_data['who']);
@@ -1016,7 +1018,7 @@ class PMPro_Approvals {
 
 		$confirmation_message = "<p>" . sprintf(__('Thank you for your membership to %s. Your %s membership status is: <b>%s</b>.', 'pmpro-approvals' ), get_bloginfo("name"), $current_user->membership_level->name, $approval_status) . "</p>";
 
-		$confirmation_message .= "<p>" . sprintf(__('Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s.', 'paid-memberships-pro' ), $current_user->user_email) . "</p>"; 
+		$confirmation_message .= "<p>" . sprintf(__('Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s.', 'pmpro-approvals' ), $current_user->user_email) . "</p>"; 
 
 		return $confirmation_message;
 	}
@@ -1316,7 +1318,18 @@ class PMPro_Approvals {
 			$links = array_merge($links, $new_links);
 		}
 		return $links;
-	}  
+	}
+
+	/**
+	 * Load the languages folder for i18n.
+	 * Translations can be found within 'languages' folder.
+	 * @since 1.0.5
+	 */
+	public static function text_domain(){
+
+    	load_plugin_textdomain( 'pmpro-approvals', false, basename( dirname( __FILE__ ) ) . '/languages' );
+    }
+    
 } // end class
 
 PMPro_Approvals::get_instance();
