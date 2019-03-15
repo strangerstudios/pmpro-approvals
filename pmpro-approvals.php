@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.0.4
+Version: 1.1
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -28,6 +28,10 @@ class PMPro_Approvals {
 		//initialize the plugin
   		add_action( 'init', array( 'PMPro_Approvals', 'init' ) );
   		add_action( 'plugins_loaded', array( 'PMPro_Approvals', 'text_domain' ) );
+        
+    //add support for PMPro Email Templates Add-on
+		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
+		add_filter( 'pmpro_email_filter', array( 'PMPro_Approvals', 'pmpro_email_filter' ) );
     }
 
     /**
@@ -89,11 +93,7 @@ class PMPro_Approvals {
 		add_action( 'pmpro_account_bullets_top', array( 'PMPro_Approvals', 'pmpro_account_bullets_top' ) );
 		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_confirmation_message' ) );
 		add_action( 'pmpro_before_change_membership_level', array( 'PMPro_Approvals', 'pmpro_before_change_membership_level' ), 10, 2 );
-		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 2 );		
-
-		//add support for PMPro Email Templates Add-on
-		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
-		add_filter( 'pmpro_email_filter', array( 'PMPro_Approvals', 'pmpro_email_filter' ) );
+		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 2 );
 		
 		//plugin row meta
 		add_filter('plugin_row_meta', array('PMPro_Approvals', 'plugin_row_meta'), 10, 2);
@@ -761,6 +761,8 @@ class PMPro_Approvals {
 			$user_level = pmpro_getMembershipLevelForUser($user_id);
 			$level_id = $user_level->id;
 		}
+
+		do_action( 'pmpro_approvals_before_approve_member', $user_id, $level_id );
 		
 		//update user meta to save timestamp and user who approved
 		update_user_meta($user_id, 'pmpro_approval_' . $level_id, array('status'=>'approved', 'timestamp'=>current_time('timestamp'), 'who' => $current_user->ID, 'approver'=>$current_user->user_login));
@@ -789,6 +791,8 @@ class PMPro_Approvals {
 
 		PMPro_Approvals::updateUserLog( $user_id, $level_id );
 		
+		do_action( 'pmpro_approvals_after_approve_member', $user_id, $level_id );
+
 		return true;
 	}
 
@@ -812,6 +816,8 @@ class PMPro_Approvals {
 			$level_id = $user_level->id;
 		}
 		
+		do_action( 'pmpro_approvals_before_deny_member', $user_id, $level_id );
+
 		//update user meta to save timestamp and user who approved
 		update_user_meta( $user_id, 'pmpro_approval_' . $level_id, array( "status"=>"denied", "timestamp"=>time(), "who" => $current_user->ID, "approver"=>$current_user->user_login ) );
 		
@@ -840,6 +846,8 @@ class PMPro_Approvals {
 
 		PMPro_Approvals::updateUserLog( $user_id, $level_id );
 		
+		do_action( 'pmpro_approvals_after_deny_member', $user_id, $level_id );
+
 		return true;
  
 	}
@@ -864,12 +872,16 @@ class PMPro_Approvals {
 			$level_id = $user_level->id;
 		}
 		
+		do_action( 'pmpro_approvals_before_reset_member', $user_id, $level_id );
+
 		update_user_meta($user_id, "pmpro_approval_" . $level_id, array('status'=>'pending', 'timestamp'=>current_time('timestamp'), 'who' => '', 'approver'=>''));
 			
 		$msg = 1;
 		$msgt = __("Approval reset.", 'pmpro-approvals');	
 
 		PMPro_Approvals::updateUserLog( $user_id, $level_id );
+
+		do_action( 'pmpro_approvals_after_reset_member', $user_id, $level_id );
 		
 		return true;
 
