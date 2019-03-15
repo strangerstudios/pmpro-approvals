@@ -1303,6 +1303,31 @@ class PMPro_Approvals {
 		
 		return $r;
 	}
+
+	/**
+	 * Integration with Email Confirmation Add On.
+	 * call this function to see if the user's email has been confirmed.
+	 * @return boolean
+	 */
+	public static function getEmailConfirmation( $user_id ) {
+
+		if ( ! function_exists( 'pmproec_load_plugin_text_domain' ) ) {
+			return true;
+		}
+
+		$status = array( 'validated', '' );
+		$email_confirmation = get_user_meta( $user_id, 'pmpro_email_confirmation_key', true );
+
+		if ( in_array( $email_confirmation, $status ) ) {
+			$r = true;
+		} else {
+			$r = false;
+		}
+
+		$r = apply_filters( 'pmpro_approvals_email_confirmation_status', $r );
+
+		return $r;
+	}
 	
 	/**
 	 * Add links to the plugin row meta
