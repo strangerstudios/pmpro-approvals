@@ -592,6 +592,8 @@ class PMPro_Approvals {
 
 		}
 
+		$status = apply_filters( 'pmpro_approvals_status_filter', $status, $user_id, $level_id );
+
 		return $status;
 	}
 	
@@ -763,8 +765,8 @@ class PMPro_Approvals {
 			
 		$sqlQuery .= "LIMIT $start, $limit";	
 						
-		$theusers = $wpdb->get_results($sqlQuery);		
-		
+		$theusers = $wpdb->get_results($sqlQuery);	
+
 		return $theusers;		
 	}
 	
