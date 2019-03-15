@@ -1,0 +1,449 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Project-Id-Version: Paid Memberships Pro - Approvals Add On\n"
+"POT-Creation-Date: 2018-05-28 09:56+0200\n"
+"PO-Revision-Date: 2018-06-08 09:07+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.8\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: pmpro-approvals.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"Last-Translator: \n"
+"Language: fr_FR\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: adminpages/approvals.php:6
+msgid "You do not have permissions to perform this action."
+msgstr "Vous n'avez pas les permissions pour effectuer cette action."
+
+#: adminpages/approvals.php:51 pmpro-approvals.php:145 pmpro-approvals.php:181
+msgid "Approvals"
+msgstr "Validations"
+
+#: adminpages/approvals.php:54
+msgid "All"
+msgstr "Tous"
+
+#: adminpages/approvals.php:55 pmpro-approvals.php:985
+msgid "Pending"
+msgstr "En attente"
+
+#: adminpages/approvals.php:56 pmpro-approvals.php:574
+msgid "Approved"
+msgstr "Approuvé"
+
+#: adminpages/approvals.php:57
+msgid "Denied"
+msgstr "Refusé"
+
+#: adminpages/approvals.php:60 adminpages/approvals.php:64
+#, fuzzy
+msgid "Search Approvals"
+msgstr "Approbations de recherche"
+
+#: adminpages/approvals.php:67
+msgid "Show"
+msgstr "Montrer"
+
+#: adminpages/approvals.php:68
+msgid "All Levels"
+msgstr "Tous les niveaux"
+
+#: adminpages/approvals.php:115
+#, fuzzy
+msgid "applications awaiting review"
+msgstr "demandes en attente d'examen"
+
+#: adminpages/approvals.php:123
+msgid "ID"
+msgstr "ID"
+
+#: adminpages/approvals.php:124 adminpages/userinfo.php:57
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: adminpages/approvals.php:125
+msgid "Name"
+msgstr "Nom"
+
+#: adminpages/approvals.php:126 adminpages/userinfo.php:61
+msgid "Email"
+msgstr "E-Mail"
+
+#: adminpages/approvals.php:127
+msgid "Membership"
+msgstr "Adhésion"
+
+#: adminpages/approvals.php:128 adminpages/userinfo.php:73
+#: pmpro-approvals.php:1110
+msgid "Approval Status"
+msgstr "Etat d'acceptation"
+
+#: adminpages/approvals.php:129
+msgid "Joined"
+msgstr "Inscrit"
+
+#: adminpages/approvals.php:203
+#, fuzzy
+msgid "No pending members found."
+msgstr "Aucun membre en attente trouvé."
+
+#: adminpages/userinfo.php:30
+#, fuzzy
+msgid "No user id passed in."
+msgstr "Aucun ID utilisateur n'est transmis."
+
+#: adminpages/userinfo.php:39
+#, fuzzy, php-format
+msgid "No user found with ID %d."
+msgstr "Aucun utilisateur trouvé avec l'ID% d."
+
+#: adminpages/userinfo.php:50
+msgid "Account Information"
+msgstr "Informations du compte"
+
+#: adminpages/userinfo.php:53
+msgid "User ID"
+msgstr "Identifiant"
+
+#: adminpages/userinfo.php:65
+msgid "Membership Level"
+msgstr "Niveau d'adhésion"
+
+#: adminpages/userinfo.php:124
+#, fuzzy
+msgid "&laquo; Back to Approvals"
+msgstr "&laquo; Retour aux approbations"
+
+#: pmpro-approvals.php:279
+msgid "Approval Settings"
+msgstr "Paramètres de validation"
+
+#: pmpro-approvals.php:283
+msgid "Requires Approval?"
+msgstr "Nécessite une approbation?"
+
+#: pmpro-approvals.php:286
+msgid "No."
+msgstr "Non."
+
+#: pmpro-approvals.php:287
+#, fuzzy
+msgid "Yes. Admin must approve new members for this level."
+msgstr "Oui. Admin doit approuver de nouveaux membres pour ce niveau."
+
+#: pmpro-approvals.php:289
+#, fuzzy
+msgid "Yes. User must have an approved membership for a different level."
+msgstr ""
+"Oui. L'utilisateur doit avoir un abonnement approuvé pour un niveau "
+"différent."
+
+#: pmpro-approvals.php:290
+#, fuzzy
+msgid ""
+"Yes. User must have an approved membership for a different level AND admin "
+"must approve new members for this level."
+msgstr ""
+"Oui. L'utilisateur doit avoir une adhésion approuvée pour un niveau "
+"différent et Admin doit approuver de nouveaux membres pour ce niveau."
+
+#: pmpro-approvals.php:297
+#, fuzzy
+msgid "Which Level?"
+msgstr "Quel niveau?"
+
+#: pmpro-approvals.php:452
+#, fuzzy
+msgid ""
+"Your previous application for this level has been denied. You will not be "
+"allowed to check out."
+msgstr ""
+"Votre demande précédente pour ce niveau a été refusée. Vous ne serez pas "
+"autorisé à vérifier."
+
+#: pmpro-approvals.php:462
+#, fuzzy, php-format
+msgid ""
+"Since your application to the %s level has been denied, you may not check "
+"out for this level."
+msgstr ""
+"Étant donné que votre application au niveau %s a été refusée, vous ne pouvez "
+"pas vérifier pour ce niveau."
+
+#: pmpro-approvals.php:468
+#, fuzzy, php-format
+msgid "Your application to %s is still pending."
+msgstr "Votre application à %s est toujours en attente."
+
+#: pmpro-approvals.php:472
+#, fuzzy, php-format
+msgid "You must be approved for %s before checking out here."
+msgstr "Vous devez être approuvé pour %s avant de vérifier ici."
+
+#: pmpro-approvals.php:474
+#, fuzzy, php-format
+msgid ""
+"You must register and be approved for <a href=\"%s\">%s</a> before checking "
+"out here."
+msgstr ""
+"Vous devez vous inscrire et être approuvé pour < a href = \" %s\" > %s </a> "
+"avant de vérifier ici."
+
+#: pmpro-approvals.php:570
+#, fuzzy, php-format
+msgid "%s on %s by %s"
+msgstr "%s sur %s par %s"
+
+#: pmpro-approvals.php:572
+#, php-format
+msgid "%s on %s"
+msgstr "%s à %s"
+
+#: pmpro-approvals.php:581
+msgid "pending"
+msgstr "en cours"
+
+#: pmpro-approvals.php:583
+#, fuzzy, php-format
+msgid "Pending Approval for %s"
+msgstr "Approbation en attente %s"
+
+#: pmpro-approvals.php:754 pmpro-approvals.php:804 pmpro-approvals.php:856
+#, fuzzy
+msgid "You do not have permission to perform approvals."
+msgstr "Vous n'avez pas la permission d'effectuer des approbations."
+
+#: pmpro-approvals.php:770
+#, fuzzy
+msgid "Member was approved."
+msgstr "Membre a été approuvé."
+
+#: pmpro-approvals.php:776
+#, fuzzy, php-format
+msgid "Your membership at %s has been approved."
+msgstr "Votre adhésion à %s a été approuvée."
+
+#: pmpro-approvals.php:785
+#, fuzzy, php-format
+msgid "A membership at %s has been approved."
+msgstr "Un abonnement à %s a été approuvé."
+
+#: pmpro-approvals.php:820
+#, fuzzy
+msgid "Member was denied."
+msgstr "Membre a été refusé."
+
+#: pmpro-approvals.php:826
+#, php-format
+msgid "Your membeship at %s has been denied."
+msgstr "Votre adhésion à %s a été refusée."
+
+#: pmpro-approvals.php:836
+#, fuzzy, php-format
+msgid "A membership at %s has been denied."
+msgstr "Une adhésion à %s a été refusée."
+
+#: pmpro-approvals.php:870
+#, fuzzy
+msgid "Approval reset."
+msgstr "Réinitialisation de l'homologation."
+
+#: pmpro-approvals.php:920
+#, fuzzy
+msgid "A user is pending approval for a level"
+msgstr "Un utilisateur est en attente d'approbation pour un niveau"
+
+#: pmpro-approvals.php:922
+#, fuzzy
+msgid "<p>Dear Admin</p>"
+msgstr "Cher administrateur,"
+
+#: pmpro-approvals.php:945
+#, fuzzy
+msgid ""
+"Your membership requires approval before you are able to view this content."
+msgstr ""
+"Votre adhésion nécessite l'approbation avant que vous soyez en mesure "
+"d'afficher ce contenu."
+
+#: pmpro-approvals.php:947
+#, fuzzy
+msgid ""
+"Your membership application has been denied. Contact the site owners if you "
+"believe this is an error."
+msgstr ""
+"Votre demande d'adhésion a été refusée. Contactez les propriétaires du site "
+"si vous pensez que c'est une erreur."
+
+#: pmpro-approvals.php:976
+#, php-format
+msgid "<li><strong>Status:</strong> %s</li>"
+msgstr "Statut: <strong>%s</strong>;"
+
+#: pmpro-approvals.php:1007
+#, php-format
+msgid ""
+"Thank you for your membership to %s. Your %s membership status is: <b>%s</b>."
+msgstr ""
+"Merci de votre adhésion à %s. Votre statut de membre %s est: <b> %s </b>."
+
+#: pmpro-approvals.php:1009
+#, php-format
+msgid ""
+"Below are details about your membership account and a receipt for your "
+"initial membership invoice. A welcome email with a copy of your initial "
+"membership invoice has been sent to %s."
+msgstr ""
+"Voici les détails de votre compte et un reçu pour votre adhésion initiale. "
+"Un courriel de bienvenue avec une copie de votre reçu vous a été envoyé à %s."
+
+#: pmpro-approvals.php:1021
+#, fuzzy
+msgid "A user has been approved for !!membership_level_name!!"
+msgstr "Un utilisateur a été approuvé pour!! membership_level_name!"
+
+#: pmpro-approvals.php:1022
+#, fuzzy
+msgid "Approved Email (admin)"
+msgstr "Publier la Tâche pour validation"
+
+#: pmpro-approvals.php:1023
+msgid "<p>This is email for admin</p>"
+msgstr "<p> C'est un email pour l'Admin </p>"
+
+#: pmpro-approvals.php:1027
+#, fuzzy
+msgid "A user has been denied for !!membership_level_name!!"
+msgstr "Un utilisateur a été refusé pour! membership_level_name!"
+
+#: pmpro-approvals.php:1028
+#, fuzzy
+msgid "Denied Email (admin)"
+msgstr "E-mail refusé (admin)"
+
+#: pmpro-approvals.php:1029
+msgid "<p>Admin email for denies</p>"
+msgstr "<p> Email de l'admin pour les refus </p>"
+
+#: pmpro-approvals.php:1033
+#, fuzzy
+msgid "A user requires approval"
+msgstr "Un utilisateur requiert l'approbation"
+
+#: pmpro-approvals.php:1034
+#, fuzzy
+msgid "Requires Approval (admin)"
+msgstr "Nécessite l'approbation (admin)"
+
+#: pmpro-approvals.php:1035
+#, fuzzy
+msgid ""
+"<p>You have a new user !!display_name!! (!!user_email!!) pending approval</p>"
+msgstr ""
+"<p> vous avez un nouvel utilisateur! display_name! (!! user_email!!) "
+"approbation en attente </p>"
+
+#: pmpro-approvals.php:1040
+#, fuzzy
+msgid "Your membership to !!sitename!! has been approved."
+msgstr "Votre adhésion à!! Sitename!! a été approuvé."
+
+#: pmpro-approvals.php:1041
+#, fuzzy
+msgid "Approved Email"
+msgstr "email d'annonce approuvée"
+
+#: pmpro-approvals.php:1042
+msgid "<p>Your membership account has been approved.</p>"
+msgstr "<p>Votre compte a été approuvé.</p>"
+
+#: pmpro-approvals.php:1046
+#, fuzzy
+msgid "Your membership to !!sitename!! has been denied."
+msgstr "Votre adhésion à!! Sitename!! a été refusée."
+
+#: pmpro-approvals.php:1047
+#, fuzzy
+msgid "Denied Email"
+msgstr "E-mail refusé"
+
+#: pmpro-approvals.php:1048
+#, fuzzy
+msgid "<p>Your membership account has been denied</p>"
+msgstr "<p> votre compte de membre a été refusé </p>"
+
+#: pmpro-approvals.php:1067
+#, fuzzy
+msgid ""
+"Your membership account is now pending. You will be notified once your "
+"account has been approved/denied."
+msgstr ""
+"Votre compte de membre est maintenant en attente. Vous serez notifié une "
+"fois que votre compte a été approuvé/refusé."
+
+#: pmpro-approvals.php:1132
+#, fuzzy
+msgid "User Approval Log"
+msgstr "Approbation d'utilisateur"
+
+#: pmpro-approvals.php:1165
+#, fuzzy
+msgid "The chosen level does not require approval."
+msgstr "Le niveau choisi ne nécessite pas d'approbation."
+
+#: pmpro-approvals.php:1251
+#, fuzzy
+msgid "No approval history found."
+msgstr "Aucun historique d'approbation n'a été trouvé."
+
+#: pmpro-approvals.php:1303
+msgid "View Documentation"
+msgstr "Voir la documentation"
+
+#: pmpro-approvals.php:1303
+msgid "Docs"
+msgstr "Docs"
+
+#: pmpro-approvals.php:1304
+msgid "Visit Customer Support Forum"
+msgstr "Consultez le forum de support"
+
+#: pmpro-approvals.php:1304
+msgid "Support"
+msgstr "Support"
+
+#. Plugin Name of the plugin/theme
+msgid "Paid Memberships Pro - Approvals Add On"
+msgstr "Paid Memberships Pro - Add On pour Approbations"
+
+#. Plugin URI of the plugin/theme
+msgid "https://www.paidmembershipspro.com/add-ons/approval-process-membership/"
+msgstr ""
+"https://www.paidmembershipspro.com/add-ons/approval-process-membership/"
+
+#. Description of the plugin/theme
+#, fuzzy
+msgid ""
+"Grants administrators the ability to approve/deny memberships after signup."
+msgstr ""
+"Octroie aux administrateurs la possibilité d'approuver/refuser les "
+"appartenances après l'inscription."
+
+#. Author of the plugin/theme
+msgid "Stranger Studios"
+msgstr "Stranger Studios"
+
+#. Author URI of the plugin/theme
+#, fuzzy
+msgid "https://www.paidmembershipspro.com"
+msgstr "https://www.paidmembershipspro.com"

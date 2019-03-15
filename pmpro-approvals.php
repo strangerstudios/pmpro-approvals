@@ -7,8 +7,8 @@ Version: 1.1
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
+Domain Path: /languages
 */
-
 
 define( 'PMPRO_APP_DIR', dirname( __FILE__ ) );
 
@@ -31,6 +31,7 @@ class PMPro_Approvals {
 
 		//initialize the plugin
 		add_action( 'init', array( 'PMPro_Approvals', 'init' ) );
+		add_action( 'plugins_loaded', array( 'PMPro_Approvals', 'text_domain' ) );
 
 		//add support for PMPro Email Templates Add-on
 		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
@@ -147,13 +148,17 @@ class PMPro_Approvals {
 	 */
 	public static function admin_menu() {
 		global $menu, $submenu;
+		
+		if ( ! defined( 'PMPRO_VERSION' ) ) {
+			return;
+		}
 
 		$approval_menu_text = __( 'Approvals', 'pmpro-approvals' );
-
+		
 		$user_count = self::getApprovalCount();
 
 		if ( $user_count > 0 ) {
-			 $approval_menu_text .= ' <span class="wp-core-ui wp-ui-notification pmpro-issue-counter" style="display: inline; padding: 1px 7px 1px 6px!important; border-radius: 50%; color: #fff; ">' . $user_count . '</span>';
+			$approval_menu_text .= ' <span class="wp-core-ui wp-ui-notification pmpro-issue-counter" style="display: inline; padding: 1px 7px 1px 6px!important; border-radius: 50%; color: #fff; ">' . $user_count . '</span>';
 
 			foreach ( $menu as $key => $value ) {
 				if ( $menu[ $key ][1] === 'pmpro_memberships_menu' ) {
@@ -171,7 +176,6 @@ class PMPro_Approvals {
 		} else {
 			add_submenu_page( 'pmpro-membershiplevels', __( 'Approvals', 'pmpro-approvals' ), $approval_menu_text, 'pmpro_approvals', 'pmpro-approvals', array( 'PMPro_Approvals', 'admin_page_approvals' ) );
 		}
-
 	}
 
 	/**
@@ -605,7 +609,7 @@ class PMPro_Approvals {
 				if ( ! empty( $approval_data ) ) {
 					$status = $approval_data['status'];
 				} else {
-					$status = 'approved';
+					$status = __( 'approved', 'pmpro-approvals' );
 				}
 			} else {
 				if ( ! empty( $approval_data ) ) {
@@ -1010,7 +1014,6 @@ class PMPro_Approvals {
 		//send email to admin that a new member requires approval.
 		$email = new PMPro_Approvals_Email();
 		$email->sendAdminPending( $user_id );
-
 	}
 
 	/**
@@ -1095,7 +1098,7 @@ class PMPro_Approvals {
 
 		$confirmation_message = '<p>' . sprintf( __( 'Thank you for your membership to %1$s. Your %2$s membership status is: <b>%3$s</b>.', 'pmpro-approvals' ), get_bloginfo( 'name' ), $current_user->membership_level->name, $approval_status ) . '</p>';
 
-		$confirmation_message .= '<p>' . sprintf( __( 'Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s.', 'paid-memberships-pro' ), $current_user->user_email ) . '</p>';
+		$confirmation_message .= '<p>' . sprintf( __( 'Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s.', 'pmpro-approvals' ), $current_user->user_email ) . '</p>';
 
 		return $confirmation_message;
 	}
@@ -1123,6 +1126,7 @@ class PMPro_Approvals {
 			'description' => __( 'Requires Approval (admin)', 'pmpro-approvals' ),
 			'body'        => file_get_contents( PMPRO_APP_DIR . '/email/admin_notification.html' ),
 		);
+
 
 		//Add user emails to the PMPro Edit Email Templates Add-on list.
 		$pmproet_email_defaults['application_approved'] = array(
@@ -1384,6 +1388,7 @@ style="display: none;"<?php } ?>>
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Integration with Email Confirmation Add On.
 	 * call this function to see if the user's email has been confirmed.
 	 * @return boolean
@@ -1421,6 +1426,17 @@ style="display: none;"<?php } ?>>
 		}
 		return $links;
 	}
+
+	/**
+	 * Load the languages folder for i18n.
+	 * Translations can be found within 'languages' folder.
+	 * @since 1.0.5
+	 */
+	public static function text_domain() {
+
+		load_plugin_textdomain( 'pmpro-approvals', false, basename( dirname( __FILE__ ) ) . '/languages' );
+	}
+
 } // end class
 
 PMPro_Approvals::get_instance();

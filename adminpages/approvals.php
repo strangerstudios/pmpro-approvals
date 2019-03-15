@@ -213,7 +213,6 @@ class="alternate"<?php } ?>>
 								<?php
 								$pmpro_approvals_nonce = wp_create_nonce( 'pmpro_approvals' );
 
-
 								if ( PMPro_Approvals::isApproved( $theuser->ID ) || PMPro_Approvals::isDenied( $theuser->ID ) ) {
 
 									if ( ! PMPro_Approvals::getEmailConfirmation( $theuser->ID ) ) {

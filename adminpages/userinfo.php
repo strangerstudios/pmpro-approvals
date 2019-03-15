@@ -70,7 +70,6 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 			<?php
 			//show status here
 			if ( PMPro_Approvals::isApproved( $user->ID ) || PMPro_Approvals::isDenied( $user->ID ) ) {
-
 				if ( ! PMPro_Approvals::getEmailConfirmation( $user->ID ) ) {
 					_e( 'Email Confirmation Required.', 'pmpro-approvals' );
 				} else {
@@ -86,13 +85,12 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 			<a href="?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&deny=<?php echo $user->ID; ?>">Deny</a>
 			<?php
 			}
-
 			?>
 			</td>
 		</tr>
 	</table>
 	
-		<?php
+	<?php
 		if ( function_exists( 'pmprorh_getProfileFields' ) ) {
 			global $pmprorh_registration_fields, $pmprorh_checkout_boxes;
 
@@ -102,11 +100,11 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 					$box = pmprorh_getCheckoutBoxByName( $where );
 					?>
 					<h3><?php echo $box->label; ?></h3>
+
 					<table class="form-table">
 					<?php
 					//cycle through groups
 					foreach ( $fields as $field ) {
-
 						// show field as long as it's not false
 						if ( false != $field->profile ) {
 						?>
