@@ -1096,6 +1096,12 @@ class PMPro_Approvals {
 			return $confirmation_message;
 		}
 
+		$email_confirmation = self::getEmailConfirmation( $current_user->ID );
+
+		if ( ! $email_confirmation ) {
+			$approval_status = __( 'pending', 'pmpro-approvals' );
+		}
+
 		$confirmation_message = '<p>' . sprintf( __( 'Thank you for your membership to %1$s. Your %2$s membership status is: <b>%3$s</b>.', 'pmpro-approvals' ), get_bloginfo( 'name' ), $current_user->membership_level->name, $approval_status ) . '</p>';
 
 		$confirmation_message .= '<p>' . sprintf( __( 'Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s.', 'pmpro-approvals' ), $current_user->user_email ) . '</p>';
@@ -1388,7 +1394,6 @@ style="display: none;"<?php } ?>>
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Integration with Email Confirmation Add On.
 	 * call this function to see if the user's email has been confirmed.
 	 * @return boolean
