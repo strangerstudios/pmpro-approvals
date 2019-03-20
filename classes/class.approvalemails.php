@@ -100,8 +100,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 	public function sendAdminPending( $member = null, $admin = null ) {
 
 		if ( empty( $admin ) ) {
-			global $current_user;
-			$admin = $current_user;
+			$admin = get_user_by( 'email', get_option( 'admin_email' ) );
 		} elseif ( is_int( $admin ) ) {
 			$admin = get_user_by( 'ID', $admin );
 		}
@@ -151,8 +150,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 	public function sendAdminApproval( $member = null, $admin = null ) {
 
 		if ( empty( $admin ) ) {
-			global $current_user;
-			$admin = $current_user;
+			$admin = get_user_by( 'email', get_option( 'admin_email' ) );
 		} elseif ( is_int( $admin ) ) {
 			$admin = get_user_by( 'ID', $admin );
 		}
@@ -203,8 +201,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 	public function sendAdminDenied( $member = null, $admin = null ) {
 
 		if ( empty( $admin ) ) {
-			global $current_user;
-			$admin = $current_user;
+			$admin = get_user_by( 'email', get_option( 'admin_email' ) );
 		} elseif ( is_int( $admin ) ) {
 			$admin = get_user_by( 'ID', $admin );
 		}

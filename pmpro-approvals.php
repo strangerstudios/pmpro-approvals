@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.1
+Version: 1.2
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -1072,7 +1072,12 @@ class PMPro_Approvals {
 	 * Add approval status to the members list in the dashboard
 	 */
 	public static function pmpro_members_list_user( $user ) {
-		if ( current_user_can( 'pmpro_approvals' ) && self::isPending( $user->ID, $user->membership_id ) ) {
+
+		// Hide ('pending') link from the following statuses.
+		$status_in = apply_filters( 'pmpro_approvals_members_list_status', array( 'oldmembers', 'cancelled', 'expired' ) );
+		$level_type = isset( $_REQUEST['l'] ) ? $_REQUEST['l'] : '';
+
+		if ( current_user_can( 'pmpro_approvals' ) && self::isPending( $user->ID, $user->membership_id ) && ! in_array( $level_type, $status_in ) ) {
 			$user->membership .= ' (<a href="' . admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $user->user_email ) ) . '">' . __( 'Pending', 'pmpro-approvals' ) . '</a>)';
 		}
 
@@ -1094,6 +1099,12 @@ class PMPro_Approvals {
 		//if current level does not require approval keep confirmation message the same.
 		if ( ! self::requiresApproval( $level_id ) ) {
 			return $confirmation_message;
+		}
+
+		$email_confirmation = self::getEmailConfirmation( $current_user->ID );
+
+		if ( ! $email_confirmation ) {
+			$approval_status = __( 'pending', 'pmpro-approvals' );
 		}
 
 		$confirmation_message = '<p>' . sprintf( __( 'Thank you for your membership to %1$s. Your %2$s membership status is: <b>%3$s</b>.', 'pmpro-approvals' ), get_bloginfo( 'name' ), $current_user->membership_level->name, $approval_status ) . '</p>';
