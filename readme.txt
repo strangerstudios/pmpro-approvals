@@ -36,7 +36,7 @@ Members pending approval will not have access to view members-only content until
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
-= 1.2 =
+= 1.2 - 2019-03-20 =
 * BUG FIX: Fixed issue with [membership] shortcode not working correctly for pending/logged-in non-members.
 * BUG FIX: Fixed integration with Email Confirmation. Admins will only be able to approve/deny users once their emails are confirmed.
 * BUG FIX: Fixed integration with Email Templates Admin Editor sending out wrong usernames. Dear admin, for users and vice versa.
