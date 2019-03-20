@@ -1388,7 +1388,6 @@ style="display: none;"<?php } ?>>
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Integration with Email Confirmation Add On.
 	 * call this function to see if the user's email has been confirmed.
 	 * @return boolean
