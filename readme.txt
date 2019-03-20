@@ -36,9 +36,9 @@ View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-
 
 == Changelog ==
 = 1.2 =
-* BUG FIX: Issue with [membership] shortcode not working correctly for pending/logged-in non-members.
-* BUG FIX: Integrate with Email Confirmation. Admins will only be able to approve/deny users once their emails are confirmed.
-* BUG FIX: Integrate with Email Templates Admin Edito sending out wrong usernames. Dear admin, for users and vice versa.
+* BUG FIX: Fixed issue with [membership] shortcode not working correctly for pending/logged-in non-members.
+* BUG FIX: Fixed integration with Email Confirmation. Admins will only be able to approve/deny users once their emails are confirmed.
+* BUG FIX: Fixed integration with Email Templates Admin Editor sending out wrong usernames. Dear admin, for users and vice versa.
 * BUG FIX/ENHANCEMENT: Reworked the email functionality entirely.
 * BUG FIX/ENHANCEMENT: Reworked admin menu links to support PMPro 2.0+ as well as pending member notification bubble.
 * ENHANCEMENT: Added i18n support for Approvals with French translation files. Please submit your translation files via a Pull Request or on www.paidmembershipspro.com so we may include these in future a release.

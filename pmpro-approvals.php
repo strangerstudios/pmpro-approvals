@@ -1122,19 +1122,19 @@ class PMPro_Approvals {
 		//Add admin emails to the PMPro Edit Email Templates Add-on list.
 		$pmproet_email_defaults['admin_approved'] = array(
 			'subject'     => __( 'A user has been approved for !!membership_level_name!!', 'pmpro-approvals' ),
-			'description' => __( 'Approved Email (admin)', 'pmpro-approvals' ),
+			'description' => __( 'Approvals - Approved Email (admin)', 'pmpro-approvals' ),
 			'body'        => file_get_contents( PMPRO_APP_DIR . '/email/admin_approved.html' ),
 		);
 
 		$pmproet_email_defaults['admin_denied'] = array(
 			'subject'     => __( 'A user has been denied for !!membership_level_name!!', 'pmpro-approvals' ),
-			'description' => __( 'Denied Email (admin)', 'pmpro-approvals' ),
+			'description' => __( 'Approvals - Denied Email (admin)', 'pmpro-approvals' ),
 			'body'        => file_get_contents( PMPRO_APP_DIR . '/email/admin_denied.html' ),
 		);
 
 		$pmproet_email_defaults['admin_notification_approval'] = array(
 			'subject'     => __( 'A user requires approval', 'pmpro-approvals' ),
-			'description' => __( 'Requires Approval (admin)', 'pmpro-approvals' ),
+			'description' => __( 'Approvals - Requires Approval (admin)', 'pmpro-approvals' ),
 			'body'        => file_get_contents( PMPRO_APP_DIR . '/email/admin_notification.html' ),
 		);
 
@@ -1142,13 +1142,13 @@ class PMPro_Approvals {
 		//Add user emails to the PMPro Edit Email Templates Add-on list.
 		$pmproet_email_defaults['application_approved'] = array(
 			'subject'     => __( 'Your membership to !!sitename!! has been approved.', 'pmpro-approvals' ),
-			'description' => __( 'Approved Email', 'pmpro-approvals' ),
+			'description' => __( 'Approvals - Approved Email', 'pmpro-approvals' ),
 			'body'        => file_get_contents( PMPRO_APP_DIR . '/email/application_approved.html' ),
 		);
 
 		$pmproet_email_defaults['application_denied'] = array(
 			'subject'     => __( 'Your membership to !!sitename!! has been denied.', 'pmpro-approvals' ),
-			'description' => __( 'Denied Email', 'pmpro-approvals' ),
+			'description' => __( 'Approvals - Denied Email', 'pmpro-approvals' ),
 			'body'        => file_get_contents( PMPRO_APP_DIR . '/email/application_denied.html' ),
 		);
 
