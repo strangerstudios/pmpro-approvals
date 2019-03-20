@@ -1,9 +1,9 @@
 === Paid Memberships Pro - Approvals ===
 Contributors: strangerstudios, andrewza
 Tags: paid memberships pro, pmpro, approval, approvals, workflow
-Requires at least: 3.5
-Tested up to: 4.9.8
-Stable tag: 1.1
+Requires at least: 4.0
+Tested up to: 5.1.1
+Stable tag: 1.2
 
 Grants administrators the ability to approve/deny memberships after signup.
 
@@ -35,6 +35,16 @@ Members pending approval will not have access to view members-only content until
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
+= 1.2 =
+* BUG FIX: Issue with [membership] shortcode not working correctly for pending/logged-in non-members.
+* BUG FIX: Integrate with Email Confirmation. Admins will only be able to approve/deny users once their emails are confirmed.
+* BUG FIX: Integrate with Email Templates Admin Edito sending out wrong usernames. Dear admin, for users and vice versa.
+* BUG FIX/ENHANCEMENT: Reworked the email functionality entirely.
+* BUG FIX/ENHANCEMENT: Reworked admin menu links to support PMPro 2.0+ as well as pending member notification bubble.
+* ENHANCEMENT: Added i18n support for Approvals with French translation files. Please submit your translation files via a Pull Request or on www.paidmembershipspro.com so we may include these in future a release.
+* ENHANCEMENT: Filters added for approved, denied and pending status.
+* ENHANCEMENT: Support Register Helper fields inside the "View" profile of pending users. Including "File" fields.
+
 = 1.1 =
 * ENHANCEMENT: Added action hooks: pmpro_approvals_before_approve_member, pmpro_approvals_after_approve_member, pmpro_approvals_before_deny_member, pmpro_approvals_after_deny_member, pmpro_approvals_before_reset_member, pmpro_approvals_after_reset_member. All of these hooks pass two parameters: $user_id, $level_id.
 
@@ -54,3 +64,7 @@ View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-
 
 = 1.0 =
 * Initial version.
+
+== Upgrade Notice ==
+= 1.2 =
+* Please update to the latest version of Approvals.
