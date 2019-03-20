@@ -31,16 +31,18 @@ Members pending approval will not have access to view members-only content until
 = How to Use =
 1. To set a level's approval requirements, edit your membership level and adjust the settings under "Approval Settings".
 1. To process membership approvals, navigate to the Approvals Dashboard under Memberships > Approvals.
+1. To customize the emails related to this plugin, install the PMPro Email Templates Add On. The email template for this plugin will be added to the list of templates available to edit. https://www.paidmembershipspro.com/add-ons/email-templates-admin-editor/
 
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
-= 1.2 =
+= 1.2 - 2019-03-20 =
 * BUG FIX: Fixed issue with [membership] shortcode not working correctly for pending/logged-in non-members.
 * BUG FIX: Fixed integration with Email Confirmation. Admins will only be able to approve/deny users once their emails are confirmed.
 * BUG FIX: Fixed integration with Email Templates Admin Editor sending out wrong usernames. Dear admin, for users and vice versa.
+* BUG FIX: Fixed pending member notification bubble for PMPro 2.0+.
+* BUG FIX: Fixed menus for PMPro 2.0+. (Thanks, ioamnesia on GitHub)
 * BUG FIX/ENHANCEMENT: Reworked the email functionality entirely.
-* BUG FIX/ENHANCEMENT: Reworked admin menu links to support PMPro 2.0+ as well as pending member notification bubble.
 * ENHANCEMENT: Added i18n support for Approvals with French translation files. Please submit your translation files via a Pull Request or on www.paidmembershipspro.com so we may include these in future a release.
 * ENHANCEMENT: Filters added for approved, denied and pending status.
 * ENHANCEMENT: Support Register Helper fields inside the "View" profile of pending users. Including "File" fields.
