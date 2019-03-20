@@ -1,5 +1,10 @@
 <?php
+// Make sure PMPro is loaded.
+if ( ! class_exists( 'PMProEmail' ) ) {
+	return;
+}
 
+// Class for PMPro Approvals Emails
 class PMPro_Approvals_Email extends PMProEmail {
 	private static $instance;
 
