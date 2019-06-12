@@ -33,6 +33,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 		$this->data     = array(
 			'subject'               => $this->subject,
 			'name'                  => $member->display_name,
+			'member_email'          => $member->user_email,
 			'user_login'            => $member->user_login,
 			'sitename'              => get_option( 'blogname' ),
 			'membership_id'         => $level->id,
@@ -70,6 +71,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 		$this->data     = array(
 			'subject'               => $this->subject,
 			'name'                  => $member->display_name,
+			'member_email'          => $member->user_email,
 			'user_login'            => $member->user_login,
 			'sitename'              => get_option( 'blogname' ),
 			'membership_id'         => $level->id,
@@ -126,6 +128,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 			}
 
 			$this->data['member_name']  = $member->display_name;
+			$this->data['member_email'] = $member->user_email;
 			$this->data['view_profile'] = admin_url( 'admin.php/?page=pmpro-approvals&user_id=' . $member->ID );
 			$this->data['approve_link'] = $this->data['view_profile'] . '&approve=' . $member->ID;
 			$this->data['deny_link']    = $this->data['view_profile'] . '&deny=' . $member->ID;
@@ -178,6 +181,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 			$this->data['membership_id']         = $level->id;
 			$this->data['membership_level_name'] = $level->name;
+			$this->data['member_email']          = $member->user_email;
 			$this->data['member_name']           = $member->display_name;
 			$this->data['view_profile']          = admin_url( 'admin.php/?page=pmpro-approvals&user_id=' . $member->ID );
 		}
@@ -229,6 +233,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 			$this->data['membership_id']         = $level->id;
 			$this->data['membership_level_name'] = $level->name;
+			$this->data['member_email']          = $member->user_email;
 			$this->data['member_name']           = $member->display_name;
 			$this->data['view_profile']          = admin_url( 'admin.php/?page=pmpro-approvals&user_id=' . $member->ID );
 		}
