@@ -118,9 +118,23 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 								<td><a href="<?php echo $field['fullurl']; ?>" target="_blank" rel="noopener noreferrer"><?php _e( 'View File', 'pmpro-approvals' ); ?></a> (<?php echo $field['filename']; ?>)</td>
 
 
-							<?php } else { ?>
-								<td><?php echo get_user_meta( $user->ID, $field->name, true ); ?></td>
-							<?php } ?>
+							<?php } else { 
+								$register_helper_fields = get_user_meta( $user->ID, $field->name, true );
+
+								// Get all array option values and break up the array into readable content.
+								if ( is_array( $register_helper_fields ) ) {
+									 $rh_field_string = '';
+									 foreach( $register_helper_fields as $key => $value ) {
+										$rh_field_string .= $value . ', ';
+									}
+
+									// remove trailing comma from string.
+									echo '<td>' . rtrim( $rh_field_string, ', ') . '</td>';
+								} else {
+									echo '<td>' . $register_helper_fields . '</td>';
+								}
+							
+ 							} ?>
 						</tr>
 						<?php
 						}   //endif
