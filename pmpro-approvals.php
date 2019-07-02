@@ -599,10 +599,10 @@ class PMPro_Approvals {
 			return false;
 		}
 
-		//check if level requires approval.
-		if ( ! self::requiresApproval( $level_id ) ) {
-			return;
-		}
+	//check if level requires approval.
+	if ( ! self::requiresApproval( $level_id ) ) {
+		return;
+	}
 
 		//Get the user approval status. If it's not Approved/Denied it's set to Pending.
 		if ( ! self::isPending( $user_id, $level_id ) ) {
@@ -1066,9 +1066,15 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_account_bullets_top() {
 
-			$approval_status = self::getUserApprovalStatus();
+			$approval_status = ucfirst( self::getUserApprovalStatus() );
 
-			printf( __( '<li><strong>Status:</strong> %s</li>', 'pmpro-approvals' ), $approval_status );
+			$user_level = pmpro_getMembershipLevelForUser();
+			$level_approval = self::requiresApproval( $user_level->ID );
+
+			// Only show this if the user has an approval status.
+			if ( $level_approval ) {
+				printf( __( '<li><strong>Status:</strong> %s</li>', 'pmpro-approvals' ), $approval_status );
+			}
 
 	}
 
