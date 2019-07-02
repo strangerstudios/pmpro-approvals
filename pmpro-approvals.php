@@ -1073,16 +1073,16 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_members_list_user( $user ) {
 
-		// Hide ('pending') link from the following statuses.
-		$status_in = apply_filters( 'pmpro_approvals_members_list_status', array( 'oldmembers', 'cancelled', 'expired' ) );
-		$level_type = isset( $_REQUEST['l'] ) ? $_REQUEST['l'] : '';
+	// Hide ('pending') link from the following statuses.
+	$status_in = apply_filters( 'pmpro_approvals_members_list_status', array( 'oldmembers', 'cancelled', 'expired' ) );
+	$level_type = isset( $_REQUEST['l'] ) ? $_REQUEST['l'] : '';
 
-		if ( current_user_can( 'pmpro_approvals' ) && self::isPending( $user->ID, $user->membership_id ) && ! in_array( $level_type, $status_in ) ) {
-			$user->membership .= ' (<a href="' . admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $user->user_email ) ) . '">' . __( 'Pending', 'pmpro-approvals' ) . '</a>)';
-		}
-
-		return $user;
+	if ( isset( $_REQUEST['page']) && $_REQUEST['page'] === 'pmpro-dashboard' && current_user_can( 'pmpro_approvals' ) && self::isPending( $user->ID, $user->membership_id ) && ! in_array( $level_type, $status_in ) ) {
+		$user->membership .= ' (<a href="' . admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $user->user_email ) ) . '">' . __( 'Pending', 'pmpro-approvals' ) . '</a>)';
 	}
+
+	return $user;
+}
 
 	/**
 	 * Custom confirmation message for levels that requires approval.

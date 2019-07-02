@@ -111,8 +111,6 @@ class PMPro_Approvals_Email extends PMProEmail {
 			'name'                  => $admin->display_name,
 			'user_login'            => $admin->user_login,
 			'sitename'              => get_option( 'blogname' ),
-			'membership_id'         => $admin->membership_level->id,
-			'membership_level_name' => $admin->membership_level->name,
 			'siteemail'             => pmpro_getOption( 'from_email' ),
 			'login_link'            => wp_login_url(),
 		);
@@ -127,8 +125,12 @@ class PMPro_Approvals_Email extends PMProEmail {
 				$member = get_user_by( 'email', $member );
 			}
 
+			$level = pmpro_getMembershipLevelForUser( $member->ID );
+
 			$this->data['member_name']  = $member->display_name;
 			$this->data['member_email'] = $member->user_email;
+			$this->data['membership_id']         = $level->id;
+			$this->data['membership_level_name'] = $level->name;
 			$this->data['view_profile'] = admin_url( 'admin.php/?page=pmpro-approvals&user_id=' . $member->ID );
 			$this->data['approve_link'] = $this->data['view_profile'] . '&approve=' . $member->ID;
 			$this->data['deny_link']    = $this->data['view_profile'] . '&deny=' . $member->ID;
