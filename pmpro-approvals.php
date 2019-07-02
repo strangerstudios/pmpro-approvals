@@ -585,7 +585,11 @@ class PMPro_Approvals {
 		//get the PMPro level for the user
 		if ( empty( $level_id ) ) {
 			$level    = pmpro_getMembershipLevelForUser( $user_id );
-			$level_id = $level->ID;
+			
+			if ( ! empty( $level ) ) {
+				$level_id = $level->ID;
+			}
+			
 		} else {
 			$level = pmpro_getLevel( $level_id );
 		}
