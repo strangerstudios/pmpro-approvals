@@ -100,6 +100,8 @@ class PMPro_Approvals {
 		add_action( 'pmpro_before_change_membership_level', array( 'PMPro_Approvals', 'pmpro_before_change_membership_level' ), 10, 2 );
 		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 2 );
 
+		//Integrate with Member Directory.
+		add_filter( 'pmpro_member_directory_sql_parts', array( 'PMPro_Approvals', 'pmpro_member_directory_sql_parts'), 10, 9 );
 		//plugin row meta
 		add_filter( 'plugin_row_meta', array( 'PMPro_Approvals', 'plugin_row_meta' ), 10, 2 );
 	}
@@ -599,10 +601,10 @@ class PMPro_Approvals {
 			return false;
 		}
 
-	//check if level requires approval.
-	if ( ! self::requiresApproval( $level_id ) ) {
-		return;
-	}
+		//check if level requires approval.
+		if ( ! self::requiresApproval( $level_id ) ) {
+			return;
+		}
 
 		//Get the user approval status. If it's not Approved/Denied it's set to Pending.
 		if ( ! self::isPending( $user_id, $level_id ) ) {
@@ -1432,6 +1434,23 @@ style="display: none;"<?php } ?>>
 
 		return $r;
 	}
+
+
+	/**
+	 * Integrate with Membership Directory Add On.
+	 * @since 1.3
+	 */
+	public static function pmpro_member_directory_sql_parts( $sql_parts, $levels, $s, $pn, $limit, $start, $end, $order_by, $order ) {
+		$sql_parts['JOIN'] .= "LEFT JOIN wp_usermeta umm
+		ON umm.meta_key = CONCAT('pmpro_approval_', mu.membership_id)
+		  AND umm.meta_key != 'pmpro_approval_log'
+		  AND u.ID = umm.user_id ";
+
+		$sql_parts['WHERE'] .= "AND ( umm.meta_value LIKE '%approved%' OR umm.meta_value IS NULL ) ";
+
+		return $sql_parts;
+	}
+
 
 	/**
 	 * Add links to the plugin row meta
