@@ -102,6 +102,7 @@ class PMPro_Approvals {
 
 		//Integrate with Member Directory.
 		add_filter( 'pmpro_member_directory_sql_parts', array( 'PMPro_Approvals', 'pmpro_member_directory_sql_parts'), 10, 9 );
+		add_filter( 'gettext', array( 'PMPro_Approvals', 'change_your_level_text' ), 10, 3 );
 		//plugin row meta
 		add_filter( 'plugin_row_meta', array( 'PMPro_Approvals', 'plugin_row_meta' ), 10, 2 );
 	}
@@ -1475,6 +1476,35 @@ style="display: none;"<?php } ?>>
 
 		load_plugin_textdomain( 'pmpro-approvals', false, basename( dirname( __FILE__ ) ) . '/languages' );
 	}
+
+	/**
+	 * Change "Your Level" to "Awaiting Approval" in these instances for pending users. 
+	 * @since 1.3
+	 */
+	public static function change_your_level_text( $translated_text, $text, $domain ) {
+		global $current_user;
+
+		$approved = self::isApproved( $current_user->ID );
+
+		// Bail if the user is approved.
+		if ( $approved ) {
+			return $translated_text;
+		}
+
+		$approval = self::getUserApproval( $current_user->ID );
+
+		if ( $domain == 'paid-memberships-pro' ) {
+			if ( $translated_text == 'Your&nbsp;Level' ) {
+				if ( $approval['status'] == 'pending' ){
+					$translated_text = __( 'Pending Approval', 'pmpro-approvals' );
+				} else {
+					$translated_text = __( 'Membership Denied', 'pmpro-approvals' );
+				}
+			}
+		}
+		return $translated_text;
+	}
+
 
 } // end class
 
