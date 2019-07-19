@@ -132,5 +132,5 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 			}
 		}
 	?>
-	<a href="?page=pmpro-approvals" class=""><?php _e( '&laquo; Back to Approvals', 'pmpro-approvals' ); ?></a>
+	<a href="?page=pmpro-approvals" class="">&laquo; <?php _e( 'Back to Approvals', 'pmpro-approvals' ); ?></a>
 </div>

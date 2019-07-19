@@ -1064,7 +1064,7 @@ class PMPro_Approvals {
 
 			$approval_status = self::getUserApprovalStatus();
 
-			printf( __( '<li><strong>Status:</strong> %s</li>', 'pmpro-approvals' ), $approval_status );
+			printf( '<li><strong>' . __( 'Status:') . '</strong> %s</li>', 'pmpro-approvals', $approval_status );
 
 	}
 
