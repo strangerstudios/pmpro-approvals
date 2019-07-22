@@ -1,201 +1,199 @@
-#, fuzzy
 msgid ""
 msgstr ""
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
-"Project-Id-Version: Paid Memberships Pro - Approvals Add On\n"
-"POT-Creation-Date: 2019-07-19 14:12+0200\n"
-"PO-Revision-Date: 2018-06-11 11:53+0200\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2019-07-19 14:15+0200\n"
+"PO-Revision-Date: 2019-07-19 14:15+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: en_ZA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.2.3\n"
 "X-Poedit-Basepath: ..\n"
-"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
-"X-Poedit-WPHeader: pmpro-approvals.php\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
-"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
-"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: __;_e;esc_html__\n"
 "X-Poedit-SearchPath-0: .\n"
-"X-Poedit-SearchPathExcluded-0: *.js\n"
 
 #: adminpages/approvals.php:6
 msgid "You do not have permissions to perform this action."
-msgstr ""
+msgstr "You do not have permissions to perform this action."
 
 #: adminpages/approvals.php:51 pmpro-approvals.php:156 pmpro-approvals.php:175
 #: pmpro-approvals.php:177 pmpro-approvals.php:193
 msgid "Approvals"
-msgstr ""
+msgstr "Approvals"
 
 #: adminpages/approvals.php:58
 msgid "All"
-msgstr ""
+msgstr "All"
 
 #: adminpages/approvals.php:63 pmpro-approvals.php:1081
 msgid "Pending"
-msgstr ""
+msgstr "Pending"
 
 #: adminpages/approvals.php:68 pmpro-approvals.php:631
 msgid "Approved"
-msgstr ""
+msgstr "Approved"
 
 #: adminpages/approvals.php:73
 msgid "Denied"
-msgstr ""
+msgstr "Denied"
 
 #: adminpages/approvals.php:76 adminpages/approvals.php:80
 msgid "Search Approvals"
-msgstr ""
+msgstr "Search Approvals"
 
 #: adminpages/approvals.php:83
 msgid "Show"
-msgstr ""
+msgstr "Show"
 
 #: adminpages/approvals.php:88
 msgid "All Levels"
-msgstr ""
+msgstr "All Levels"
 
 #: adminpages/approvals.php:145
 msgid "applications awaiting review"
-msgstr ""
+msgstr "applications awaiting review"
 
 #: adminpages/approvals.php:153
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: adminpages/approvals.php:154 adminpages/userinfo.php:49
 msgid "Username"
-msgstr ""
+msgstr "Username"
 
 #: adminpages/approvals.php:155
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: adminpages/approvals.php:156 adminpages/userinfo.php:53
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #: adminpages/approvals.php:157
 msgid "Membership"
-msgstr ""
+msgstr "Membership"
 
 #: adminpages/approvals.php:158 adminpages/userinfo.php:68
 #: pmpro-approvals.php:1209
 msgid "Approval Status"
-msgstr ""
+msgstr "Approval Status"
 
 #: adminpages/approvals.php:163
 msgid "Joined"
-msgstr ""
+msgstr "Joined"
 
 #: adminpages/approvals.php:219 adminpages/userinfo.php:74
 msgid "Email Confirmation Required."
-msgstr ""
+msgstr "Email Confirmation Required."
 
 #: adminpages/approvals.php:232
 msgid "Approve"
-msgstr ""
+msgstr "Approve"
 
 #: adminpages/approvals.php:233
 msgid "Deny"
-msgstr ""
+msgstr "Deny"
 
 #: adminpages/approvals.php:246
 msgid "No pending members found."
-msgstr ""
+msgstr "No pending members found."
 
 #: adminpages/userinfo.php:25
 msgid "No user id passed in."
-msgstr ""
+msgstr "No user id passed in."
 
 #: adminpages/userinfo.php:31
 #, php-format
 msgid "No user found with ID %d."
-msgstr ""
+msgstr "No user found with ID %d."
 
 #: adminpages/userinfo.php:42
 msgid "Account Information"
-msgstr ""
+msgstr "Account Information"
 
 #: adminpages/userinfo.php:45
 msgid "User ID"
-msgstr ""
+msgstr "User ID"
 
 #: adminpages/userinfo.php:57
 msgid "Membership Level"
-msgstr ""
+msgstr "Membership Level"
 
 #: adminpages/userinfo.php:118
 msgid "View File"
-msgstr ""
+msgstr "View File"
 
 #: adminpages/userinfo.php:135
 msgid "Back to Approvals"
-msgstr ""
+msgstr "Back to Approvals"
 
 #: classes/class.approvalemails.php:30
 #, php-format
 msgid "Your membership at %s has been approved."
-msgstr ""
+msgstr "Your membership at %s has been approved."
 
 #: classes/class.approvalemails.php:68
 #, php-format
 msgid "Your membership at %s has been denied."
-msgstr ""
+msgstr "Your membership at %s has been denied."
 
 #: classes/class.approvalemails.php:106
 #, php-format
 msgid "A member at %s is waiting approval."
-msgstr ""
+msgstr "A member at %s is waiting approval."
 
 #: classes/class.approvalemails.php:159
 #, php-format
 msgid "A member at %s has been approved."
-msgstr ""
+msgstr "A member at %s has been approved."
 
 #: classes/class.approvalemails.php:211
 #, php-format
 msgid "A member at %s has been denied."
-msgstr ""
+msgstr "A member at %s has been denied."
 
 #: pmpro-approvals.php:308
 msgid "Approval Settings"
-msgstr ""
+msgstr "Approval Settings"
 
 #: pmpro-approvals.php:312
 msgid "Requires Approval?"
-msgstr ""
+msgstr "Requires Approval?"
 
 #: pmpro-approvals.php:315
 msgid "No."
-msgstr ""
+msgstr "No."
 
 #: pmpro-approvals.php:316
 msgid "Yes. Admin must approve new members for this level."
-msgstr ""
+msgstr "Yes. Admin must approve new members for this level."
 
 #: pmpro-approvals.php:318
 msgid "Yes. User must have an approved membership for a different level."
-msgstr ""
+msgstr "Yes. User must have an approved membership for a different level."
 
 #: pmpro-approvals.php:319
 msgid ""
 "Yes. User must have an approved membership for a different level AND admin "
 "must approve new members for this level."
 msgstr ""
+"Yes. User must have an approved membership for a different level AND admin "
+"must approve new members for this level."
 
 #: pmpro-approvals.php:330
 msgid "Which Level?"
-msgstr ""
+msgstr "Which Level?"
 
 #: pmpro-approvals.php:504
 msgid ""
 "Your previous application for this level has been denied. You will not be "
 "allowed to check out."
 msgstr ""
+"Your previous application for this level has been denied. You will not be "
+"allowed to check out."
 
 #: pmpro-approvals.php:514
 #, php-format
@@ -203,16 +201,18 @@ msgid ""
 "Since your application to the %s level has been denied, you may not check "
 "out for this level."
 msgstr ""
+"Since your application to the %s level has been denied, you may not check "
+"out for this level."
 
 #: pmpro-approvals.php:520
 #, php-format
 msgid "Your application to %s is still pending."
-msgstr ""
+msgstr "Your application to %s is still pending."
 
 #: pmpro-approvals.php:524
 #, php-format
 msgid "You must be approved for %s before checking out here."
-msgstr ""
+msgstr "You must be approved for %s before checking out here."
 
 #: pmpro-approvals.php:526
 #, php-format
@@ -220,60 +220,65 @@ msgid ""
 "You must register and be approved for <a href=\"%1$s\">%2$s</a> before "
 "checking out here."
 msgstr ""
+"You must register and be approved for <a href=\"%1$s\">%2$s</a> before "
+"checking out here."
 
 #: pmpro-approvals.php:612
 msgid "approved"
-msgstr ""
+msgstr "approved"
 
 #: pmpro-approvals.php:626
 #, php-format
 msgid "%1$s on %2$s by %3$s"
-msgstr ""
+msgstr "%1$s on %2$s by %3$s"
 
 #: pmpro-approvals.php:628
 #, php-format
 msgid "%1$s on %2$s"
-msgstr ""
+msgstr "%1$s on %2$s"
 
 #: pmpro-approvals.php:637 pmpro-approvals.php:1107
 msgid "pending"
-msgstr ""
+msgstr "pending"
 
 #: pmpro-approvals.php:639
 #, php-format
 msgid "Pending Approval for %s"
-msgstr ""
+msgstr "Pending Approval for %s"
 
 #: pmpro-approvals.php:838 pmpro-approvals.php:886 pmpro-approvals.php:935
 msgid "You do not have permission to perform approvals."
-msgstr ""
+msgstr "You do not have permission to perform approvals."
 
 #: pmpro-approvals.php:863
 msgid "Member was approved."
-msgstr ""
+msgstr "Member was approved."
 
 #: pmpro-approvals.php:911
 msgid "Member was denied."
-msgstr ""
+msgstr "Member was denied."
 
 #: pmpro-approvals.php:958
 msgid "Approval reset."
-msgstr ""
+msgstr "Approval reset."
 
 #: pmpro-approvals.php:1034
 msgid ""
 "Your membership requires approval before you are able to view this content."
 msgstr ""
+"Your membership requires approval before you are able to view this content."
 
 #: pmpro-approvals.php:1036
 msgid ""
 "Your membership application has been denied. Contact the site owners if you "
 "believe this is an error."
 msgstr ""
+"Your membership application has been denied. Contact the site owners if you "
+"believe this is an error."
 
 #: pmpro-approvals.php:1067
 msgid "Status:"
-msgstr ""
+msgstr "Status:"
 
 #: pmpro-approvals.php:1110
 #, php-format
@@ -281,6 +286,8 @@ msgid ""
 "Thank you for your membership to %1$s. Your %2$s membership status is: <b>"
 "%3$s</b>."
 msgstr ""
+"Thank you for your membership to %1$s. Your %2$s membership status is: <b>"
+"%3$s</b>."
 
 #: pmpro-approvals.php:1112
 #, php-format
@@ -289,98 +296,82 @@ msgid ""
 "initial membership invoice. A welcome email with a copy of your initial "
 "membership invoice has been sent to %s."
 msgstr ""
+"Below are details about your membership account and a receipt for your "
+"initial membership invoice. A welcome email with a copy of your initial "
+"membership invoice has been sent to %s."
 
 #: pmpro-approvals.php:1124
 msgid "A user has been approved for !!membership_level_name!!"
-msgstr ""
+msgstr "A user has been approved for !!membership_level_name!!"
 
 #: pmpro-approvals.php:1125
 msgid "Approvals - Approved Email (admin)"
-msgstr ""
+msgstr "Approvals - Approved Email (admin)"
 
 #: pmpro-approvals.php:1130
 msgid "A user has been denied for !!membership_level_name!!"
-msgstr ""
+msgstr "A user has been denied for !!membership_level_name!!"
 
 #: pmpro-approvals.php:1131
 msgid "Approvals - Denied Email (admin)"
-msgstr ""
+msgstr "Approvals - Denied Email (admin)"
 
 #: pmpro-approvals.php:1136
 msgid "A user requires approval"
-msgstr ""
+msgstr "A user requires approval"
 
 #: pmpro-approvals.php:1137
 msgid "Approvals - Requires Approval (admin)"
-msgstr ""
+msgstr "Approvals - Requires Approval (admin)"
 
 #: pmpro-approvals.php:1144
 msgid "Your membership to !!sitename!! has been approved."
-msgstr ""
+msgstr "Your membership to !!sitename!! has been approved."
 
 #: pmpro-approvals.php:1145
 msgid "Approvals - Approved Email"
-msgstr ""
+msgstr "Approvals - Approved Email"
 
 #: pmpro-approvals.php:1150
 msgid "Your membership to !!sitename!! has been denied."
-msgstr ""
+msgstr "Your membership to !!sitename!! has been denied."
 
 #: pmpro-approvals.php:1151
 msgid "Approvals - Denied Email"
-msgstr ""
+msgstr "Approvals - Denied Email"
 
 #: pmpro-approvals.php:1170
 msgid ""
 "Your membership account is now pending. You will be notified once your "
 "account has been approved/denied."
 msgstr ""
+"Your membership account is now pending. You will be notified once your "
+"account has been approved/denied."
 
 #: pmpro-approvals.php:1239
 msgid "User Approval Log"
-msgstr ""
+msgstr "User Approval Log"
 
 #: pmpro-approvals.php:1272
 msgid "The chosen level does not require approval."
-msgstr ""
+msgstr "The chosen level does not require approval."
 
 #: pmpro-approvals.php:1356
 msgid "No approval history found."
-msgstr ""
+msgstr "No approval history found."
 
 #: pmpro-approvals.php:1432
 msgid "View Documentation"
-msgstr ""
+msgstr "View Documentation"
 
 #: pmpro-approvals.php:1432
 msgid "Docs"
-msgstr ""
+msgstr "Docs"
 
 #: pmpro-approvals.php:1433
 msgid "Visit Customer Support Forum"
-msgstr ""
+msgstr "Visit Customer Support Forum"
 
 #: pmpro-approvals.php:1433
 msgid "Support"
-msgstr ""
-
-#. Plugin Name of the plugin/theme
-msgid "Paid Memberships Pro - Approvals Add On"
-msgstr ""
-
-#. Plugin URI of the plugin/theme
-msgid "https://www.paidmembershipspro.com/add-ons/approval-process-membership/"
-msgstr ""
-
-#. Description of the plugin/theme
-msgid ""
-"Grants administrators the ability to approve/deny memberships after signup."
-msgstr ""
-
-#. Author of the plugin/theme
-msgid "Stranger Studios"
-msgstr ""
-
-#. Author URI of the plugin/theme
-msgid "https://www.paidmembershipspro.com"
-msgstr ""
+msgstr "Support"

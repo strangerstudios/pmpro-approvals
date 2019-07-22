@@ -62,6 +62,7 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 			 $level_details = pmpro_getMembershipLevelForUser( $user->ID );
 
 			 echo esc_html( $level_details->name );
+        
 			?>
 			</td>
 		</tr>
