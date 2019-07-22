@@ -1076,6 +1076,7 @@ class PMPro_Approvals {
 			// Only show this if the user has an approval status.
 			if ( $level_approval ) {
 			  printf( '<li><strong>' . __( 'Status:') . '</strong> %s</li>', 'pmpro-approvals', $approval_status );
+			}
 	}
 
 	/**
