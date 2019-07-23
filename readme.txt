@@ -2,8 +2,8 @@
 Contributors: strangerstudios, andrewza
 Tags: paid memberships pro, pmpro, approval, approvals, workflow
 Requires at least: 4.0
-Tested up to: 5.1.1
-Stable tag: 1.2
+Tested up to: 5.2.2
+Stable tag: 1.3
 
 Grants administrators the ability to approve/deny memberships after signup.
 
