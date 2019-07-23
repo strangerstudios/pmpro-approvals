@@ -36,6 +36,17 @@ Members pending approval will not have access to view members-only content until
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
+= 1.3 - 2019-07-23 =
+* BUG FIX: Remove "Status" from account page if the user's level doesn't require approval.
+* BUG FIX: Approval link being escaped in Paid Memberships Pro 2.x+ 'recent' members dashboard widget.
+* BUG FIX/ENHANCEMENT: Improved custom fields not showing for pending members edit page and view info pages.
+* BUG FIX/ENHANCEMENT: Integrate with Email Confirmation Add On. Improved UX.
+* ENHANCEMENT: Improved i18n. Some strings were missing. Please submit a PR to get your locale included in a future release.
+* ENHANCEMENT: Integrate with Member Directory Add On. Automatically hide non-approved users from Member Directory Add On pages. Member Directory .5.4+ required.
+* ENHANCEMENT: Hooks added in for Approvals table to allow inserting custom columns ("pmpro_approvals_list_extra_cols_header" and "pmpro_approvals_list_extra_cols_body" respectively).
+* SECURITY: General security updates when outputting data to the screen.
+
+
 = 1.2 - 2019-03-20 =
 * BUG FIX: Fixed issue with [membership] shortcode not working correctly for pending/logged-in non-members.
 * BUG FIX: Fixed integration with Email Confirmation. Admins will only be able to approve/deny users once their emails are confirmed.
