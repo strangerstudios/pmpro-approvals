@@ -185,7 +185,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$this->data['membership_level_name'] = $level->name;
 			$this->data['member_email']          = $member->user_email;
 			$this->data['member_name']           = $member->display_name;
-			$this->data['view_profile']          = admin_url( 'admin.php/?page=pmpro-approvals&user_id=' . $member->ID );
+			$this->data['view_profile']          = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID );
 		}
 
 		$this->data = apply_filters( 'pmpro_approvals_admin_approved_email_data', $this->data, $member, $admin );
@@ -237,7 +237,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$this->data['membership_level_name'] = $level->name;
 			$this->data['member_email']          = $member->user_email;
 			$this->data['member_name']           = $member->display_name;
-			$this->data['view_profile']          = admin_url( 'admin.php/?page=pmpro-approvals&user_id=' . $member->ID );
+			$this->data['view_profile']          = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID );
 		}
 
 		$this->data = apply_filters( 'pmpro_approvals_admin_denied_email_data', $this->data, $member, $admin );
