@@ -36,7 +36,8 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 	
 	<form id="posts-filter" method="get" action="">	
 	<h2>
-		<?php echo $user->ID; ?> - <?php echo $user->display_name; ?> (<?php echo $user->user_login; ?>)
+		<?php echo $user->ID; ?> - <?php echo esc_attr( $user->display_name ); ?> (<?php echo esc_attr( $user->user_login ); ?>)
+		<a href="<?php echo admin_url( 'user-edit.php?user_id=' . $user->ID ); ?>" class="button button-primary">Edit Profile</a>
 	</h2>	
 	
 	<h3><?php _e( 'Account Information', 'pmpro-approvals' ); ?></h3>
@@ -47,11 +48,11 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 		</tr>		
 		<tr>
 			<th><label><?php _e( 'Username', 'pmpro-approvals' ); ?></label></th>
-			<td><?php echo $user->user_login; ?></td>
+			<td><?php echo esc_html( $user->user_login ); ?></td>
 		</tr>
 		<tr>
 			<th><label><?php _e( 'Email', 'pmpro-approvals' ); ?></label></th>
-			<td><?php echo $user->user_email; ?></td>
+			<td><?php echo sanitize_email( $user->user_email ); ?></td>
 		</tr>
 		<tr>
 			<th><label><?php _e( 'Membership Level', 'pmpro-approvals' ); ?></label></th>
@@ -60,7 +61,8 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 			//Changed this to show Membership Level Name now, so approvers don't need to go back and forth to see what level the user is applying for.
 			 $level_details = pmpro_getMembershipLevelForUser( $user->ID );
 
-			 echo $level_details->name;
+			 echo esc_html( $level_details->name );
+        
 			?>
 			</td>
 		</tr>
@@ -75,7 +77,7 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 				} else {
 					echo PMPro_Approvals::getUserApprovalStatus( $user->ID, null, false );
 				?>
-				[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $user->user_login; ?>?', '?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID; ?>');">X</a>]
+				[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo esc_attr( $user->user_login ); ?>?', '?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID; ?>');">X</a>]
 				<?php
 				}   // end of email confirmation check.
 			} else {
@@ -99,7 +101,7 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 				foreach ( $pmprorh_registration_fields as $where => $fields ) {
 					$box = pmprorh_getCheckoutBoxByName( $where );
 					?>
-					<h3><?php echo $box->label; ?></h3>
+					<h3><?php echo esc_html( $box->label ); ?></h3>
 
 					<table class="form-table">
 					<?php
@@ -109,18 +111,32 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 						if ( false != $field->profile ) {
 						?>
 						<tr>
-							<th><label><?php echo $field->label; ?></label></th>
+							<th><label><?php echo esc_attr( $field->label ); ?></label></th>
 							<?php
 							if ( is_array( get_user_meta( $user->ID, $field->name, true ) ) && 'file' === $field->type ) {
 								$field = get_user_meta( $user->ID, $field->name, true );
 								?>
 
-								<td><a href="<?php echo $field['fullurl']; ?>" target="_blank" rel="noopener noreferrer"><?php _e( 'View File', 'pmpro-approvals' ); ?></a> (<?php echo $field['filename']; ?>)</td>
+								<td><a href="<?php echo esc_url( $field['fullurl'] ); ?>" target="_blank" rel="noopener noreferrer"><?php _e( 'View File', 'pmpro-approvals' ); ?></a> (<?php echo esc_attr( $field['filename'] ); ?>)</td>
 
 
-							<?php } else { ?>
-								<td><?php echo get_user_meta( $user->ID, $field->name, true ); ?></td>
-							<?php } ?>
+							<?php } else { 
+								$register_helper_fields = get_user_meta( $user->ID, $field->name, true );
+
+								// Get all array option values and break up the array into readable content.
+								if ( is_array( $register_helper_fields ) ) {
+									 $rh_field_string = '';
+									 foreach( $register_helper_fields as $key => $value ) {
+										$rh_field_string .= $value . ', ';
+									}
+
+									// remove trailing comma from string.
+									echo '<td>' . esc_html( rtrim( $rh_field_string, ', ' ) ) . '</td>';
+								} else {
+									echo '<td>' . esc_html( $register_helper_fields ) . '</td>';
+								}
+							
+ 							} ?>
 						</tr>
 						<?php
 						}   //endif
@@ -132,5 +148,5 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 			}
 		}
 	?>
-	<a href="?page=pmpro-approvals" class=""><?php _e( '&laquo; Back to Approvals', 'pmpro-approvals' ); ?></a>
+	<a href="?page=pmpro-approvals" class="">&laquo; <?php _e( 'Back to Approvals', 'pmpro-approvals' ); ?></a>
 </div>

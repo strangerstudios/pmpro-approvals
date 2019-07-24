@@ -153,7 +153,8 @@ selected="selected"<?php } ?>><?php _e( 'All Levels', 'pmpro-approvals' ); ?></o
 				<th><?php _e( 'ID', 'pmpro-approvals' ); ?></th>
 				<th><?php _e( 'Username', 'pmpro-approvals' ); ?></th>
 				<th><?php _e( 'Name', 'pmpro-approvals' ); ?></th>				
-				<th><?php _e( 'Email', 'pmpro-approvals' ); ?></th>				
+				<th><?php _e( 'Email', 'pmpro-approvals' ); ?></th>
+				<?php do_action( 'pmpro_approvals_list_extra_cols_header', $theusers ); ?>
 				<th><?php _e( 'Membership', 'pmpro-approvals' ); ?></th>					
 				<th><?php _e( 'Approval Status', 'pmpro-approvals' ); ?></th>
 				<th><a href="<?php echo admin_url( 'admin.php?page=pmpro-approvals&s=' . esc_attr( $s ) . '&limit=' . $limit . '&pn=' . $pn . '&sortby=user_registered' ); ?>
@@ -203,12 +204,13 @@ class="alternate"<?php } ?>>
 								?>
 							</td>
 							<td><?php echo trim( $theuser->first_name . ' ' . $theuser->last_name ); ?></td>							
-							<td><a href="mailto:<?php echo $theuser->user_email; ?>"><?php echo $theuser->user_email; ?></a></td>							
+							<td><a href="mailto:<?php echo $theuser->user_email; ?>"><?php echo $theuser->user_email; ?></a></td>
+							<?php do_action( 'pmpro_approvals_list_extra_cols_body', $theusers ); ?>						
 							<td>
 								<?php
 								echo $auser->membership;
 								?>
-							</td>							
+							</td>						
 							<td>										
 								<?php
 								$pmpro_approvals_nonce = wp_create_nonce( 'pmpro_approvals' );
@@ -229,8 +231,8 @@ class="alternate"<?php } ?>>
 								} else {
 									?>
 																			
-									<a href="?page=pmpro-approvals&s=<?php echo esc_attr( $s ); ?>&l=<?php echo $l; ?>&limit=<?php echo intval( $limit ); ?>&status=<?php echo $status; ?>&sortby=<?php echo $sortby; ?>&sortorder=<?php echo $sortorder; ?>&pn=<?php echo intval( $pn ); ?>&approve=<?php echo $theuser->ID; ?>&pmpro_approvals_nonce=<?php echo urlencode( $pmpro_approvals_nonce ); ?>">Approve</a> |
-									<a href="?page=pmpro-approvals&s=<?php echo esc_attr( $s ); ?>&l=<?php echo $l; ?>&limit=<?php echo intval( $limit ); ?>&status=<?php echo $status; ?>&sortby=<?php echo $sortby; ?>&sortorder=<?php echo $sortorder; ?>&pn=<?php echo intval( $pn ); ?>&deny=<?php echo $theuser->ID; ?>&pmpro_approvals_nonce=<?php echo urlencode( $pmpro_approvals_nonce ); ?>">Deny</a>
+									<a href="?page=pmpro-approvals&s=<?php echo esc_attr( $s ); ?>&l=<?php echo $l; ?>&limit=<?php echo intval( $limit ); ?>&status=<?php echo $status; ?>&sortby=<?php echo $sortby; ?>&sortorder=<?php echo $sortorder; ?>&pn=<?php echo intval( $pn ); ?>&approve=<?php echo $theuser->ID; ?>&pmpro_approvals_nonce=<?php echo urlencode( $pmpro_approvals_nonce ); ?>"><?php _e('Approve', 'pmpro-approvals') ?></a> |
+									<a href="?page=pmpro-approvals&s=<?php echo esc_attr( $s ); ?>&l=<?php echo $l; ?>&limit=<?php echo intval( $limit ); ?>&status=<?php echo $status; ?>&sortby=<?php echo $sortby; ?>&sortorder=<?php echo $sortorder; ?>&pn=<?php echo intval( $pn ); ?>&deny=<?php echo $theuser->ID; ?>&pmpro_approvals_nonce=<?php echo urlencode( $pmpro_approvals_nonce ); ?>"><?php _e('Deny', 'pmpro-approvals') ?></a>
 									<?php
 								}
 								?>

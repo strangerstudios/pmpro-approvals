@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.2
+Version: 1.3
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -100,6 +100,9 @@ class PMPro_Approvals {
 		add_action( 'pmpro_before_change_membership_level', array( 'PMPro_Approvals', 'pmpro_before_change_membership_level' ), 10, 2 );
 		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 2 );
 
+		//Integrate with Member Directory.
+		add_filter( 'pmpro_member_directory_sql_parts', array( 'PMPro_Approvals', 'pmpro_member_directory_sql_parts'), 10, 9 );
+		add_filter( 'gettext', array( 'PMPro_Approvals', 'change_your_level_text' ), 10, 3 );
 		//plugin row meta
 		add_filter( 'plugin_row_meta', array( 'PMPro_Approvals', 'plugin_row_meta' ), 10, 2 );
 	}
@@ -585,7 +588,11 @@ class PMPro_Approvals {
 		//get the PMPro level for the user
 		if ( empty( $level_id ) ) {
 			$level    = pmpro_getMembershipLevelForUser( $user_id );
-			$level_id = $level->ID;
+			
+			if ( ! empty( $level ) ) {
+				$level_id = $level->ID;
+			}
+			
 		} else {
 			$level = pmpro_getLevel( $level_id );
 		}
@@ -1062,10 +1069,14 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_account_bullets_top() {
 
-			$approval_status = self::getUserApprovalStatus();
+			$approval_status = ucfirst( self::getUserApprovalStatus() );
+			$user_level = pmpro_getMembershipLevelForUser();
+			$level_approval = self::requiresApproval( $user_level->ID );
 
-			printf( __( '<li><strong>Status:</strong> %s</li>', 'pmpro-approvals' ), $approval_status );
-
+			// Only show this if the user has an approval status.
+			if ( $level_approval ) {
+			  printf( '<li><strong>' . __( 'Status', 'pmpro-approvals' ) . ':' . '</strong> %s</li>', $approval_status );
+			}
 	}
 
 	/**
@@ -1073,16 +1084,16 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_members_list_user( $user ) {
 
-		// Hide ('pending') link from the following statuses.
-		$status_in = apply_filters( 'pmpro_approvals_members_list_status', array( 'oldmembers', 'cancelled', 'expired' ) );
-		$level_type = isset( $_REQUEST['l'] ) ? $_REQUEST['l'] : '';
+	// Hide ('pending') link from the following statuses.
+	$status_in = apply_filters( 'pmpro_approvals_members_list_status', array( 'oldmembers', 'cancelled', 'expired' ) );
+	$level_type = isset( $_REQUEST['l'] ) ? $_REQUEST['l'] : '';
 
-		if ( current_user_can( 'pmpro_approvals' ) && self::isPending( $user->ID, $user->membership_id ) && ! in_array( $level_type, $status_in ) ) {
-			$user->membership .= ' (<a href="' . admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $user->user_email ) ) . '">' . __( 'Pending', 'pmpro-approvals' ) . '</a>)';
-		}
-
-		return $user;
+	if ( isset( $_REQUEST['page']) && $_REQUEST['page'] === 'pmpro-dashboard' && current_user_can( 'pmpro_approvals' ) && self::isPending( $user->ID, $user->membership_id ) && ! in_array( $level_type, $status_in ) ) {
+		$user->membership .= ' (<a href="' . admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $user->user_email ) ) . '">' . __( 'Pending', 'pmpro-approvals' ) . '</a>)';
 	}
+
+	return $user;
+}
 
 	/**
 	 * Custom confirmation message for levels that requires approval.
@@ -1423,6 +1434,23 @@ style="display: none;"<?php } ?>>
 		return $r;
 	}
 
+
+	/**
+	 * Integrate with Membership Directory Add On.
+	 * @since 1.3
+	 */
+	public static function pmpro_member_directory_sql_parts( $sql_parts, $levels, $s, $pn, $limit, $start, $end, $order_by, $order ) {
+		$sql_parts['JOIN'] .= "LEFT JOIN wp_usermeta umm
+		ON umm.meta_key = CONCAT('pmpro_approval_', mu.membership_id)
+		  AND umm.meta_key != 'pmpro_approval_log'
+		  AND u.ID = umm.user_id ";
+
+		$sql_parts['WHERE'] .= "AND ( umm.meta_value LIKE '%approved%' OR umm.meta_value IS NULL ) ";
+
+		return $sql_parts;
+	}
+
+
 	/**
 	 * Add links to the plugin row meta
 	 */
@@ -1446,6 +1474,35 @@ style="display: none;"<?php } ?>>
 
 		load_plugin_textdomain( 'pmpro-approvals', false, basename( dirname( __FILE__ ) ) . '/languages' );
 	}
+
+	/**
+	 * Change "Your Level" to "Awaiting Approval" in these instances for pending users. 
+	 * @since 1.3
+	 */
+	public static function change_your_level_text( $translated_text, $text, $domain ) {
+		global $current_user;
+
+		$approved = self::isApproved( $current_user->ID );
+
+		// Bail if the user is approved.
+		if ( $approved ) {
+			return $translated_text;
+		}
+
+		$approval = self::getUserApproval( $current_user->ID );
+
+		if ( $domain == 'paid-memberships-pro' ) {
+			if ( $translated_text == 'Your&nbsp;Level' ) {
+				if ( $approval['status'] == 'pending' ){
+					$translated_text = __( 'Pending Approval', 'pmpro-approvals' );
+				} else {
+					$translated_text = __( 'Membership Denied', 'pmpro-approvals' );
+				}
+			}
+		}
+		return $translated_text;
+	}
+
 
 } // end class
 
