@@ -1100,7 +1100,13 @@ class PMPro_Approvals {
 	$status_in = apply_filters( 'pmpro_approvals_members_list_status', array( 'oldmembers', 'cancelled', 'expired' ) );
 	$level_type = isset( $_REQUEST['l'] ) ? $_REQUEST['l'] : '';
 
-	if ( isset( $_REQUEST['page']) && $_REQUEST['page'] === 'pmpro-dashboard' && current_user_can( 'pmpro_approvals' ) && self::isPending( $user->ID, $user->membership_id ) && ! in_array( $level_type, $status_in ) ) {
+	// Bail if this is the dashboard page.
+	if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-dashboard' ) {
+		return $user;
+	}
+
+	// Show user status if the user is pending.
+	if ( current_user_can( 'pmpro_approvals' ) && self::isPending( $user->ID, $user->membership_id ) && ! in_array( $level_type, $status_in ) ) {
 		$user->membership .= ' (<a href="' . admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $user->user_email ) ) . '">' . __( 'Pending', 'pmpro-approvals' ) . '</a>)';
 	}
 
