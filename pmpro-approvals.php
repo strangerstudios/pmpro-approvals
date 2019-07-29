@@ -468,6 +468,18 @@ class PMPro_Approvals {
 			return $haslevel;
 		}
 
+		// Only check this inside admin of WordPress.
+		if ( is_admin() ) {
+
+			// Ignore if on the edit user screen. This will allow admins/users to update custom fields.
+			$current_screen = get_current_screen();
+			
+			if ( $current_screen->base == 'user-edit' || $current_screen->base == 'profile' ) {
+				return $haslevel;
+			}
+
+		}
+
 		//no user, skip
 		if ( empty( $user_id ) ) {
 			return $haslevel;
