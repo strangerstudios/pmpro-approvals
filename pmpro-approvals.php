@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.3
+Version: 1.3.1
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -466,6 +466,18 @@ class PMPro_Approvals {
 		//if already false, skip
 		if ( ! $haslevel ) {
 			return $haslevel;
+		}
+
+		// Only check this inside admin of WordPress.
+		if ( is_admin() ) {
+
+			// Ignore if on the edit user screen. This will allow admins/users to update custom fields.
+			$current_screen = get_current_screen();
+			
+			if ( $current_screen->base == 'user-edit' || $current_screen->base == 'profile' ) {
+				return $haslevel;
+			}
+
 		}
 
 		//no user, skip
@@ -1088,7 +1100,13 @@ class PMPro_Approvals {
 	$status_in = apply_filters( 'pmpro_approvals_members_list_status', array( 'oldmembers', 'cancelled', 'expired' ) );
 	$level_type = isset( $_REQUEST['l'] ) ? $_REQUEST['l'] : '';
 
-	if ( isset( $_REQUEST['page']) && $_REQUEST['page'] === 'pmpro-dashboard' && current_user_can( 'pmpro_approvals' ) && self::isPending( $user->ID, $user->membership_id ) && ! in_array( $level_type, $status_in ) ) {
+	// Bail if this is the dashboard page.
+	if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-dashboard' ) {
+		return $user;
+	}
+
+	// Show user status if the user is pending.
+	if ( current_user_can( 'pmpro_approvals' ) && self::isPending( $user->ID, $user->membership_id ) && ! in_array( $level_type, $status_in ) ) {
 		$user->membership .= ' (<a href="' . admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $user->user_email ) ) . '">' . __( 'Pending', 'pmpro-approvals' ) . '</a>)';
 	}
 
