@@ -469,7 +469,7 @@ class PMPro_Approvals {
 		}
 
 		// Only check this inside admin of WordPress.
-		if ( is_admin() ) {
+		if ( is_admin() && function_exists( "get_current_screen" ) ) {
 
 			// Ignore if on the edit user screen. This will allow admins/users to update custom fields.
 			$current_screen = get_current_screen();
