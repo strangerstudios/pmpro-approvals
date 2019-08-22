@@ -1458,7 +1458,8 @@ style="display: none;"<?php } ?>>
 	 * @since 1.3
 	 */
 	public static function pmpro_member_directory_sql_parts( $sql_parts, $levels, $s, $pn, $limit, $start, $end, $order_by, $order ) {
-		$sql_parts['JOIN'] .= "LEFT JOIN wp_usermeta umm
+		global $wpdb;
+		$sql_parts['JOIN'] .= "LEFT JOIN " . $wpdb->prefix . "usermeta umm
 		ON umm.meta_key = CONCAT('pmpro_approval_', mu.membership_id)
 		  AND umm.meta_key != 'pmpro_approval_log'
 		  AND u.ID = umm.user_id ";
