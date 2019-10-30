@@ -271,7 +271,10 @@ class PMPro_Approvals {
 		}
 
 		$options = self::getOptions( $level_id );
-		return $options['requires_approval'];
+		
+		$requires_approval = apply_filters( 'pmpro_approvals_level_requires_approval', $options['requires_approval'], $level_id);
+		
+		return $requires_approval;
 	}
 
 	/**
