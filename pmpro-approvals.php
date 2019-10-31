@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.3.2
+Version: 1.3.3
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -271,7 +271,10 @@ class PMPro_Approvals {
 		}
 
 		$options = self::getOptions( $level_id );
-		return $options['requires_approval'];
+		
+		$requires_approval = apply_filters( 'pmpro_approvals_level_requires_approval', $options['requires_approval'], $level_id);
+		
+		return $requires_approval;
 	}
 
 	/**
@@ -1458,7 +1461,8 @@ style="display: none;"<?php } ?>>
 	 * @since 1.3
 	 */
 	public static function pmpro_member_directory_sql_parts( $sql_parts, $levels, $s, $pn, $limit, $start, $end, $order_by, $order ) {
-		$sql_parts['JOIN'] .= "LEFT JOIN wp_usermeta umm
+		global $wpdb;
+		$sql_parts['JOIN'] .= "LEFT JOIN {$wpdb->usermeta} umm
 		ON umm.meta_key = CONCAT('pmpro_approval_', mu.membership_id)
 		  AND umm.meta_key != 'pmpro_approval_log'
 		  AND u.ID = umm.user_id ";
