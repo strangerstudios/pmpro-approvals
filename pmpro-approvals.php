@@ -1404,8 +1404,15 @@ style="display: none;"<?php } ?>>
 			$approval_status = 'pending';
 		}
 
-		//get all users with 'pending' status.
-		$sqlQuery = $wpdb->prepare( "SELECT COUNT(u.ID) as count FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id LEFT JOIN $wpdb->usermeta um ON um.user_id = u.ID AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) WHERE mu.status = 'active' AND mu.membership_id > 0 AND um.meta_value LIKE '%s'", '%' . $approval_status . '%' );
+		//get all users with 'pending' status.	
+		$sqlQuery = $wpdb->prepare( "SELECT COUNT(mu.user_id) as count
+									 FROM $wpdb->pmpro_memberships_users mu
+										LEFT JOIN $wpdb->usermeta um
+											ON um.user_id = mu.user_id
+												AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) 
+									 WHERE mu.status = 'active'
+										AND mu.membership_id > 0
+										AND um.meta_value LIKE '%s'", '%' . $approval_status . '%' );
 
 		$results         = $wpdb->get_results( $sqlQuery );
 		$number_of_users = (int) $results[0]->count;
