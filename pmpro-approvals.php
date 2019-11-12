@@ -1400,25 +1400,36 @@ style="display: none;"<?php } ?>>
 
 		global $wpdb, $menu, $submenu;
 
+		// Default to pending status.
 		if ( empty( $approval_status ) ) {
 			$approval_status = 'pending';
 		}
 
-		//get all users with 'pending' status.	
-		$sqlQuery = $wpdb->prepare( "SELECT COUNT(mu.user_id) as count
-									 FROM $wpdb->pmpro_memberships_users mu
-										LEFT JOIN $wpdb->usermeta um
-											ON um.user_id = mu.user_id
-												AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) 
-									 WHERE mu.status = 'active'
-										AND mu.membership_id > 0
-										AND um.meta_value LIKE '%s'", '%' . $approval_status . '%' );
+		// Store results in a static var in case we call this again.
+		static $number_of_users;
+		
+		// Store results in an array to support different statuses.
+		if ( ! isset( $number_of_users ) ) {
+			$number_of_users = array();
+		}
+		
+		// If we don't have this value yet, get it.
+		if ( ! isset( $number_of_users[$approval_status] ) ) {
+			//get all users with 'pending' status.	
+			$sqlQuery = $wpdb->prepare( "SELECT COUNT(mu.user_id) as count
+										 FROM $wpdb->pmpro_memberships_users mu
+											LEFT JOIN $wpdb->usermeta um
+												ON um.user_id = mu.user_id
+													AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) 
+										 WHERE mu.status = 'active'
+											AND mu.membership_id > 0
+											AND um.meta_value LIKE '%s'", '%' . $approval_status . '%' );
 
-		$results         = $wpdb->get_results( $sqlQuery );
-		$number_of_users = (int) $results[0]->count;
+			$results         = $wpdb->get_results( $sqlQuery );
+			$number_of_users[$approval_status] = (int) $results[0]->count;
+		}
 
-		return $number_of_users;
-
+		return $number_of_users[$approval_status];
 	}
 
 	/**
