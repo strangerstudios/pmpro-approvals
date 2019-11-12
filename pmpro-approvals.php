@@ -879,6 +879,9 @@ class PMPro_Approvals {
 				'approver'  => $current_user->user_login,
 			)
 		);
+		
+		//delete the approval count cache
+		delete_transient( 'pmpro_approvals_approval_count' );
 
 		//update statuses/etc
 		$msg  = 1;
@@ -928,6 +931,9 @@ class PMPro_Approvals {
 			)
 		);
 
+		//delete the approval count cache
+		delete_transient( 'pmpro_approvals_approval_count' );
+
 		//update statuses/etc
 		$msg  = 1;
 		$msgt = __( 'Member was denied.', 'pmpro-approvals' );
@@ -975,6 +981,9 @@ class PMPro_Approvals {
 				'approver'  => '',
 			)
 		);
+		
+		//delete the approval count cache
+		delete_transient( 'pmpro_approvals_approval_count' );
 
 		$msg  = 1;
 		$msgt = __( 'Approval reset.', 'pmpro-approvals' );
@@ -1021,6 +1030,9 @@ class PMPro_Approvals {
 				'approver'  => '',
 			)
 		);
+		
+		//delete the approval count cache
+		delete_transient( 'pmpro_approvals_approval_count' );
 	}
 
 	/**
@@ -1031,7 +1043,7 @@ class PMPro_Approvals {
 		//check if level requires approval, if not stop executing this function and don't send email.
 		if ( ! self::requiresApproval( $level_id ) ) {
 			return;
-		}
+		}		
 
 		//send email to admin that a new member requires approval.
 		$email = new PMPro_Approvals_Email();
@@ -1405,8 +1417,8 @@ style="display: none;"<?php } ?>>
 			$approval_status = 'pending';
 		}
 
-		// Store results in a static var in case we call this again.
-		static $number_of_users;
+		// Check for a cached value in the transient.
+		$number_of_users = get_transient( 'pmpro_approvals_approval_count' );	
 		
 		// Store results in an array to support different statuses.
 		if ( ! isset( $number_of_users ) ) {
@@ -1427,6 +1439,8 @@ style="display: none;"<?php } ?>>
 
 			$results         = $wpdb->get_results( $sqlQuery );
 			$number_of_users[$approval_status] = (int) $results[0]->count;
+			
+			set_transient( 'pmpro_approvals_approval_count', $number_of_users, 3600*24 );
 		}
 
 		return $number_of_users[$approval_status];
