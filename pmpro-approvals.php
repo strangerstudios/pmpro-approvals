@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.3.3
+Version: 1.3.4
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -477,7 +477,7 @@ class PMPro_Approvals {
 			// Ignore if on the edit user screen. This will allow admins/users to update custom fields.
 			$current_screen = get_current_screen();
 			
-			if ( $current_screen->base == 'user-edit' || $current_screen->base == 'profile' ) {
+			if ( !empty( $current_screen ) && ( $current_screen->base == 'user-edit' || $current_screen->base == 'profile' ) ) {
 				return $haslevel;
 			}
 
@@ -879,6 +879,9 @@ class PMPro_Approvals {
 				'approver'  => $current_user->user_login,
 			)
 		);
+		
+		//delete the approval count cache
+		delete_transient( 'pmpro_approvals_approval_count' );
 
 		//update statuses/etc
 		$msg  = 1;
@@ -928,6 +931,9 @@ class PMPro_Approvals {
 			)
 		);
 
+		//delete the approval count cache
+		delete_transient( 'pmpro_approvals_approval_count' );
+
 		//update statuses/etc
 		$msg  = 1;
 		$msgt = __( 'Member was denied.', 'pmpro-approvals' );
@@ -975,6 +981,9 @@ class PMPro_Approvals {
 				'approver'  => '',
 			)
 		);
+		
+		//delete the approval count cache
+		delete_transient( 'pmpro_approvals_approval_count' );
 
 		$msg  = 1;
 		$msgt = __( 'Approval reset.', 'pmpro-approvals' );
@@ -1021,6 +1030,9 @@ class PMPro_Approvals {
 				'approver'  => '',
 			)
 		);
+		
+		//delete the approval count cache
+		delete_transient( 'pmpro_approvals_approval_count' );
 	}
 
 	/**
@@ -1031,7 +1043,7 @@ class PMPro_Approvals {
 		//check if level requires approval, if not stop executing this function and don't send email.
 		if ( ! self::requiresApproval( $level_id ) ) {
 			return;
-		}
+		}		
 
 		//send email to admin that a new member requires approval.
 		$email = new PMPro_Approvals_Email();
@@ -1400,18 +1412,38 @@ style="display: none;"<?php } ?>>
 
 		global $wpdb, $menu, $submenu;
 
+		// Default to pending status.
 		if ( empty( $approval_status ) ) {
 			$approval_status = 'pending';
 		}
 
-		//get all users with 'pending' status.
-		$sqlQuery = $wpdb->prepare( "SELECT COUNT(u.ID) as count FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id LEFT JOIN $wpdb->usermeta um ON um.user_id = u.ID AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) WHERE mu.status = 'active' AND mu.membership_id > 0 AND um.meta_value LIKE '%s'", '%' . $approval_status . '%' );
+		// Check for a cached value in the transient.
+		$number_of_users = get_transient( 'pmpro_approvals_approval_count' );	
+		
+		// Store results in an array to support different statuses.
+		if ( ! isset( $number_of_users ) ) {
+			$number_of_users = array();
+		}
+		
+		// If we don't have this value yet, get it.
+		if ( ! isset( $number_of_users[$approval_status] ) ) {
+			//get all users with 'pending' status.	
+			$sqlQuery = $wpdb->prepare( "SELECT COUNT(mu.user_id) as count
+										 FROM $wpdb->pmpro_memberships_users mu
+											LEFT JOIN $wpdb->usermeta um
+												ON um.user_id = mu.user_id
+													AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) 
+										 WHERE mu.status = 'active'
+											AND mu.membership_id > 0
+											AND um.meta_value LIKE '%s'", '%' . $approval_status . '%' );
 
-		$results         = $wpdb->get_results( $sqlQuery );
-		$number_of_users = (int) $results[0]->count;
+			$results         = $wpdb->get_results( $sqlQuery );
+			$number_of_users[$approval_status] = (int) $results[0]->count;
+			
+			set_transient( 'pmpro_approvals_approval_count', $number_of_users, 3600*24 );
+		}
 
-		return $number_of_users;
-
+		return $number_of_users[$approval_status];
 	}
 
 	/**
