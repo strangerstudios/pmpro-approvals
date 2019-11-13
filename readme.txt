@@ -1,9 +1,9 @@
 === Paid Memberships Pro - Approvals ===
 Contributors: strangerstudios, andrewza
 Tags: paid memberships pro, pmpro, approval, approvals, workflow
-Requires at least: 4.0
-Tested up to: 5.2.4
-Stable tag: 1.3.3
+Requires at least: 4.7
+Tested up to: 5.3
+Stable tag: 1.3.4
 
 Grants administrators the ability to approve/deny memberships after signup.
 
@@ -36,6 +36,9 @@ Members pending approval will not have access to view members-only content until
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
+
+= 1.3.4 - 2019-11-13 =
+* ENHANCEMENT: Improved query for Approval Count inside dashboard for speed improvements to reduce load times while in WordPress dashboard.
 
 = 1.3.3 - 2019-10-31 =
 * BUG FIX: Fixed issues with PMPro Member Directory integration if your DB prefix was not wp_. (Thanks, Ciprian Tepes)
