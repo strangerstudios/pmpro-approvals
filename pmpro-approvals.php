@@ -96,7 +96,7 @@ class PMPro_Approvals {
 		//Add code for filtering checkouts, confirmation, and content filters
 		add_filter( 'pmpro_non_member_text_filter', array( 'PMPro_Approvals', 'pmpro_non_member_text_filter' ) );
 		add_action( 'pmpro_account_bullets_top', array( 'PMPro_Approvals', 'pmpro_account_bullets_top' ) );
-		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_confirmation_message' ) );
+		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_confirmation_message' ), 10, 2 );
 		add_action( 'pmpro_before_change_membership_level', array( 'PMPro_Approvals', 'pmpro_before_change_membership_level' ), 10, 2 );
 		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 2 );
 
@@ -1131,7 +1131,7 @@ class PMPro_Approvals {
 	/**
 	 * Custom confirmation message for levels that requires approval.
 	 */
-	public static function pmpro_confirmation_message( $confirmation_message ) {
+	public static function pmpro_confirmation_message( $confirmation_message, $pmpro_invoice ) {
 
 		global $current_user;
 
@@ -1152,6 +1152,12 @@ class PMPro_Approvals {
 		}
 
 		$confirmation_message = '<p>' . sprintf( __( 'Thank you for your membership to %1$s. Your %2$s membership status is: <b>%3$s</b>.', 'pmpro-approvals' ), get_bloginfo( 'name' ), $current_user->membership_level->name, $approval_status ) . '</p>';
+
+		// Check instructions
+		if ( $pmpro_invoice->gateway == "check" && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
+			$confirmation_message .= '<div class="pmpro_payment_instructions">' . wpautop( wp_unslash( pmpro_getOption("instructions") ) ) . '</div>';
+		}
+
 
 		$confirmation_message .= '<p>' . sprintf( __( 'Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s.', 'pmpro-approvals' ), $current_user->user_email ) . '</p>';
 
