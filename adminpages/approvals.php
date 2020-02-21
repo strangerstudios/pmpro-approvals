@@ -205,7 +205,7 @@ class="alternate"<?php } ?>>
 							</td>
 							<td><?php echo trim( $theuser->first_name . ' ' . $theuser->last_name ); ?></td>							
 							<td><a href="mailto:<?php echo $theuser->user_email; ?>"><?php echo $theuser->user_email; ?></a></td>
-							<?php do_action( 'pmpro_approvals_list_extra_cols_body', $theusers ); ?>						
+							<?php do_action( 'pmpro_approvals_list_extra_cols_body', $theuser ); ?>						
 							<td>
 								<?php
 								echo $auser->membership;
