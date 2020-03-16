@@ -12,7 +12,13 @@ Domain Path: /languages
 
 define( 'PMPRO_APP_DIR', dirname( __FILE__ ) );
 
-require PMPRO_APP_DIR . '/classes/class.approvalemails.php';
+/**
+ * Only load approvals after plugins have been loaded. Otherwise it may be loaded too early (e.g., before PMPro).
+ */
+function pmpro_approvals_plugins_loaded() {
+	require PMPRO_APP_DIR . '/classes/class.approvalemails.php';
+}
+add_action( 'plugins_loaded', 'pmpro_approvals_plugins_loaded' );
 
 class PMPro_Approvals {
 	/*
