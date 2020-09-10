@@ -104,7 +104,7 @@ class PMPro_Approvals {
 		add_action( 'pmpro_account_bullets_top', array( 'PMPro_Approvals', 'pmpro_account_bullets_top' ) );
 		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_confirmation_message' ), 10, 2 );
 		add_action( 'pmpro_before_change_membership_level', array( 'PMPro_Approvals', 'pmpro_before_change_membership_level' ), 10, 2 );
-		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 2 );
+		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 3 );
 
 		//Integrate with Member Directory.
 		add_filter( 'pmpro_member_directory_sql_parts', array( 'PMPro_Approvals', 'pmpro_member_directory_sql_parts'), 10, 9 );
@@ -1003,6 +1003,56 @@ class PMPro_Approvals {
 	}
 
 	/**
+	 * Removes all member approval information for a level
+	 */
+	public static function removeMember( $user_id, $level_id ) {
+		global $current_user, $msg, $msgt;
+
+		// make sure they have permission
+		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_approvals' ) ) {
+			$msg  = -1;
+			$msgt = __( 'You do not have permission to perform approvals.', 'pmpro-approvals' );
+
+			return false;
+		}
+
+		// get user's current level if none given
+		if ( empty( $level_id ) ) {
+			$user_level = pmpro_getMembershipLevelForUser( $user_id );
+			$level_id   = $user_level->id;
+		}
+
+		/**
+		 * Action to run before membership level
+		 * approval information is removed.
+		 *
+		 * @param int $user_id  ID of the user.
+		 * @param int $level_id ID of the membership leve.
+		 */
+		do_action( 'pmpro_approvals_before_remove_member', $user_id, $level_id );
+
+		delete_user_meta( $user_id, 'pmpro_approval_' . $level_id );
+		// delete the approval count cache
+		delete_transient( 'pmpro_approvals_approval_count' );
+
+		$msg  = 1;
+		$msgt = __( 'Approval reset.', 'pmpro-approvals' );
+
+		self::updateUserLog( $user_id, $level_id );
+
+		/**
+		 * Action to run after membership level
+		 * approval information is removed.
+		 *
+		 * @param int $user_id  ID of the user.
+		 * @param int $level_id ID of the membership leve.
+		 */
+		do_action( 'pmpro_approvals_after_remove_member', $user_id, $level_id );
+
+		return true;
+	}
+
+	/**
 	 * Set approval status to pending for new members
 	 */
 	public static function pmpro_before_change_membership_level( $level_id, $user_id ) {
@@ -1044,12 +1094,17 @@ class PMPro_Approvals {
 	/**
 	 * Send an email to an admin when a user has signed up for a membership level that requires approval.
 	 */
-	public static function pmpro_after_change_membership_level( $level_id, $user_id ) {
+	public static function pmpro_after_change_membership_level( $level_id, $user_id, $cancel_level ) {
 
 		//check if level requires approval, if not stop executing this function and don't send email.
-		if ( ! self::requiresApproval( $level_id ) ) {
+		if ( ! self::requiresApproval( $level_id ) && ! self::requiresApproval( $cancel_level ) ) {
 			return;
-		}		
+		}
+
+		if ( $cancel_level ) {
+			self::removeMember( $user_id, $cancel_level );
+			return;
+		}
 
 		//send email to admin that a new member requires approval.
 		$email = new PMPro_Approvals_Email();
@@ -1366,13 +1421,32 @@ style="display: none;"<?php } ?>>
 		//get user's approval status
 		$user_meta_stuff = get_user_meta( $user_id, 'pmpro_approval_' . $level_id, true );
 
+		$narration = "";
+		$timestamp = "";
+
+		if ( empty( $user_meta_stuff ) || ! is_array( $user_meta_stuff ) ) {
+			$narration = __( 'removed after expiration/cancellation', 'pmpro-approvals' );
+			$timestamp = current_time( 'timestamp' );
+		} else {
+			$narration = sprintf(
+				__( '%s by %s', 'pmpro-approvals' ),
+				$user_meta_stuff['status'],
+				$user_meta_stuff['approver']
+			);
+			$timestamp = $user_meta_stuff['timestamp'];
+		}
+
 		$data = get_user_meta( $user_id, 'pmpro_approval_log', true );
 
 		if ( ! array( $data ) || empty( $data ) ) {
 			$data = array();
 		}
 
-		$data[] = $user_meta_stuff['status'] . ' by ' . $user_meta_stuff['approver'] . ' on ' . date_i18n( get_option( 'date_format' ), $user_meta_stuff['timestamp'] );
+		$data[] = sprintf(
+			__( '%s on %s', 'pmpro-approvals' ),
+			$narration,
+			date_i18n( get_option( 'date_format' ), $timestamp )
+		);
 
 		update_user_meta( $user_id, 'pmpro_approval_log', $data );
 
