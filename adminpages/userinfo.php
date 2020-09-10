@@ -93,7 +93,7 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 	</table>
 	
 	<?php
-		if ( function_exists( 'pmprorh_getProfileFields' ) ) {
+		if ( function_exists( 'pmprorh_getProfileFields' ) && function_exists( 'pmprorh_checkFieldForLevel' ) ) {
 			global $pmprorh_registration_fields, $pmprorh_checkout_boxes;
 
 			//show the fields
@@ -108,7 +108,7 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 					//cycle through groups
 					foreach ( $fields as $field ) {
 						// show field as long as it's not false
-						if ( false != $field->profile ) {
+						if ( false != $field->profile && pmprorh_checkFieldForLevel( $field, 'profile', $user->ID ) ) {
 						?>
 						<tr>
 							<th><label><?php echo esc_attr( $field->label ); ?></label></th>
