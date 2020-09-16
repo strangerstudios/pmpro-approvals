@@ -817,37 +817,92 @@ class PMPro_Approvals {
 		$end   = $pn * $limit;
 		$start = $end - $limit;
 
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
+		$sql_parts = array();
+		$sql_parts['SELECT'] = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u ";
+		$sql_parts['JOIN'] = "LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
+		$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND mu.membership_id > 0 ";
+		$sql_parts['GROUP'] = "";
+		$sql_parts['LIMIT'] = "LIMIT $start, $limit";
 
 		if ( ! empty( $status ) && $status != 'all' ) {
-			$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON um.user_id = u.ID AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) ";
+			$sql_parts['JOIN'] .= "LEFT JOIN $wpdb->usermeta um ON um.user_id = u.ID AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) ";
 		}
 
-		$sqlQuery .= "WHERE mu.status = 'active' AND mu.membership_id > 0 ";
-
 		if ( ! empty( $s ) ) {
-			$sqlQuery .= "AND (u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%') ";
+			$sql_parts['WHERE'] .= "AND (u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%') ";
 		}
 
 		if ( $l ) {
-			$sqlQuery .= " AND mu.membership_id = '" . esc_sql( $l ) . "' ";
+			$sql_parts['WHERE'] .= "AND mu.membership_id = '" . esc_sql( $l ) . "' ";
 		} else {
-			$sqlQuery .= ' AND mu.membership_id IN(' . implode( ',', self::getApprovalLevels() ) . ') ';
+			$sql_parts['WHERE'] .= "AND mu.membership_id IN(" . implode( ',', self::getApprovalLevels() ) . ") ";
 		}
 
 		if ( ! empty( $status ) && $status != 'all' ) {
-			$sqlQuery .= "AND um.meta_value LIKE '%\"" . esc_sql( $status ) . "\"%' ";
+			$sql_parts['WHERE'] .= "AND um.meta_value LIKE '%\"" . esc_sql( $status ) . "\"%' ";
 		}
-
-		//$sqlQuery .= "GROUP BY u.ID ";
 
 		if ( $sortby == 'pmpro_approval' ) {
-			$sqlQuery .= "ORDER BY (um2.meta_value IS NULL) $sortorder ";
+			$sql_parts['ORDER'] = "ORDER BY (um2.meta_value IS NULL) $sortorder ";
 		} else {
-			$sqlQuery .= "ORDER BY $sortby $sortorder ";
+			$sql_parts['ORDER'] = "ORDER BY $sortby $sortorder ";
 		}
 
-		$sqlQuery .= "LIMIT $start, $limit";
+		/**
+		 * Filters SQL parts for the query to fetch all users pending approval.
+		 *
+		 * @since
+		 *
+		 * @param array  $sql_parts The current SQL query parts
+		 * @param int    $l         Level ID
+		 * @param string $s         Search string
+		 * @param string $status    Approval status
+		 * @param string $sortby    Sort by
+		 * @param string $sortby    Sort order
+		 * @param int    $pn        Results page number
+		 * @param int    $limit     Number of results per page limit
+		 *
+		 */
+		$sql_parts = apply_filters(
+			'pmpro_approvals_pending_approvals_sql_parts',
+			$sql_parts,
+			$l,
+			$s,
+			$status,
+			$sortby,
+			$sortorder ,
+			$pn,
+			$limit
+		);
+
+		$sqlQuery = $sql_parts['SELECT'] . $sql_parts['JOIN'] . $sql_parts['WHERE'] . $sql_parts['GROUP'] . $sql_parts['ORDER'] . $sql_parts['LIMIT'];
+
+		/**
+		 * Filters final SQL string for the query to fetch all users pending approval.
+		 *
+		 * @since
+		 *
+		 * @param array  $sqlQuery  The current SQL query
+		 * @param int    $l         Level ID
+		 * @param string $s         Search string
+		 * @param string $status    Approval status
+		 * @param string $sortby    Sort by
+		 * @param string $sortby    Sort order
+		 * @param int    $pn        Results page number
+		 * @param int    $limit     Number of results per page limit
+		 *
+		 */
+		$sqlQuery = apply_filters(
+			'pmpro_approvals_pending_approvals_sql',
+			$sqlQuery,
+			$l,
+			$s,
+			$status,
+			$sortby,
+			$sortorder ,
+			$pn,
+			$limit
+		);
 
 		$theusers = $wpdb->get_results( $sqlQuery );
 
