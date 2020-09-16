@@ -1492,17 +1492,46 @@ style="display: none;"<?php } ?>>
 			$number_of_users = array();
 		}
 		
-		// If we don't have this value yet, get it.
+		// If we don't have this value yet, get all users with 'pending' status.
 		if ( ! isset( $number_of_users[$approval_status] ) ) {
-			//get all users with 'pending' status.	
-			$sqlQuery = $wpdb->prepare( "SELECT COUNT(mu.user_id) as count
-										 FROM $wpdb->pmpro_memberships_users mu
-											LEFT JOIN $wpdb->usermeta um
-												ON um.user_id = mu.user_id
-													AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) 
-										 WHERE mu.status = 'active'
-											AND mu.membership_id > 0
-											AND um.meta_value LIKE '%s'", '%' . $approval_status . '%' );
+			$sql_parts = array();
+			$sql_parts['SELECT'] = "SELECT COUNT(mu.user_id) as count FROM $wpdb->pmpro_memberships_users mu ";
+			$sql_parts['JOIN'] = "LEFT JOIN $wpdb->usermeta um ON um.user_id = mu.user_id AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) ";
+			$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND mu.membership_id > 0 AND um.meta_value LIKE '%" . esc_sql( $approval_status ) . "%' ";
+			$sql_parts['GROUP'] = "";
+			$sql_parts['ORDER'] = "";
+			$sql_parts['LIMIT'] = "";
+
+			/**
+			 * Filters SQL parts for the query to get pending approvals count.
+			 *
+			 * @since
+			 *
+			 * @param array  $sql_parts       The current SQL query parts
+			 * @param string $approval_status Approval status
+			 */
+			$sql_parts = apply_filters(
+				'pmpro_approvals_approval_count_sql_parts',
+				$sql_parts,
+				$approval_status
+			);
+
+			$sqlQuery = $sql_parts['SELECT'] . $sql_parts['JOIN'] . $sql_parts['WHERE'] . $sql_parts['GROUP'] . $sql_parts['ORDER'] . $sql_parts['LIMIT'];
+
+			/**
+			 * Filters final SQL string for the query to get pending approvals count.
+			 *
+			 * @since
+			 *
+			 * @param array  $sql_parts       The current SQL query parts
+			 * @param string $approval_status Approval status
+			*
+			*/
+			$sqlQuery = apply_filters(
+				'pmpro_approvals_approval_count_sql',
+				$sqlQuery,
+				$approval_status
+			);
 
 			$results         = $wpdb->get_results( $sqlQuery );
 			$number_of_users[$approval_status] = (int) $results[0]->count;
