@@ -17,6 +17,7 @@ define( 'PMPRO_APP_DIR', dirname( __FILE__ ) );
  */
 function pmpro_approvals_plugins_loaded() {
 	require PMPRO_APP_DIR . '/classes/class.approvalemails.php';
+	require PMPRO_APP_DIR . '/classes/class.paybycheck.php';
 }
 add_action( 'plugins_loaded', 'pmpro_approvals_plugins_loaded' );
 
