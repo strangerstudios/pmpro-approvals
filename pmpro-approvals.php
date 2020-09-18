@@ -244,6 +244,7 @@ class PMPro_Approvals {
 				$r = array(
 					'requires_approval' => 0,
 					'restrict_checkout' => 0,
+					'approve_check_automatically' => 0,
 				);
 			}
 		} else {
@@ -297,7 +298,13 @@ class PMPro_Approvals {
 			$options = array(
 				'requires_approval' => false,
 				'restrict_checkout' => false,
+				'approve_check_automatically' => false
 			);
+		}
+
+		$approve_check_automatically = 0;
+		if ( ! empty ( $options['approve_check_automatically'] ) ) {
+			$approve_check_automatically = $options['approve_check_automatically'];
 		}
 
 		//figure out approval_setting from the actual options
@@ -352,6 +359,33 @@ class PMPro_Approvals {
 					?>
 				</td>
 			</tr>
+			<tr style="display: none;">
+				<th scope="row" valign="top"><label for="approval_approve_check_automatically"><?php _e( 'Approve check payments automatically?', 'pmpro-approvals' ); ?></label></th>
+				<td>
+					<select id="approval_approve_check_automatically" name="approval_approve_check_automatically">
+						<option value="0" <?php selected( $approve_check_automatically, 0 ); ?>><?php _e( 'No', 'pmpro-approvals' ); ?></option>
+						<option value="1" <?php selected( $approve_check_automatically, 1 ); ?>><?php _e( 'Yes', 'pmpro-approvals' ); ?></option>
+					</select>
+					<br />
+					<small>
+						<?php
+							_e(
+								'Pending members will be approved automatically whenever you change the status of their check payment order to success.',
+								'pmpro-approvals'
+							);
+						?>
+					</small>
+					<br />
+					<small>
+					<?php
+							_e(
+								'	Additionally, their check payments will be marked successful when you approve them.',
+								'pmpro-approvals'
+							);
+						?>
+					</small>
+				</td>
+			</tr>
 			<?php } ?>
 		</tbody>
 		</table>
@@ -364,12 +398,22 @@ class PMPro_Approvals {
 					else
 						jQuery('#approval_restrict_level').closest('tr').hide();
 				}
+
+				function pmproap_toggleCheckPaymentApproval() {
+					if (jQuery('#approval_setting').val() > 0) {
+						jQuery('#approval_approve_check_automatically').closest('tr').show();
+						return;
+					}
+					jQuery('#approval_approve_check_automatically').closest('tr').hide();
+				}
 				
 				//bind to approval setting change
 				jQuery('#approval_setting').change(function() { pmproap_toggleWhichLevel(); });
+				jQuery('#approval_setting').change(function() { pmproap_toggleCheckPaymentApproval(); });
 				
 				//run on load
 				pmproap_toggleWhichLevel();
+				pmproap_toggleCheckPaymentApproval();
 			});
 		</script>
 		<?php } ?>
@@ -420,9 +464,16 @@ class PMPro_Approvals {
 			$options[ $level_id ] = array();
 		}
 
+		if ( ! empty( $_REQUEST['approval_approve_check_automatically'] ) ) {
+			$approve_check_automatically = intval( $_REQUEST['approval_approve_check_automatically'] );
+		} else {
+			$approve_check_automatically = 0;
+		}
+
 		//update options
 		$options[ $level_id ]['requires_approval'] = $requires_approval;
 		$options[ $level_id ]['restrict_checkout'] = $restrict_checkout;
+		$options[ $level_id ]['approve_check_automatically'] = $approve_check_automatically;
 
 		//save it
 		self::saveOptions( $options );

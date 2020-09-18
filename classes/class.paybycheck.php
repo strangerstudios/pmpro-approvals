@@ -88,6 +88,15 @@ class PMPro_Approvals_Check {
 			return;
 		}
 
+		$membership_level_options = PMPro_Approvals::getOptions( $level_id );
+		if ( empty ( $membership_level_options['approve_check_automatically'] ) ) {
+			return;
+		}
+		$approve_check_automatically = $membership_level_options['approve_check_automatically'];
+		if ( $approve_check_automatically !== 1) {
+			return;
+		}
+
 		// mark the order as successful and save
 		$lastorder->status = self::SUCCESS_STATUS;
 		$lastorder->saveOrder();
@@ -111,6 +120,15 @@ class PMPro_Approvals_Check {
 		$membership_level = $previous_order->getMembershipLevel();
 		// bail if the user has no pending approval for the membership level
 		if ( ! PMPro_Approvals::isPending( $order->user_id, $membership_level->id ) ) {
+			return $order;
+		}
+
+		$membership_level_options = PMPro_Approvals::getOptions( $membership_level->id );
+		if ( empty ( $membership_level_options['approve_check_automatically'] ) ) {
+			return $order;
+		}
+		$approve_check_automatically = $membership_level_options['approve_check_automatically'];
+		if ( $approve_check_automatically !== 1 ) {
 			return $order;
 		}
 
