@@ -855,20 +855,24 @@ class PMPro_Approvals {
 	}
 
 	/**
-	 * Approve a member
+	 * Approve a member.
+	 *
+	 * @param int  $user_id  The user ID.
+	 * @param int  $level_id The Level ID.
+	 * @param bool $force    Whether to force the appproval.
 	 */
-	public static function approveMember( $user_id, $level_id = null ) {
+	public static function approveMember( $user_id, $level_id = null, $force = false ) {
 		global $current_user, $msg, $msgt;
 
 		//make sure they have permission
-		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_approvals' ) ) {
+		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_approvals' ) && ! $force ) {
 			$msg  = -1;
 			$msgt = __( 'You do not have permission to perform approvals.', 'pmpro-approvals' );
 
 			return false;
 		}
 
-		//get user's current level if none given
+		// get user's current level if none given.
 		if ( empty( $level_id ) ) {
 			$user_level = pmpro_getMembershipLevelForUser( $user_id );
 			$level_id   = $user_level->id;
@@ -876,7 +880,7 @@ class PMPro_Approvals {
 
 		do_action( 'pmpro_approvals_before_approve_member', $user_id, $level_id );
 
-		//update user meta to save timestamp and user who approved
+		// update user meta to save timestamp and user who approved.
 		update_user_meta(
 			$user_id, 'pmpro_approval_' . $level_id, array(
 				'status'    => 'approved',
@@ -885,19 +889,35 @@ class PMPro_Approvals {
 				'approver'  => $current_user->user_login,
 			)
 		);
-		
-		//delete the approval count cache
+
+		// delete the approval count cache.
 		delete_transient( 'pmpro_approvals_approval_count' );
 
-		//update statuses/etc
+		// update statuses/etc.
 		$msg  = 1;
 		$msgt = __( 'Member was approved.', 'pmpro-approvals' );
 
-		//send email to user and admin.
-		$approval_email = new PMPro_Approvals_Email();
-		$approval_email->sendMemberApproved( $user_id );
-		$approval_email->sendAdminApproval( $user_id );
+		/**
+		 * Potentially skip emails sent to admin/member.
+		 *
+		 * Skip sending if value is false.
+		 *
+		 * @since 1.3.5
+		 *
+		 * @param boolean true to skip email, false to to not (default false)
+		 * @param int     $user_id  The user ID to approve.
+		 * @param int     $level_id The level ID to approve.
+		 * @param boolean $force Whether the approval was forced.
+		 */
+		$send_emails = apply_filters( 'pmpro_approvals_after_approve_member_send_emails', true, $user_id, $level_id, $force );
 
+		if ( $send_emails ) {
+			// send email to user and admin.
+			$approval_email = new PMPro_Approvals_Email();
+			$approval_email->sendMemberApproved( $user_id );
+			$approval_email->sendAdminApproval( $user_id );
+		}
+		
 		self::updateUserLog( $user_id, $level_id );
 
 		do_action( 'pmpro_approvals_after_approve_member', $user_id, $level_id );
