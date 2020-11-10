@@ -106,9 +106,16 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 					<table class="form-table">
 					<?php
 					//cycle through groups
+
 					foreach ( $fields as $field ) {
 						// show field as long as it's not false
 						if ( false != $field->profile ) {
+
+						// Check to see if level is set for the field.
+						if ( isset( $field->levels ) && ! in_array( $level_details->ID, $field->levels ) ) {
+							break;
+						}
+							
 						?>
 						<tr>
 							<th><label><?php echo esc_attr( $field->label ); ?></label></th>
