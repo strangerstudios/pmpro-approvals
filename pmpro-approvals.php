@@ -1592,4 +1592,6 @@ style="display: none;"<?php } ?>>
 
 } // end class
 
-PMPro_Approvals::get_instance();
+if ( defined( 'PMPRO_VERSION' ) ) {
+	PMPro_Approvals::get_instance();
+}
