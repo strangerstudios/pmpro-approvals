@@ -1439,7 +1439,7 @@ style="display: none;"<?php } ?>>
 	public static function updateUserLog( $user_id, $level_id ) {
 
 		//get user's approval status
-		$user_meta_stuff = get_user_meta( $user_id, 'pmpro_approval_' . $level_id, true );
+		$users_approval_information = get_user_meta( $user_id, 'pmpro_approval_' . $level_id, true );
 
 		$data = get_user_meta( $user_id, 'pmpro_approval_log', true );
 
@@ -1447,7 +1447,7 @@ style="display: none;"<?php } ?>>
 			$data = array();
 		}
 
-		$data[] = $user_meta_stuff['status'] . ' by ' . $user_meta_stuff['approver'] . ' on ' . date_i18n( get_option( 'date_format' ), $user_meta_stuff['timestamp'] );
+		$data[] = $users_approval_information['status'] . ' by ' . $users_approval_information['approver'] . ' on ' . date_i18n( get_option( 'date_format' ), $users_approval_information['timestamp'] );
 
 		update_user_meta( $user_id, 'pmpro_approval_log', $data );
 
