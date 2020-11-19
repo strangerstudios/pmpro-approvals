@@ -1676,6 +1676,4 @@ style="display: none;"<?php } ?>>
 
 } // end class
 
-if ( defined( 'PMPRO_VERSION' ) ) {
-	PMPro_Approvals::get_instance();
-}
+PMPro_Approvals::get_instance();
