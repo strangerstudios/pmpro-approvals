@@ -36,15 +36,15 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 	
 	<form id="posts-filter" method="get" action="">	
 	<h2>
-		<?php echo $user->ID; ?> - <?php echo esc_attr( $user->display_name ); ?> (<?php echo esc_attr( $user->user_login ); ?>)
-		<a href="<?php echo admin_url( 'user-edit.php?user_id=' . $user->ID ); ?>" class="button button-primary">Edit Profile</a>
+		<?php echo intval( $user->ID ); ?> - <?php echo esc_html( $user->display_name ); ?> (<?php echo esc_html( $user->user_login ); ?>)
+		<a href="<?php echo admin_url( 'user-edit.php?user_id=' . intval( $user->ID ) ); ?>" class="button button-primary"><?php esc_html_e( 'Edit Profile', 'pmpro-approvals' ); ?></a>
 	</h2>	
 	
-	<h3><?php _e( 'Account Information', 'pmpro-approvals' ); ?></h3>
+	<h3><?php esc_html_e( 'Account Information', 'pmpro-approvals' ); ?></h3>
 	<table class="form-table">
 		<tr>
-			<th><label><?php _e( 'User ID', 'pmpro-approvals' ); ?></label></th>
-			<td><?php echo $user->ID; ?></td>
+			<th><label><?php esc_html_e( 'User ID', 'pmpro-approvals' ); ?></label></th>
+			<td><?php echo intval( $user->ID ); ?></td>
 		</tr>		
 		<tr>
 			<th><label><?php _e( 'Username', 'pmpro-approvals' ); ?></label></th>
@@ -55,7 +55,7 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 			<td><?php echo sanitize_email( $user->user_email ); ?></td>
 		</tr>
 		<tr>
-			<th><label><?php _e( 'Membership Level', 'pmpro-approvals' ); ?></label></th>
+			<th><label><?php esc_html_e( 'Membership Level', 'pmpro-approvals' ); ?></label></th>
 			<td>
 			<?php
 			//Changed this to show Membership Level Name now, so approvers don't need to go back and forth to see what level the user is applying for.
@@ -101,7 +101,9 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 				foreach ( $pmprorh_registration_fields as $where => $fields ) {
 					$box = pmprorh_getCheckoutBoxByName( $where );
 					?>
-					<h3><?php echo esc_html( $box->label ); ?></h3>
+					<?php if ( isset( $box->label ) ) { ?>
+						<h3><?php echo esc_html( $box->label ); ?></h3>
+					<?php } ?>
 
 					<table class="form-table">
 					<?php
