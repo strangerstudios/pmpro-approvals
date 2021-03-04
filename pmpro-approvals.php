@@ -521,6 +521,12 @@ class PMPro_Approvals {
 	 * Fires on pmpro_has_membership_level filter
 	 */
 	public static function pmpro_has_membership_level( $haslevel, $user_id, $levels ) {
+		global $pmpro_pages;
+
+		// Let members access PMPro pages, PMPro can handle the cases here.
+		if ( is_page( $pmpro_pages ) ) {
+			return $haslevel;
+		}
 
 		//if already false, skip
 		if ( ! $haslevel ) {
@@ -1494,11 +1500,6 @@ style="display: none;"<?php } ?>>
 	 * @since 1.4
 	 */
 	public static function clearApprovalData( $user_id, $level_id = NULL, $force = NULL, $status = 'pending' ) {
-
-		// Make sure the current user can call this function, just in case.
-		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_approvals' ) ) {
-			die( 'You cannot do this' );
-		}
 
 		// try to get the current user level.
 		if ( empty( $level_id ) ) {
