@@ -142,7 +142,12 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 									// remove trailing comma from string.
 									echo '<td>' . esc_html( rtrim( $rh_field_string, ', ' ) ) . '</td>';
 								} else {
-									echo '<td>' . esc_html( $register_helper_fields ) . '</td>';
+									// If Register Helper field is a valid URL, then let's make it clickable.
+									if ( wp_http_validate_url( $register_helper_fields ) ) {
+										echo '<td><a href="' . esc_url_raw( $register_helper_fields ) . '" target="_blank">' . esc_url( $register_helper_fields ) . '</a></td>';
+									} else {
+										echo '<td>' . esc_html( $register_helper_fields ) . '</td>';
+									}
 								}
 							
  							} ?>
