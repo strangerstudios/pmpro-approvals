@@ -110,6 +110,10 @@ class PMPro_Approvals {
 		//Integrate with Member Directory.
 		add_filter( 'pmpro_member_directory_sql_parts', array( 'PMPro_Approvals', 'pmpro_member_directory_sql_parts'), 10, 9 );
 		add_filter( 'gettext', array( 'PMPro_Approvals', 'change_your_level_text' ), 10, 3 );
+
+		//Integrate with Pay By Check Add On
+		add_action( 'pmpro_approvals_after_approve_member', array( 'PMPro_Approvals', 'pmpro_pay_by_check_approve' ), 10, 2 );
+
 		//plugin row meta
 		add_filter( 'plugin_row_meta', array( 'PMPro_Approvals', 'plugin_row_meta' ), 10, 2 );
 	}
@@ -1721,6 +1725,36 @@ style="display: none;"<?php } ?>>
 		$sql_parts['WHERE'] .= "AND ( umm.meta_value LIKE '%approved%' OR umm.meta_value IS NULL ) ";
 
 		return $sql_parts;
+	}
+
+		/**
+	 * Helper function to change the order status to 'success' for Pay By Check Add On when user is approved.
+	 * @since 1.4
+	 */
+	public static function pmpro_pay_by_check_approve( $user_id, $level_id, $order_id = NULL ) {
+
+		//If Pay By Check Add On not set, just bail.
+		if ( ! defined( 'PMPROPBC_VER' ) ) {
+			return;
+		}
+
+		// User's have to physically set this as a filter for now.
+		if ( ! apply_filters( 'pmpro_approvals_pbc_success_on_approval', false ) ) {
+			return;
+		}
+
+		//Check to see if the user's level that was approved had pay by check.
+		$requires_check = pmpropbc_getOptions( $level_id );
+
+		if ( $requires_check ) {
+			$order = new MemberOrder();
+			$order->getLastMemberOrder( $user_id, 'pending', $level_id );
+
+			if ( isset( $order->gateway ) && $order->gateway == 'check' ) {
+				$order->status = 'success';
+				$order->saveOrder();
+			}
+		}
 	}
 
 
