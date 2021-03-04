@@ -283,6 +283,22 @@ class PMPro_Approvals {
 		return $requires_approval;
 	}
 
+    /**
+     * Check if level has a restriction level at checkout
+     */
+    public static function restrictCheckout( $level_id = null ) {
+        //no level?
+        if ( empty( $level_id ) ) {
+            return false;
+        }
+        
+        $options = self::getOptions( $level_id );
+
+        $restrict_checkout = apply_filters( 'pmpro_approvals_level_restrict_checkout', $options['restrict_checkout'], $level_id);
+
+        return $restrict_checkout;
+    }
+
 	/**
 	* Load check box to make level require membership.
 	* Fires on pmpro_membership_level_after_other_settings
@@ -529,14 +545,14 @@ class PMPro_Approvals {
 		}
 
 		//does this level require approval of another level?
-		$options = self::getOptions( $pmpro_level->id );
-		if ( $options['restrict_checkout'] ) {
-			$other_level = pmpro_getLevel( $options['restrict_checkout'] );
+		$restrict_checkout = self::restrictCheckout( $pmpro_level->id );
+		if ( $restrict_checkout ) {
+			$other_level = pmpro_getLevel( $restrict_checkout );
 
 			//check that they are approved and not denied for that other level
-			if ( self::isDenied( null, $options['restrict_checkout'] ) ) {
+			if ( self::isDenied( null, $restrict_checkout ) ) {
 				pmpro_setMessage( sprintf( __( 'Since your application to the %s level has been denied, you may not check out for this level.', 'pmpro-approvals' ), $other_level->name ), 'pmpro_error' );
-			} elseif ( self::isPending( null, $options['restrict_checkout'] ) ) {
+			} elseif ( self::isPending( null, $restrict_checkout ) ) {
 				//note we use pmpro_getMembershipLevelForUser instead of pmpro_hasMembershipLevel because the latter is filtered
 				$user_level = pmpro_getMembershipLevelForUser( $current_user->ID );
 				if ( ! empty( $user_level ) && $user_level->id == $other_level->id ) {
