@@ -94,6 +94,7 @@ class PMPro_Approvals {
 		//filter membership and content access
 		add_filter( 'pmpro_has_membership_level', array( 'PMPro_Approvals', 'pmpro_has_membership_level' ), 10, 3 );
 		add_filter( 'pmpro_has_membership_access_filter', array( 'PMPro_Approvals', 'pmpro_has_membership_access_filter' ), 10, 4 );
+		add_filter( 'pmpro_member_shortcode_access', array( 'PMPro_Approvals', 'pmpro_member_shortcode_access' ), 10, 4 );
 
 		//load checkbox in membership level edit page for users to select.
 		add_action( 'pmpro_membership_level_after_other_settings', array( 'PMPro_Approvals', 'pmpro_membership_level_after_other_settings' ) );
@@ -478,6 +479,35 @@ class PMPro_Approvals {
 			}
 		}
 
+		return $access;
+	}
+
+	/**
+	 * Deny access for shortcode specific content to pending members.
+	 * @since 1.4
+	 */
+	public static function pmpro_member_shortcode_access( $access, $content, $levels, $delay ) {
+		global $current_user;
+
+		if ( ! is_user_logged_in() ) {
+			return $access;
+		}
+
+		// If no levels are defined but they aren't approved. Let's set this to false.
+		if ( empty( $levels ) && ! self::isApproved( $current_user->ID ) ) {
+			return false;
+		}
+
+		// See if user is approved for any level.
+		if ( is_array( $levels ) && ! empty( $levels ) ) {
+			foreach ( $levels as $level ) {
+				if ( self::isApproved( $current_user->ID, $level ) ) {
+					$access = true;
+					break;
+				}
+			}
+		}
+		// $access = true;
 		return $access;
 	}
 
