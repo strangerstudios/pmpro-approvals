@@ -103,7 +103,7 @@ class PMPro_Approvals {
 		add_filter( 'pmpro_non_member_text_filter', array( 'PMPro_Approvals', 'pmpro_non_member_text_filter' ) );
 		add_action( 'pmpro_account_bullets_top', array( 'PMPro_Approvals', 'pmpro_account_bullets_top' ) );
 		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_confirmation_message' ), 10, 2 );
-		add_action( 'pmpro_before_change_membership_level', array( 'PMPro_Approvals', 'pmpro_before_change_membership_level' ), 10, 2 );
+		add_action( 'pmpro_before_change_membership_level', array( 'PMPro_Approvals', 'pmpro_before_change_membership_level' ), 10, 4 );
 		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 2 );
 
 		//Integrate with Member Directory.
@@ -1007,6 +1007,13 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_before_change_membership_level( $level_id, $user_id ) {
 
+		// First see if the user is cancelling, try to clean up approval data if they are pending.
+		if ( $level_id == 0 || isset( $old_level[0]->ID ) ) {
+			if ( self::isPending( $user_id, $old_level[0]->ID ) ) {
+				self::clearApprovalData( $user_id, $old_level[0]->ID, apply_filters( 'pmpro_approvals_delete_log_on_cancel', false ) );
+			}
+		}
+
 		//check if level requires approval, if not stop executing this function and don't send email.
 		if ( ! self::requiresApproval( $level_id ) ) {
 			return;
@@ -1355,6 +1362,56 @@ style="display: none;"<?php } ?>>
 			pmpro_approval_updateApprovalStatus();
 		</script>
 		<?php
+	}
+
+	/**
+	 * Clear database data if the user changes their level while pending.
+	 * @since 1.4
+	 */
+	public static function clearApprovalData( $user_id, $level_id = NULL, $force = NULL, $status = 'pending' ) {
+
+		// Make sure the current user can call this function, just in case.
+		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_approvals' ) ) {
+			die( 'You cannot do this' );
+		}
+
+		// try to get the current user level.
+		if ( empty( $level_id ) ) {
+			$user_level = pmpro_getMembershipLevelForUser( $user_id );
+			$level_id   = $user_level->id;
+		}
+
+		do_action( 'pmpro_approvals_before_cleaned_approval_meta', $user_id, $level_id );
+		
+		// If force set to true, we can delete all approval data for the user when they cancel their level.
+		if ( $force && $level_id == 0 ) {
+			delete_user_meta( $user_id, 'pmpro_approval_' . $level_id );
+			delete_user_meta( $user_id, 'pmpro_approval_log' );
+		} else {
+			// Get user meta and only remove the approval where status is pending.
+			$approval_status = get_user_meta( $user_id, 'pmpro_approval_' . $level_id );
+			foreach( $approval_status as $key => $data ) {
+				// Remove this from the approvals array.
+				if ( $data['status'] === $status ) {
+					unset( $approval_status[$key] );
+				}
+			}
+			
+			// Let's clean up the user meta table a bit more smartly if they have no data pending/approved etc.
+			if ( is_array( $approval_status ) && empty( $approval_status[0] ) ) {
+				delete_user_meta( $user_id, 'pmpro_approval_' . $level_id );
+			} else {
+				update_user_meta( $user_id, 'pmpro_approval_' . $level_id, $approval_status );
+			}
+
+		}
+
+		delete_transient( 'pmpro_approvals_approval_count' );
+
+		do_action( 'pmpro_approvals_after_cleaned_approval_meta', $user_id, $level_id );
+		// If we made it here, let's assume it worked okay
+		return true;
+
 	}
 
 	/**
