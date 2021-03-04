@@ -34,10 +34,14 @@ if ( empty( $status ) || ! in_array( $status, $statuses ) ) {
 	//Approve, deny or reset member back to pending
 if ( ! empty( $_REQUEST['approve'] ) ) {
 	check_admin_referer( 'pmpro_approvals', 'pmpro_approvals_nonce' );
-	PMPro_Approvals::approveMember( intval( $_REQUEST['approve'] ), $l );
+	if ( ! PMPro_Approvals::isApproved( intval( $_REQUEST['approve'] ) ) ) {
+		PMPro_Approvals::approveMember( intval( $_REQUEST['approve'] ), $l );
+	}
 } elseif ( ! empty( $_REQUEST['deny'] ) ) {
 	check_admin_referer( 'pmpro_approvals', 'pmpro_approvals_nonce' );
-	PMPro_Approvals::denyMember( intval( $_REQUEST['deny'] ), $l );
+	if ( ! PMPro_Approvals::isDenied( intval( $_REQUEST['deny'] ) ) ) {
+		PMPro_Approvals::denyMember( intval( $_REQUEST['deny'] ), $l );
+	}
 } elseif ( ! empty( $_REQUEST['unapprove'] ) ) {
 	check_admin_referer( 'pmpro_approvals', 'pmpro_approvals_nonce' );
 	PMPro_Approvals::resetMember( intval( $_REQUEST['unapprove'] ), $l );
