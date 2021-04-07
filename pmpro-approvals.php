@@ -1136,12 +1136,12 @@ class PMPro_Approvals {
 	/**
 	 * Set approval status to pending for new members
 	 */
-	public static function pmpro_before_change_membership_level( $level_id, $user_id ) {
+	public static function pmpro_before_change_membership_level( $level_id, $user_id, $old_levels, $cancel_level ) {
 
 		// First see if the user is cancelling, try to clean up approval data if they are pending.
-		if ( $level_id == 0 || isset( $old_level[0]->ID ) ) {
-			if ( self::isPending( $user_id, $old_level[0]->ID ) ) {
-				self::clearApprovalData( $user_id, $old_level[0]->ID, apply_filters( 'pmpro_approvals_delete_log_on_cancel', false ) );
+		if ( $level_id == 0 || isset( $old_levels[0]->ID ) ) {
+			if ( self::isPending( $user_id, $old_levels[0]->ID ) ) {
+				self::clearApprovalData( $user_id, $old_levels[0]->ID, apply_filters( 'pmpro_approvals_delete_log_on_cancel', false ) );
 			}
 		}
 
