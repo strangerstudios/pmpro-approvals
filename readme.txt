@@ -36,6 +36,26 @@ Members pending approval will not have access to view members-only content until
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
+= 1.4 - 2021-04-07 =
+* SECURITY: General escaping and sanitizing when outputting data on the user's approvals information page.
+* ENHANCEMENT: Added translation file for German locale.
+* ENHANCEMENT: Added in filter 'pmpro_approvals_approval_count_sql_parts' and 'pmpro_approvals_approval_count_sql' to make SQL query (when counting pending users) easier to manipulate.
+* ENHANCEMENT: Added in filter 'pmpro_approvals_pending_approvals_sql_parts' and 'pmpro_approvals_pending_approvals_sql' to make SQL query (for retrieving pending users) easier to manipulate.
+* ENHANCEMENT: Added in filter 'pmpro_approvals_level_restrict_checkout' to allow bypassing of checkout restriction. Thanks @edwinbsmith
+* ENHANCEMENT: Improved coding readability and variable naming.
+* ENHANCEMENT: Make links clickable when custom fields are added to the user's profile and previewing approval information. Note: the stored value requires http:// or https:// to make it clickable.
+* ENHANCEMENT: Integrate with Pay By Check. When a user is approved, approve their pending check order. Has to be enabled by using the filter `pmpro_approvals_pbc_success_on_approval` and returning `true` to enable it.
+* BUG FIX/ENHANCEMENT: Clear pending approval data if the user changes their level or cancels before being approved or denied.
+* BUG FIX: Allow pending/non-approved members to cancel their membership level on the frontend.
+* BUG FIX: Fixes an issue for [membership] shortcode that didn't pass levels attribute and pending members used to gain access to restricted content.
+* BUG FIX: Fixed an issue where refreshing the approvals page may resend the approval email - this now only gets sent once.
+* BUG FIX: Fixed an issue where multiple fields belonging to different levels with the same name would show up twice on the view info page of the approvals. This now supports the 'level' attribute inside Register Helper when displaying fields.
+* BUG FIX: Fixed general issues when Paid Memberships Pro was not active.
+* BUG FIX: Fixed warnings of missing variables when approval emails were sent.
+* BUG FIX: Fixed an issue where an undefined variable was used inside the approval's list within the WordPress admin.
+* BUG FIX: Fixed general warnings when a level does not require payment.
+* BUG FIX: Support Pay By Check confirmation message/instructions when a level uses both Pay By Check and requires approval.
+* BUG FIX: Fixing a notice for check payment instructions confirmation message text when approval level is free.
 
 = 1.3.4 - 2019-11-13 =
 * ENHANCEMENT: Improved query for Approval Count inside dashboard for speed improvements to reduce load times while in WordPress dashboard.
