@@ -31,7 +31,7 @@ Members pending approval will not have access to view members-only content until
 = How to Use =
 1. To set a level's approval requirements, edit your membership level and adjust the settings under "Approval Settings".
 1. To process membership approvals, navigate to the Approvals Dashboard under Memberships > Approvals.
-1. To customize the emails related to this plugin, install the PMPro Email Templates Add On. The email template for this plugin will be added to the list of templates available to edit. https://www.paidmembershipspro.com/add-ons/email-templates-admin-editor/
+1. To customize the emails related to this plugin, navigate to Memberships > Settings > Email Templates in the WordPress admin.
 
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
