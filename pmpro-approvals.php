@@ -497,15 +497,20 @@ class PMPro_Approvals {
 			return $access;
 		}
 
+		// Bail if the user is logged in but doesn't have a membership level.
+		if ( ! pmpro_hasMembershipLevel() ) {
+			return $access;
+		}
+
 		// If no levels are defined but they aren't approved. Let's set this to false.
 		if ( empty( $levels ) && ! self::isApproved( $current_user->ID ) ) {
 			return false;
 		}
 
-		// See if user is approved for any level.
+		// See if user is approved for a specific level, ignore if level ID is 0.
 		if ( is_array( $levels ) && ! empty( $levels ) ) {
 			foreach ( $levels as $level ) {
-				if ( self::isApproved( $current_user->ID, $level ) ) {
+				if ( self::isApproved( $current_user->ID, $level ) && intval( $level ) !== 0 ) {
 					$access = true;
 					break;
 				}
