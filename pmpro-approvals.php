@@ -492,8 +492,9 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_member_shortcode_access( $access, $content, $levels, $delay ) {
 		global $current_user;
-
-		if ( ! is_user_logged_in() ) {
+		
+		// Bail if they are not logged-in, default behavior.
+		if ( ! is_user_logged_in()  ) {
 			return $access;
 		}
 
@@ -507,16 +508,10 @@ class PMPro_Approvals {
 			return false;
 		}
 
-		// See if user is approved for a specific level, ignore if level ID is 0.
-		if ( is_array( $levels ) && ! empty( $levels ) ) {
-			foreach ( $levels as $level ) {
-				if ( intval( $level ) !== 0 && self::isApproved( $current_user->ID, $level ) ) {
-					$access = true;
-					break;
-				}
-			}
+		if ( self::isApproved( $current_user->ID ) ) {
+			return $access;
 		}
-		// $access = true;
+		
 		return $access;
 	}
 
