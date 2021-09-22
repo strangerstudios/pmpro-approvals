@@ -510,7 +510,7 @@ class PMPro_Approvals {
 		// See if user is approved for a specific level, ignore if level ID is 0.
 		if ( is_array( $levels ) && ! empty( $levels ) ) {
 			foreach ( $levels as $level ) {
-				if ( self::isApproved( $current_user->ID, $level ) && intval( $level ) !== 0 ) {
+				if ( intval( $level ) !== 0 && self::isApproved( $current_user->ID, $level ) ) {
 					$access = true;
 					break;
 				}
