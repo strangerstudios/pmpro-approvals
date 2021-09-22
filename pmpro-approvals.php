@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.4
+Version: 1.4.1
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -492,8 +492,14 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_member_shortcode_access( $access, $content, $levels, $delay ) {
 		global $current_user;
+		
+		// Bail if they are not logged-in, default behavior.
+		if ( ! is_user_logged_in()  ) {
+			return $access;
+		}
 
-		if ( ! is_user_logged_in() ) {
+		// Bail if the user is logged in but doesn't have a membership level.
+		if ( ! pmpro_hasMembershipLevel() ) {
 			return $access;
 		}
 
@@ -502,16 +508,10 @@ class PMPro_Approvals {
 			return false;
 		}
 
-		// See if user is approved for any level.
-		if ( is_array( $levels ) && ! empty( $levels ) ) {
-			foreach ( $levels as $level ) {
-				if ( self::isApproved( $current_user->ID, $level ) ) {
-					$access = true;
-					break;
-				}
-			}
+		if ( self::isApproved( $current_user->ID ) ) {
+			return $access;
 		}
-		// $access = true;
+		
 		return $access;
 	}
 
@@ -1138,8 +1138,8 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_before_change_membership_level( $level_id, $user_id, $old_levels, $cancel_level ) {
 
-		// First see if the user is cancelling, try to clean up approval data if they are pending.
-		if ( $level_id == 0 || isset( $old_levels[0]->ID ) ) {
+		// First see if the user is cancelling. If so, try to clean up approval data if they are pending.
+		if ( $level_id == 0 ) {
 			if ( self::isPending( $user_id, $old_levels[0]->ID ) ) {
 				self::clearApprovalData( $user_id, $old_levels[0]->ID, apply_filters( 'pmpro_approvals_delete_log_on_cancel', false ) );
 			}

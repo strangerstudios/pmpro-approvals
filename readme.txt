@@ -2,8 +2,8 @@
 Contributors: strangerstudios, andrewza
 Tags: paid memberships pro, pmpro, approval, approvals, workflow
 Requires at least: 4.7
-Tested up to: 5.3
-Stable tag: 1.3.4
+Tested up to: 5.8
+Stable tag: 1.4.1
 
 Grants administrators the ability to approve/deny memberships after signup.
 
@@ -31,11 +31,17 @@ Members pending approval will not have access to view members-only content until
 = How to Use =
 1. To set a level's approval requirements, edit your membership level and adjust the settings under "Approval Settings".
 1. To process membership approvals, navigate to the Approvals Dashboard under Memberships > Approvals.
-1. To customize the emails related to this plugin, install the PMPro Email Templates Add On. The email template for this plugin will be added to the list of templates available to edit. https://www.paidmembershipspro.com/add-ons/email-templates-admin-editor/
+1. To customize the emails related to this plugin, navigate to Memberships > Settings > Email Templates in the WordPress admin.
 
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
+= 1.4.1 - 2021-09-22 =
+* ENHANCEMENT: Added $level parameter to the 'pmpro_approvals_member_denied_email_data' filter.
+* BUG FIX: Fixed an issue where pending members were automatically approved when checking out for the same level multiple times.
+* BUG FIX: Fixed an issue where Register Helper Fields that show up for certain levels would cause other custom fields to be hidden from the view info of the Approvals page.
+* BUG FIX: Fixed issues where approved members would see content for non-members shortcode - [membership level="0"].
+
 = 1.4 - 2021-04-07 =
 * SECURITY: General escaping and sanitizing when outputting data on the user's approvals information page.
 * ENHANCEMENT: Added translation file for German locale.

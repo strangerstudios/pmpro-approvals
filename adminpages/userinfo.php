@@ -115,7 +115,7 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 
 						// Check to see if level is set for the field.
 						if ( isset( $field->levels ) && ! in_array( $level_details->ID, $field->levels ) ) {
-							break;
+							continue;
 						}
 							
 						?>

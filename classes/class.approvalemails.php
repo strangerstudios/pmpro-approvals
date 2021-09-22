@@ -87,7 +87,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 		$this->from     = pmpro_getOption( 'from' );
 		$this->fromname = pmpro_getOption( 'from_name' );
 
-		$this->data = apply_filters( 'pmpro_approvals_member_denied_email_data', $this->data, $member );
+		$this->data = apply_filters( 'pmpro_approvals_member_denied_email_data', $this->data, $member, $level );
 
 		return $this->sendEmail();
 	}
