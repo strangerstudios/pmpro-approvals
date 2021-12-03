@@ -1239,9 +1239,13 @@ class PMPro_Approvals {
 	 * Add Approvals status to Account Page.
 	 */
 	public static function pmpro_account_bullets_top() {
-
 			$approval_status = ucfirst( self::getUserApprovalStatus() );
+
 			$user_level = pmpro_getMembershipLevelForUser();
+			if ( empty( $user_level ) ) {
+				return;
+			}
+			
 			$level_approval = self::requiresApproval( $user_level->ID );
 
 			// Only show this if the user has an approval status.
