@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.4.1
+Version: 1.4.2
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -767,9 +767,9 @@ class PMPro_Approvals {
 			$level = pmpro_getMembershipLevelForUser( $user_id );
 
 			if ( empty( $level ) || ( ! empty( $level_id ) && $level->id != $level_id ) ) {
-				return false;
+				$user_approval = array( 'status' => 'pending' );
 			} else {
-				return true;
+				$user_approval = array( 'status' => 'approved' );
 			}
 		}
 
@@ -1114,8 +1114,8 @@ class PMPro_Approvals {
 			$user_id, 'pmpro_approval_' . $level_id, array(
 				'status'    => 'pending',
 				'timestamp' => current_time( 'timestamp' ),
-				'who'       => '',
-				'approver'  => '',
+				'who'       => $current_user->ID,
+				'approver'  => $current_user->user_login,
 			)
 		);
 		
@@ -1187,7 +1187,12 @@ class PMPro_Approvals {
 		//check if level requires approval, if not stop executing this function and don't send email.
 		if ( ! self::requiresApproval( $level_id ) ) {
 			return;
-		}		
+		}
+		
+		//if they are already approved, keep them approved
+		if ( self::isApproved( $user_id, $level_id ) ) {
+			return;
+		}
 
 		//send email to admin that a new member requires approval.
 		$email = new PMPro_Approvals_Email();
@@ -1239,9 +1244,13 @@ class PMPro_Approvals {
 	 * Add Approvals status to Account Page.
 	 */
 	public static function pmpro_account_bullets_top() {
-
 			$approval_status = ucfirst( self::getUserApprovalStatus() );
+
 			$user_level = pmpro_getMembershipLevelForUser();
+			if ( empty( $user_level ) ) {
+				return;
+			}
+			
 			$level_approval = self::requiresApproval( $user_level->ID );
 
 			// Only show this if the user has an approval status.
