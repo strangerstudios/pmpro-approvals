@@ -1114,8 +1114,8 @@ class PMPro_Approvals {
 			$user_id, 'pmpro_approval_' . $level_id, array(
 				'status'    => 'pending',
 				'timestamp' => current_time( 'timestamp' ),
-				'who'       => '',
-				'approver'  => '',
+				'who'       => $current_user->ID,
+				'approver'  => $current_user->user_login,
 			)
 		);
 		
