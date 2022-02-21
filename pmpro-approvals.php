@@ -767,9 +767,9 @@ class PMPro_Approvals {
 			$level = pmpro_getMembershipLevelForUser( $user_id );
 
 			if ( empty( $level ) || ( ! empty( $level_id ) && $level->id != $level_id ) ) {
-				return false;
+				$user_approval = array( 'status' => 'pending' );
 			} else {
-				return true;
+				$user_approval = array( 'status' => 'approved' );
 			}
 		}
 
@@ -1187,7 +1187,12 @@ class PMPro_Approvals {
 		//check if level requires approval, if not stop executing this function and don't send email.
 		if ( ! self::requiresApproval( $level_id ) ) {
 			return;
-		}		
+		}
+		
+		//if they are already approved, keep them approved
+		if ( self::isApproved( $user_id, $level_id ) ) {
+			return;
+		}
 
 		//send email to admin that a new member requires approval.
 		$email = new PMPro_Approvals_Email();
