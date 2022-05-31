@@ -317,8 +317,21 @@ class PMPro_Approvals {
 	public static function pmpro_membership_level_settings() {
 		$level_id = $_REQUEST['edit'];
 
+		// Get the template if passed in the URL.
+		if ( isset( $_REQUEST['template'] ) ) {
+			$template = $_REQUEST['template'];
+		} else {
+			$template = false;
+		}
+
+		// Get approval settings or set defaults if this is a new approvals level.
 		if ( $level_id > 0 ) {
 			$options = self::getOptions( $level_id );
+		} elseif ( $template === 'approvals' ) {
+			$options = array(
+				'requires_approval' => true,
+				'restrict_checkout' => true,
+			);
 		} else {
 			$options = array(
 				'requires_approval' => false,
@@ -343,10 +356,15 @@ class PMPro_Approvals {
 			unset( $levels[ $level_id ] );   //remove this level
 
 		}
-		?>
-		<?php
+
+		// Hide or show this section based on settings
+		if ( $template === 'approvals' || $approval_setting > 0 ) {
 			$section_visibility = 'shown';
 			$section_activated = 'true';
+		} else {
+			$section_visibility = 'hidden';
+			$section_activated = 'false';
+		}
 		?>
 		<div id="approval-settings" class="pmpro_section" data-visibility="<?php echo esc_attr( $section_visibility ); ?>" data-activated="<?php echo esc_attr( $section_activated ); ?>">
 			<div class="pmpro_section_toggle">
