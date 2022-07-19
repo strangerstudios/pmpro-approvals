@@ -319,7 +319,7 @@ class PMPro_Approvals {
 
 		// Get the template if passed in the URL.
 		if ( isset( $_REQUEST['template'] ) ) {
-			$template = $_REQUEST['template'];
+			$template = sanitize_text_field( $_REQUEST['template'] );
 		} else {
 			$template = false;
 		}
@@ -377,14 +377,14 @@ class PMPro_Approvals {
 				<table class="form-table">
 					<tbody>
 						<tr>
-							<th scope="row" valign="top"><label for="approval_setting"><?php _e( 'Requires Approval?', 'pmpro-approvals' ); ?></label></th>
+							<th scope="row" valign="top"><label for="approval_setting"><?php esc_html_e( 'Requires Approval?', 'pmpro-approvals' ); ?></label></th>
 							<td>
 								<select id="approval_setting" name="approval_setting">
-									<option value="0" <?php selected( $approval_setting, 0 ); ?>><?php _e( 'No.', 'pmpro-approvals' ); ?></option>
-									<option value="1" <?php selected( $approval_setting, 1 ); ?>><?php _e( 'Yes. Admin must approve new members for this level.', 'pmpro-approvals' ); ?></option>
+									<option value="0" <?php selected( $approval_setting, 0 ); ?>><?php esc_html_e( 'No.', 'pmpro-approvals' ); ?></option>
+									<option value="1" <?php selected( $approval_setting, 1 ); ?>><?php esc_html_e( 'Yes. Admin must approve new members for this level.', 'pmpro-approvals' ); ?></option>
 									<?php if ( ! empty( $levels ) ) { ?>
-										<option value="2" <?php selected( $approval_setting, 2 ); ?>><?php _e( 'Yes. User must have an approved membership for a different level.', 'pmpro-approvals' ); ?></option>
-										<option value="3" <?php selected( $approval_setting, 3 ); ?>><?php _e( 'Yes. User must have an approved membership for a different level AND admin must approve new members for this level.', 'pmpro-approvals' ); ?></option>
+										<option value="2" <?php selected( $approval_setting, 2 ); ?>><?php esc_html_e( 'Yes. User must have an approved membership for a different level.', 'pmpro-approvals' ); ?></option>
+										<option value="3" <?php selected( $approval_setting, 3 ); ?>><?php esc_html_e( 'Yes. User must have an approved membership for a different level AND admin must approve new members for this level.', 'pmpro-approvals' ); ?></option>
 									<?php } ?>
 								</select>
 							</td>
@@ -395,7 +395,7 @@ class PMPro_Approvals {
 						if ( $approval_setting < 2 ) {
 				?>
 			 style="display: none;"<?php } ?>>
-							<th scope="row" valign="top"><label for="approval_restrict_level"><?php _e( 'Which Level?', 'pmpro-approvals' ); ?></label></th>
+							<th scope="row" valign="top"><label for="approval_restrict_level"><?php esc_html_e( 'Which Level?', 'pmpro-approvals' ); ?></label></th>
 							<td>
 								<select id="approval_restrict_level" name="approval_restrict_level">					
 								<?php
@@ -1464,7 +1464,7 @@ class PMPro_Approvals {
 		?>
 		<table id="pmpro_approvals_status_table" class="form-table">
 			<tr>
-				<th><?php _e( 'Approval Status', 'pmpro-approvals' ); ?></th>
+				<th><?php esc_html_e( 'Approval Status', 'pmpro-approvals' ); ?></th>
 
 				<td>
 					<span id="pmpro_approvals_status_text">
@@ -1494,7 +1494,7 @@ style="display: none;"<?php } ?>>
 			if ( current_user_can( 'edit_users' ) || current_user_can( 'pmpro_approvals' ) ) {
 			?>
 			<tr>
-				<th><?php _e( 'User Approval Log', 'pmpro-approvals' ); ?></th>
+				<th><?php esc_html_e( 'User Approval Log', 'pmpro-approvals' ); ?></th>
 					<td>
 					<?php
 					echo self::showUserLog( $user->ID );
