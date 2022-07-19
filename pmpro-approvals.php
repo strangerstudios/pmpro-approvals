@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.4.2
+Version: 1.4.3
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -91,13 +91,20 @@ class PMPro_Approvals {
 		//add approval status to members list
 		add_action( 'pmpro_members_list_user', array( 'PMPro_Approvals', 'pmpro_members_list_user' ) );
 
+		//filter to add the approval membership level template
+		add_filter( 'pmpro_membershiplevels_template_level', array( 'PMPro_Approvals', 'pmpro_membershiplevels_template_level' ), 10, 2 );
+
 		//filter membership and content access
 		add_filter( 'pmpro_has_membership_level', array( 'PMPro_Approvals', 'pmpro_has_membership_level' ), 10, 3 );
 		add_filter( 'pmpro_has_membership_access_filter', array( 'PMPro_Approvals', 'pmpro_has_membership_access_filter' ), 10, 4 );
 		add_filter( 'pmpro_member_shortcode_access', array( 'PMPro_Approvals', 'pmpro_member_shortcode_access' ), 10, 4 );
 
 		//load checkbox in membership level edit page for users to select.
-		add_action( 'pmpro_membership_level_after_other_settings', array( 'PMPro_Approvals', 'pmpro_membership_level_after_other_settings' ) );
+		if ( defined( 'PMPRO_VERSION' ) && PMPRO_VERSION >= '2.9' ) {
+			add_action( 'pmpro_membership_level_before_billing_information', array( 'PMPro_Approvals', 'pmpro_membership_level_settings' ) );
+		} else {
+			add_action( 'pmpro_membership_level_after_other_settings', array( 'PMPro_Approvals', 'pmpro_membership_level_settings' ) );
+		}
 		add_action( 'pmpro_save_membership_level', array( 'PMPro_Approvals', 'pmpro_save_membership_level' ) );
 
 		//Add code for filtering checkouts, confirmation, and content filters
@@ -306,13 +313,25 @@ class PMPro_Approvals {
 
 	/**
 	* Load check box to make level require membership.
-	* Fires on pmpro_membership_level_after_other_settings
 	*/
-	public static function pmpro_membership_level_after_other_settings() {
+	public static function pmpro_membership_level_settings() {
 		$level_id = $_REQUEST['edit'];
 
+		// Get the template if passed in the URL.
+		if ( isset( $_REQUEST['template'] ) ) {
+			$template = sanitize_text_field( $_REQUEST['template'] );
+		} else {
+			$template = false;
+		}
+
+		// Get approval settings or set defaults if this is a new approvals level.
 		if ( $level_id > 0 ) {
 			$options = self::getOptions( $level_id );
+		} elseif ( $template === 'approvals' ) {
+			$options = array(
+				'requires_approval' => true,
+				'restrict_checkout' => true,
+			);
 		} else {
 			$options = array(
 				'requires_approval' => false,
@@ -337,62 +356,80 @@ class PMPro_Approvals {
 			unset( $levels[ $level_id ] );   //remove this level
 
 		}
+
+		// Hide or show this section based on settings
+		if ( $template === 'approvals' || $approval_setting > 0 ) {
+			$section_visibility = 'shown';
+			$section_activated = 'true';
+		} else {
+			$section_visibility = 'hidden';
+			$section_activated = 'false';
+		}
 		?>
-		<h3 class="topborder"><?php _e( 'Approval Settings', 'pmpro-approvals' ); ?></h3>
-		<table>
-		<tbody class="form-table">			
-			<tr>
-				<th scope="row" valign="top"><label for="approval_setting"><?php _e( 'Requires Approval?', 'pmpro-approvals' ); ?></label></th>
-				<td>
-					<select id="approval_setting" name="approval_setting">
-						<option value="0" <?php selected( $approval_setting, 0 ); ?>><?php _e( 'No.', 'pmpro-approvals' ); ?></option>
-						<option value="1" <?php selected( $approval_setting, 1 ); ?>><?php _e( 'Yes. Admin must approve new members for this level.', 'pmpro-approvals' ); ?></option>
+		<div id="approval-settings" class="pmpro_section" data-visibility="<?php echo esc_attr( $section_visibility ); ?>" data-activated="<?php echo esc_attr( $section_activated ); ?>">
+			<div class="pmpro_section_toggle">
+				<button class="pmpro_section-toggle-button" type="button" aria-expanded="<?php echo $section_visibility === 'hidden' ? 'false' : 'true'; ?>">
+					<span class="dashicons dashicons-arrow-<?php echo $section_visibility === 'hidden' ? 'down' : 'up'; ?>-alt2"></span>
+					<?php esc_html_e( 'Approval Settings', 'pmpro-approvals' ); ?>
+				</button>
+			</div>
+			<div class="pmpro_section_inside" <?php echo $section_visibility === 'hidden' ? 'style="display: none"' : ''; ?>>
+				<table class="form-table">
+					<tbody>
+						<tr>
+							<th scope="row" valign="top"><label for="approval_setting"><?php esc_html_e( 'Requires Approval?', 'pmpro-approvals' ); ?></label></th>
+							<td>
+								<select id="approval_setting" name="approval_setting">
+									<option value="0" <?php selected( $approval_setting, 0 ); ?>><?php esc_html_e( 'No.', 'pmpro-approvals' ); ?></option>
+									<option value="1" <?php selected( $approval_setting, 1 ); ?>><?php esc_html_e( 'Yes. Admin must approve new members for this level.', 'pmpro-approvals' ); ?></option>
+									<?php if ( ! empty( $levels ) ) { ?>
+										<option value="2" <?php selected( $approval_setting, 2 ); ?>><?php esc_html_e( 'Yes. User must have an approved membership for a different level.', 'pmpro-approvals' ); ?></option>
+										<option value="3" <?php selected( $approval_setting, 3 ); ?>><?php esc_html_e( 'Yes. User must have an approved membership for a different level AND admin must approve new members for this level.', 'pmpro-approvals' ); ?></option>
+									<?php } ?>
+								</select>
+							</td>
+						</tr>
 						<?php if ( ! empty( $levels ) ) { ?>
-							<option value="2" <?php selected( $approval_setting, 2 ); ?>><?php _e( 'Yes. User must have an approved membership for a different level.', 'pmpro-approvals' ); ?></option>
-							<option value="3" <?php selected( $approval_setting, 3 ); ?>><?php _e( 'Yes. User must have an approved membership for a different level AND admin must approve new members for this level.', 'pmpro-approvals' ); ?></option>
+						<tr 
+						<?php
+						if ( $approval_setting < 2 ) {
+				?>
+			 style="display: none;"<?php } ?>>
+							<th scope="row" valign="top"><label for="approval_restrict_level"><?php esc_html_e( 'Which Level?', 'pmpro-approvals' ); ?></label></th>
+							<td>
+								<select id="approval_restrict_level" name="approval_restrict_level">					
+								<?php
+								foreach ( $levels as $level ) {
+									?>
+									<option value="<?php echo $level->id; ?>" <?php selected( $options['restrict_checkout'], $level->id ); ?>><?php echo $level->name; ?></option>
+										<?php
+								}
+								?>
+							</td>
+						</tr>
 						<?php } ?>
-					</select>								
-				</td>
-			</tr>
-			<?php if ( ! empty( $levels ) ) { ?>
-			<tr 
-			<?php
-			if ( $approval_setting < 2 ) {
-	?>
- style="display: none;"<?php } ?>>
-				<th scope="row" valign="top"><label for="approval_restrict_level"><?php _e( 'Which Level?', 'pmpro-approvals' ); ?></label></th>
-				<td>
-					<select id="approval_restrict_level" name="approval_restrict_level">					
-					<?php
-					foreach ( $levels as $level ) {
-						?>
-						<option value="<?php echo $level->id; ?>" <?php selected( $options['restrict_checkout'], $level->id ); ?>><?php echo $level->name; ?></option>
-							<?php
-					}
-					?>
-				</td>
-			</tr>
-			<?php } ?>
-		</tbody>
-		</table>
-		<?php if ( ! empty( $levels ) ) { ?>
-		<script>
-			jQuery(document).ready(function() {
-				function pmproap_toggleWhichLevel() {
-					if(jQuery('#approval_setting').val() > 1)
-						jQuery('#approval_restrict_level').closest('tr').show();
-					else
-						jQuery('#approval_restrict_level').closest('tr').hide();
-				}
-				
-				//bind to approval setting change
-				jQuery('#approval_setting').change(function() { pmproap_toggleWhichLevel(); });
-				
-				//run on load
-				pmproap_toggleWhichLevel();
-			});
-		</script>
-		<?php } ?>
+					</tbody>
+				</table>
+				<?php if ( ! empty( $levels ) ) { ?>
+					<script>
+						jQuery(document).ready(function() {
+							function pmproap_toggleWhichLevel() {
+								if(jQuery('#approval_setting').val() > 1)
+									jQuery('#approval_restrict_level').closest('tr').show();
+								else
+									jQuery('#approval_restrict_level').closest('tr').hide();
+							}
+							
+							//bind to approval setting change
+							jQuery('#approval_setting').change(function() { pmproap_toggleWhichLevel(); });
+							
+							//run on load
+							pmproap_toggleWhichLevel();
+						});
+					</script>
+				<?php } ?>
+			</div> <!-- end pmpro_section_inside -->
+		</div> <!-- end pmpro_section -->
 		<?php
 	}
 
@@ -1282,6 +1319,24 @@ class PMPro_Approvals {
 }
 
 	/**
+	 * Add the approval membership level template
+	 */
+	public static function pmpro_membershiplevels_template_level( $level, $template ) {
+		if ( $template === 'approvals' ) {
+			$level->billing_amount = NULL;
+			$level->trial_amount = NULL;
+			$level->initial_payment = NULL;
+			$level->billing_limit = NULL;
+			$level->trial_limit = NULL;
+			$level->expiration_number = NULL;
+			$level->expiration_period = NULL;
+			$level->cycle_number = 1;
+			$level->cycle_period = 'Month';
+		}
+		return $level;
+	}
+
+	/**
 	 * Custom confirmation message for levels that requires approval.
 	 */
 	public static function pmpro_confirmation_message( $confirmation_message, $pmpro_invoice ) {
@@ -1409,7 +1464,7 @@ class PMPro_Approvals {
 		?>
 		<table id="pmpro_approvals_status_table" class="form-table">
 			<tr>
-				<th><?php _e( 'Approval Status', 'pmpro-approvals' ); ?></th>
+				<th><?php esc_html_e( 'Approval Status', 'pmpro-approvals' ); ?></th>
 
 				<td>
 					<span id="pmpro_approvals_status_text">
@@ -1439,7 +1494,7 @@ style="display: none;"<?php } ?>>
 			if ( current_user_can( 'edit_users' ) || current_user_can( 'pmpro_approvals' ) ) {
 			?>
 			<tr>
-				<th><?php _e( 'User Approval Log', 'pmpro-approvals' ); ?></th>
+				<th><?php esc_html_e( 'User Approval Log', 'pmpro-approvals' ); ?></th>
 					<td>
 					<?php
 					echo self::showUserLog( $user->ID );
