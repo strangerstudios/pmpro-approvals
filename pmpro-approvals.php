@@ -1463,7 +1463,7 @@ class PMPro_Approvals {
 				<td>
 					<?php
 					// Link to the approvals admin page for this user.
-					$approvals_admin_url = admin_url( 'admin.php?page=pmpro-approvals&s=' . esc_url( $user->nickname ) . '&status=all' );
+					$approvals_admin_url = admin_url( 'admin.php?page=pmpro-approvals&s=' . $user->display_name . '&status=all' );
 					?>
 					<p>
 						<a href="<?php echo esc_url( $approvals_admin_url ); ?>"><?php esc_html_e( 'Manage Approval Statuses', 'pmpro-approvals' ); ?></a>
