@@ -1177,9 +1177,9 @@ class PMPro_Approvals {
 	public static function pmpro_before_change_membership_level( $level_id, $user_id, $old_levels, $cancel_level ) {
 
 		// First see if the user is cancelling. If so, try to clean up approval data if they are pending.
-		if ( $level_id == 0 ) {
-			if ( self::isPending( $user_id, $old_levels[0]->ID ) ) {
-				self::clearApprovalData( $user_id, $old_levels[0]->ID, apply_filters( 'pmpro_approvals_delete_log_on_cancel', false ) );
+		if ( ! empty( $cancel_level ) ) {
+			if ( self::isPending( $user_id, $cancel_level ) ) {
+				self::clearApprovalData( $user_id, $cancel_level, apply_filters( 'pmpro_approvals_delete_log_on_cancel', false ) );
 			}
 		}
 
