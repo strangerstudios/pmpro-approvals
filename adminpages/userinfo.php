@@ -9,7 +9,13 @@ if ( ! function_exists( 'current_user_can' ) || ! current_user_can( 'pmpro_appro
 if ( isset( $_REQUEST['l'] ) ) {
 	$l = intval( $_REQUEST['l'] );
 } else {
-	$l = false;
+	// Default to a random level that the user has. Hopefully we never actually do this.
+	$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
+	if ( ! empty( $levels ) ) {
+		$l = $levels[0]->id;
+	} else {
+		$l = 0;
+	}
 }
 
 if ( ! empty( $_REQUEST['approve'] ) ) {
@@ -59,7 +65,7 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 			<td>
 			<?php
 			//Changed this to show Membership Level Name now, so approvers don't need to go back and forth to see what level the user is applying for.
-			 $level_details = pmpro_getMembershipLevelForUser( $user->ID );
+			 $level_details = pmpro_getSpecificMembershipLevelForUser( $user->ID, $l );
 
 			 echo esc_html( $level_details->name );
         
@@ -71,20 +77,20 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 			<td>
 			<?php
 			//show status here
-			if ( PMPro_Approvals::isApproved( $user->ID ) || PMPro_Approvals::isDenied( $user->ID ) ) {
+			if ( PMPro_Approvals::isApproved( $user->ID, $l ) || PMPro_Approvals::isDenied( $user->ID, $l ) ) {
 				if ( ! PMPro_Approvals::getEmailConfirmation( $user->ID ) ) {
 					_e( 'Email Confirmation Required.', 'pmpro-approvals' );
 				} else {
-					echo PMPro_Approvals::getUserApprovalStatus( $user->ID, null, false );
+					echo PMPro_Approvals::getUserApprovalStatus( $user->ID, $l, false );
 				?>
-				[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo esc_attr( $user->user_login ); ?>?', '?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID; ?>');">X</a>]
+				[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo esc_attr( $user->user_login ); ?>?', '?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID; ?>&l=<?php echo $l ?>');">X</a>]
 				<?php
 				}   // end of email confirmation check.
 			} else {
 			?>
 													
-			<a href="?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&approve=<?php echo $user->ID; ?>">Approve</a> |
-			<a href="?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&deny=<?php echo $user->ID; ?>">Deny</a>
+			<a href="?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&approve=<?php echo $user->ID; ?>&l=<?php echo $l ?>"><?php esc_html_e( 'Approve', 'pmpro-approvals' ); ?></a> |
+			<a href="?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&deny=<?php echo $user->ID; ?>&l=<?php echo $l ?>"><?php esc_html_e( 'Deny', 'pmpro-approvals' ); ?></a>
 			<?php
 			}
 			?>

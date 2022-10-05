@@ -20,8 +20,9 @@ class PMPro_Approvals_Email extends PMProEmail {
 	 * Send user's an email that their account has been approved.
 	 *
 	 * @param $member. The member's ID or object.
+	 * @param int $level_id
 	 */
-	public function sendMemberApproved( $member ) {
+	public function sendMemberApproved( $member, $level_id = null ) {
 
 		if ( empty( $member ) ) {
 			return;
@@ -29,7 +30,12 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$member = get_user_by( 'ID', $member );
 		}
 
-		$level = pmpro_getMembershipLevelForUser( $member->ID );
+		if ( empty( $level_id ) ) {
+			$level = pmpro_getMembershipLevelForUser( $member->ID );
+		} else {
+			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		}
+		
 
 		$this->email    = $member->user_email;
 		$this->subject  = sprintf( __( 'Your membership at %s has been approved.', 'pmpro-approvals' ), get_bloginfo( 'name' ) );
@@ -58,8 +64,9 @@ class PMPro_Approvals_Email extends PMProEmail {
 	 * Send user's an email that their account has been denied.
 	 *
 	 * @param $member. The member's ID or object.
+	 * @param int $level_id
 	 */
-	public function sendMemberDenied( $member ) {
+	public function sendMemberDenied( $member, $level_id = null ) {
 
 		if ( empty( $member ) ) {
 			return;
@@ -67,7 +74,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$member = get_user_by( 'ID', $member );
 		}
 
-		$level = pmpro_getMembershipLevelForUser( $member->ID );
+		if ( empty( $level_id ) ) {
+			$level = pmpro_getMembershipLevelForUser( $member->ID );
+		} else {
+			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		}
 
 		$this->email    = $member->user_email;
 		$this->subject  = sprintf( __( 'Your membership at %s has been denied.', 'pmpro-approvals' ), get_bloginfo( 'name' ) );
@@ -98,8 +109,9 @@ class PMPro_Approvals_Email extends PMProEmail {
 	 *
 	 * @param $member The member object/ID/email.
 	 * @param $admin The admin object/ID. Default $current_user object.
+	 * @param int $level_id
 	 */
-	public function sendAdminPending( $member = null, $admin = null ) {
+	public function sendAdminPending( $member = null, $admin = null, $level_id = null ) {
 
 		if ( empty( $admin ) ) {
 			$admin = get_user_by( 'email', get_option( 'admin_email' ) );
@@ -130,13 +142,17 @@ class PMPro_Approvals_Email extends PMProEmail {
 				$member = get_user_by( 'email', $member );
 			}
 
-			$level = pmpro_getMembershipLevelForUser( $member->ID );
+			if ( empty( $level_id ) ) {
+				$level = pmpro_getMembershipLevelForUser( $member->ID );
+			} else {
+				$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+			}
 
 			$this->data['member_name']  = $member->display_name;
 			$this->data['member_email'] = $member->user_email;
 			$this->data['membership_id']         = $level->id;
 			$this->data['membership_level_name'] = $level->name;
-			$this->data['view_profile'] = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID );
+			$this->data['view_profile'] = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
 			$this->data['approve_link'] = $this->data['view_profile'] . '&approve=' . $member->ID;
 			$this->data['deny_link']    = $this->data['view_profile'] . '&deny=' . $member->ID;
 		}
@@ -151,8 +167,9 @@ class PMPro_Approvals_Email extends PMProEmail {
 	 *
 	 * @param $member The member object/ID/email.
 	 * @param $admin The admin object/ID. Default $current_user object.
+	 * @param int $level_id
 	 */
-	public function sendAdminApproval( $member = null, $admin = null ) {
+	public function sendAdminApproval( $member = null, $admin = null, $level_id = null ) {
 
 		if ( empty( $admin ) ) {
 			$admin = get_user_by( 'email', get_option( 'admin_email' ) );
@@ -184,13 +201,17 @@ class PMPro_Approvals_Email extends PMProEmail {
 				$member = get_user_by( 'email', $member );
 			}
 
-			$level = pmpro_getMembershipLevelForUser( $member->ID );
+			if ( empty( $level_id ) ) {
+				$level = pmpro_getMembershipLevelForUser( $member->ID );
+			} else {
+				$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+			}
 
 			$this->data['membership_id']         = $level->id;
 			$this->data['membership_level_name'] = $level->name;
 			$this->data['member_email']          = $member->user_email;
 			$this->data['member_name']           = $member->display_name;
-			$this->data['view_profile']          = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID );
+			$this->data['view_profile']          = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
 		}
 
 		$this->data = apply_filters( 'pmpro_approvals_admin_approved_email_data', $this->data, $member, $admin );
@@ -203,8 +224,9 @@ class PMPro_Approvals_Email extends PMProEmail {
 	 *
 	 * @param $member The member object/ID/email.
 	 * @param $admin The admin object/ID. Default $current_user object.
+	 * @param int $level_id
 	 */
-	public function sendAdminDenied( $member = null, $admin = null ) {
+	public function sendAdminDenied( $member = null, $admin = null, $level_id = null ) {
 
 		if ( empty( $admin ) ) {
 			$admin = get_user_by( 'email', get_option( 'admin_email' ) );
@@ -236,13 +258,17 @@ class PMPro_Approvals_Email extends PMProEmail {
 				$member = get_user_by( 'email', $member );
 			}
 
-			$level = pmpro_getMembershipLevelForUser( $member->ID );
+			if ( empty( $level_id ) ) {
+				$level = pmpro_getMembershipLevelForUser( $member->ID );
+			} else {
+				$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+			}
 
 			$this->data['membership_id']         = $level->id;
 			$this->data['membership_level_name'] = $level->name;
 			$this->data['member_email']          = $member->user_email;
 			$this->data['member_name']           = $member->display_name;
-			$this->data['view_profile']          = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID );
+			$this->data['view_profile']          = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
 		}
 
 		$this->data = apply_filters( 'pmpro_approvals_admin_denied_email_data', $this->data, $member, $admin );
