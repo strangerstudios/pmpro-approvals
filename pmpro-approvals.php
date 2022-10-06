@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.4.3
+Version: 1.5
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -666,7 +666,7 @@ class PMPro_Approvals {
 		if ( ! empty( $user_id ) ) {
 			//default to the user's current level
 			if ( empty( $level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'You should pass a level ID to getUserApproval.', 'pmpro-approvals' ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, __( 'You should pass a level ID to getUserApproval.', 'pmpro-approvals' ), '1.5' );
 				$level = pmpro_getMembershipLevelForUser( $user_id );
 				if ( ! empty( $level ) ) {
 					$level_id = $level->id;
@@ -704,7 +704,7 @@ class PMPro_Approvals {
 
 		//get the PMPro level for the user
 		if ( empty( $level_id ) ) {
-			_doing_it_wrong( __FUNCTION__, __( 'You should pass a level ID to getUserApprovalStatus.', 'pmpro-approvals' ), 'TBD' );
+			_doing_it_wrong( __FUNCTION__, __( 'You should pass a level ID to getUserApprovalStatus.', 'pmpro-approvals' ), '1.5' );
 			$level    = pmpro_getMembershipLevelForUser( $user_id );
 			
 			if ( ! empty( $level ) ) {
@@ -1007,7 +1007,7 @@ class PMPro_Approvals {
 	 * Hooks into the BuddyPress member directory.
 	 * Hide the user if they are pending/denied.
 	 * 
-	 * @since TBD
+	 * @since 1.5
 	 */
 	public static function buddypress_sql( $sql_parts, $levels_included ) {
 
@@ -1043,7 +1043,7 @@ class PMPro_Approvals {
 
 		// get user's current level if none given.
 		if ( empty( $level_id ) ) {
-			_doing_it_wrong( __FUNCTION__, __( 'No level ID given. Please pass a level ID to approveMember().', 'pmpro-approvals' ), 'TBD' );
+			_doing_it_wrong( __FUNCTION__, __( 'No level ID given. Please pass a level ID to approveMember().', 'pmpro-approvals' ), '1.5' );
 			$user_level = pmpro_getMembershipLevelForUser( $user_id );
 			$level_id   = $user_level->id;
 		}
@@ -1111,7 +1111,7 @@ class PMPro_Approvals {
 
 		//get user's current level if none given
 		if ( empty( $level_id ) ) {
-			_doing_it_wrong( __FUNCTION__, __( 'No level ID given. Please pass a level ID to denyMember().', 'pmpro-approvals' ), 'TBD' );
+			_doing_it_wrong( __FUNCTION__, __( 'No level ID given. Please pass a level ID to denyMember().', 'pmpro-approvals' ), '1.5' );
 			$user_level = pmpro_getMembershipLevelForUser( $user_id );
 			$level_id   = $user_level->id;
 		}
@@ -1164,7 +1164,7 @@ class PMPro_Approvals {
 
 		//get user's current level if none given
 		if ( empty( $level_id ) ) {
-			_doing_it_wrong( __FUNCTION__, __( 'No level ID given. Please pass a level ID to resetMember().', 'pmpro-approvals' ), 'TBD' );
+			_doing_it_wrong( __FUNCTION__, __( 'No level ID given. Please pass a level ID to resetMember().', 'pmpro-approvals' ), '1.5' );
 			$user_level = pmpro_getMembershipLevelForUser( $user_id );
 			$level_id   = $user_level->id;
 		}
@@ -1295,7 +1295,7 @@ class PMPro_Approvals {
 	public static function pmpro_approvals_user_row_actions( $actions, $user, $approval_user = null ) {
 		if ( empty( $approval_user ) ) {
 			// Doing it wrong. Approval user should now be passed.
-			_doing_it_wrong( __FUNCTION__, 'The $approval_user parameter is required.', 'TBD' );
+			_doing_it_wrong( __FUNCTION__, 'The $approval_user parameter is required.', '1.5' );
 		}
 
 		$cap = apply_filters( 'pmpro_approvals_cap', 'pmpro_approvals' );
@@ -1531,7 +1531,7 @@ class PMPro_Approvals {
 
 		// try to get the current user level.
 		if ( empty( $level_id ) ) {
-			_doing_it_wrong( __FUNCTION__, 'The $level_id parameter is required.', 'TBD' );
+			_doing_it_wrong( __FUNCTION__, 'The $level_id parameter is required.', '1.5' );
 			$user_level = pmpro_getMembershipLevelForUser( $user_id );
 			$level_id   = $user_level->id;
 		}
@@ -1794,7 +1794,7 @@ class PMPro_Approvals {
 	 * Get level ID's that require approval.
 	 * 
 	 * @return array $level_ids An array of level_ids that requires approval.
-	 * @since TBD
+	 * @since 1.5
 	 */
 	public static function get_all_approval_level_ids() {
 		$all_levels = pmpro_getAllLevels( true, true );

@@ -3,7 +3,7 @@ Contributors: strangerstudios, andrewza
 Tags: paid memberships pro, pmpro, approval, approvals, workflow
 Requires at least: 5.0
 Tested up to: 6.0
-Stable tag: 1.4.3
+Stable tag: 1.5
 
 Grants administrators the ability to approve/deny memberships after signup.
 
@@ -36,6 +36,12 @@ Members pending approval will not have access to view members-only content until
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
+= 1.5 - 2022-10-06 =
+* ENHANCEMENT: Added support for Multiple Memberships Per User, allowing individual approval for each level ID a user may hold.
+* ENHANCEMENT: Improved logic for the Approval Counter to increase accuracy.
+* ENHANCEMENT: Added support for member directory filtering within the PMPro BuddyPress & BuddyBoss Add On.
+* BUG FIX: Fixed an issue where free checkouts would cause a warning that level ID's are missing on the confirmation page.
+
 = 1.4.3 - 2022-07-19 =
 * ENHANCEMENT: Added Approval level template and support for PMPro v2.9+ settings UI.
 
