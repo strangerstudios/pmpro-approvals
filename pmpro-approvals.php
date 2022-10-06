@@ -42,6 +42,9 @@ class PMPro_Approvals {
 		//add support for PMPro Email Templates Add-on
 		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
 		add_filter( 'pmpro_email_filter', array( 'PMPro_Approvals', 'pmpro_email_filter' ) );
+
+		//add support for PMPro BuddyPress Add On
+		add_filter( 'pmpro_bp_directory_sql_parts', array( 'PMPro_Approvals', 'buddypress_sql' ), 10, 2 );
 	}
 
 	/**
@@ -998,6 +1001,26 @@ class PMPro_Approvals {
 		$theusers = $wpdb->get_results( $sqlQuery );
 
 		return $theusers;
+	}
+
+	/**
+	 * Hooks into the BuddyPress member directory.
+	 * Hide the user if they are pending/denied.
+	 * 
+	 * @since TBD
+	 */
+	public static function buddypress_sql( $sql_parts, $levels_included ) {
+
+		global $wpdb;
+
+		$sql_parts['JOIN'] .= " LEFT JOIN {$wpdb->usermeta} umm 
+			ON umm.meta_key = CONCAT('pmpro_approval_', m.membership_id) 
+			AND umm.meta_key != 'pmpro_approval_log' 
+			AND m.user_id = umm.user_id ";
+
+		$sql_parts['WHERE'] .= " AND ( umm.meta_value LIKE '%approved%' OR umm.meta_value IS NULL ) ";
+	
+		return $sql_parts;
 	}
 
 	/**
