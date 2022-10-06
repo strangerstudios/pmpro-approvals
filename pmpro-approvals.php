@@ -1389,12 +1389,24 @@ class PMPro_Approvals {
 
 		global $current_user;
 
-		$approval_status = self::getUserApprovalStatus( $current_user->ID, $pmpro_invoice->membership_id );
+		// Try to get the membership ID for the confirmation.
+		if ( ! empty( $pmpro_invoice ) ) {
+			$membership_id = $pmpro_invoice->membership_id;
+		} elseif ( empty( $pmpro_invoice ) && ! empty( $_REQUEST['level' ] ) ) {
+			$membership_id = (int) $_REQUEST['level'];
+		} else {
+			$membership_id = $current_user->membership_level->ID;
+		}
+
+		$approval_status = self::getUserApprovalStatus( $current_user->ID, $membership_id );
 
 		//if current level does not require approval keep confirmation message the same.
-		if ( ! self::requiresApproval( $pmpro_invoice->membership_id ) ) {
+		if ( ! self::requiresApproval( $membership_id ) ) {
 			return $confirmation_message;
 		}
+
+		// Get the specific membership level object for this confirmation.
+		$membership = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $membership_id );
 
 		$email_confirmation = self::getEmailConfirmation( $current_user->ID );
 
@@ -1402,9 +1414,9 @@ class PMPro_Approvals {
 			$approval_status = __( 'pending', 'pmpro-approvals' );
 		}
 
-		$confirmation_message = '<p>' . sprintf( __( 'Thank you for your membership to %1$s. Your %2$s membership status is: <b>%3$s</b>.', 'pmpro-approvals' ), get_bloginfo( 'name' ), $current_user->membership_level->name, $approval_status ) . '</p>';
+		$confirmation_message = '<p>' . sprintf( __( 'Thank you for your membership to %1$s. Your %2$s membership status is: <b>%3$s</b>.', 'pmpro-approvals' ), get_bloginfo( 'name' ), $membership->name, $approval_status ) . '</p>';
 
-		// Check instructions
+		// Check instructions. $pmpro_invoice should not be empty when reaching here.
 		if ( ! empty( $pmpro_invoice ) && $pmpro_invoice->gateway == "check" && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
 			$confirmation_message .= '<div class="pmpro_payment_instructions">' . wpautop( wp_unslash( pmpro_getOption("instructions") ) ) . '</div>';
 		}
