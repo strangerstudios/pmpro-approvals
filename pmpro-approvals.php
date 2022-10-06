@@ -1006,7 +1006,10 @@ class PMPro_Approvals {
 	}
 
 	/**
-	 * Hooks into the BuddyPress
+	 * Hooks into the BuddyPress member directory.
+	 * Hide the user if they are pending/denied.
+	 * 
+	 * @since TBD
 	 */
 	public static function buddypress_sql( $sql_parts, $levels_included ) {
 
