@@ -1694,6 +1694,11 @@ class PMPro_Approvals {
 			);
 
 			$results         = $wpdb->get_results( $sqlQuery );
+
+			if ( ! $results ) {
+				$number_of_users[$approval_status] = 0;
+			}
+
 			$number_of_users[$approval_status] = (int) $results[0]->count;
 			
 			set_transient( 'pmpro_approvals_approval_count', $number_of_users, 3600*24 );
