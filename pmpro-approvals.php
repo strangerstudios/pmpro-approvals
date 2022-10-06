@@ -1651,10 +1651,13 @@ class PMPro_Approvals {
 		
 		// If we don't have this value yet, get all users with 'pending' status.
 		if ( ! isset( $number_of_users[$approval_status] ) ) {
+
+			$approval_levels = self::get_all_approval_level_ids(); // Get level ID's that require approvals only and search against those.
+
 			$sql_parts = array();
 			$sql_parts['SELECT'] = "SELECT COUNT(mu.user_id) as count FROM $wpdb->pmpro_memberships_users mu ";
 			$sql_parts['JOIN'] = "LEFT JOIN $wpdb->usermeta um ON um.user_id = mu.user_id AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) ";
-			$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND mu.membership_id > 0 AND um.meta_value LIKE '%" . esc_sql( $approval_status ) . "%' ";
+			$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND mu.membership_id IN (" . implode( ',', $approval_levels ) . ") AND um.meta_value LIKE '%" . esc_sql( $approval_status ) . "%'";
 			$sql_parts['GROUP'] = "";
 			$sql_parts['ORDER'] = "";
 			$sql_parts['LIMIT'] = "";
@@ -1785,6 +1788,27 @@ class PMPro_Approvals {
 				$order->saveOrder();
 			}
 		}
+	}
+
+	/**
+	 * Get level ID's that require approval.
+	 * 
+	 * @return array $level_ids An array of level_ids that requires approval.
+	 * @since TBD
+	 */
+	public static function get_all_approval_level_ids() {
+		$all_levels = pmpro_getAllLevels( true, true );
+		
+		$approval_levels = array();
+		foreach( $all_levels as $level_id => $data) {
+			if ( self::requiresApproval( $level_id ) ) {
+				$approval_levels[] = $level_id;
+			}
+			
+		}
+
+		return $approval_levels;
+
 	}
 
 
