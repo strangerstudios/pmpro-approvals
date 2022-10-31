@@ -34,13 +34,23 @@ if ( empty( $status ) || ! in_array( $status, $statuses ) ) {
 	//Approve, deny or reset member back to pending
 if ( ! empty( $_REQUEST['approve'] ) ) {
 	check_admin_referer( 'pmpro_approvals', 'pmpro_approvals_nonce' );
-	PMPro_Approvals::approveMember( intval( $_REQUEST['approve'] ), $l );
+	if ( ! PMPro_Approvals::isApproved( intval( $_REQUEST['approve'] ), $l ) ) {
+		PMPro_Approvals::approveMember( intval( $_REQUEST['approve'] ), $l );
+		$l = false;
+		$status = 'pending';
+	}
 } elseif ( ! empty( $_REQUEST['deny'] ) ) {
 	check_admin_referer( 'pmpro_approvals', 'pmpro_approvals_nonce' );
-	PMPro_Approvals::denyMember( intval( $_REQUEST['deny'] ), $l );
+	if ( ! PMPro_Approvals::isDenied( intval( $_REQUEST['deny'] ), $l ) ) {
+		PMPro_Approvals::denyMember( intval( $_REQUEST['deny'] ), $l );
+		$l = false;
+		$status = 'pending';
+	}
 } elseif ( ! empty( $_REQUEST['unapprove'] ) ) {
 	check_admin_referer( 'pmpro_approvals', 'pmpro_approvals_nonce' );
 	PMPro_Approvals::resetMember( intval( $_REQUEST['unapprove'] ), $l );
+	$l = false;
+	$status = 'pending';
 }
 
 	require_once PMPRO_DIR . '/adminpages/admin_header.php';
@@ -133,16 +143,17 @@ selected="selected"<?php } ?>><?php _e( 'All Levels', 'pmpro-approvals' ); ?></o
 		$limit = 15;
 	}
 
-		$theusers  = PMPro_Approvals::getApprovals( $l, $s, $status, $sortby, $sortorder, $pn, $limit );
+		$approval_users  = PMPro_Approvals::getApprovals( $l, $s, $status, $sortby, $sortorder, $pn, $limit );
 		$totalrows = $wpdb->get_var( 'SELECT FOUND_ROWS() as found_rows' );
 
-	if ( $theusers ) {
+	if ( $approval_users ) {
 		?>
 		<p class="clear">
-		<?php
-		if ( $l == 1 ) {
-?>
-<?php echo $totalrows; ?> <?php _e( 'applications awaiting review', 'pmpro-approvals' ); ?>.<?php } ?>
+			<?php
+			if ( $status === 'pending' ) {
+			?>
+				<?php echo $totalrows; ?> <?php _e( 'applications awaiting review', 'pmpro-approvals' ); ?>.
+			<?php } ?>
 		</p>
 		<?php
 	}
@@ -154,7 +165,7 @@ selected="selected"<?php } ?>><?php _e( 'All Levels', 'pmpro-approvals' ); ?></o
 				<th><?php _e( 'Username', 'pmpro-approvals' ); ?></th>
 				<th><?php _e( 'Name', 'pmpro-approvals' ); ?></th>				
 				<th><?php _e( 'Email', 'pmpro-approvals' ); ?></th>
-				<?php do_action( 'pmpro_approvals_list_extra_cols_header', $theusers ); ?>
+				<?php do_action( 'pmpro_approvals_list_extra_cols_header', $approval_users ); ?>
 				<th><?php _e( 'Membership', 'pmpro-approvals' ); ?></th>					
 				<th><?php _e( 'Approval Status', 'pmpro-approvals' ); ?></th>
 				<th><a href="<?php echo admin_url( 'admin.php?page=pmpro-approvals&s=' . esc_attr( $s ) . '&limit=' . $limit . '&pn=' . $pn . '&sortby=user_registered' ); ?>
@@ -167,28 +178,27 @@ selected="selected"<?php } ?>><?php _e( 'All Levels', 'pmpro-approvals' ); ?></o
 		<tbody id="users" class="list:user user-list">	
 			<?php
 				$count = 0;
-			foreach ( $theusers as $auser ) {
+			foreach ( $approval_users as $approval_user ) {
 				//get meta
-				$theuser                   = get_userdata( $auser->ID );
-				$theuser->membership_level = pmpro_getMembershipLevelForUser( $theuser->ID );
+				$user_data = get_userdata( $approval_user->ID );
 				?>
 					<tr 
 					<?php
 					if ( $count++ % 2 == 0 ) {
 ?>
 class="alternate"<?php } ?>>
-						<td><?php echo $theuser->ID; ?></td>
+						<td><?php echo $user_data->ID; ?></td>
 						<td class="username column-username">
-							<?php echo get_avatar( $theuser->ID, 32 ); ?>								
+							<?php echo get_avatar( $user_data->ID, 32 ); ?>								
 							<?php if ( current_user_can( 'edit_users' ) ) { ?>
-									<strong><a href="user-edit.php?user_id=<?php echo $theuser->ID; ?>"><?php echo $theuser->user_login; ?></a></strong>
+									<strong><a href="user-edit.php?user_id=<?php echo $user_data->ID; ?>"><?php echo $user_data->user_login; ?></a></strong>
 								<?php } else { ?>
-									<strong><a href="admin.php?page=pmpro-approvals&user_id=<?php echo $theuser->ID; ?>"><?php echo $theuser->user_login; ?></a></strong>
+									<strong><a href="admin.php?page=pmpro-approvals&user_id=<?php echo $user_data->ID; ?>"><?php echo $user_data->user_login; ?></a></strong>
 								<?php } ?>
 							<br />
 							<?php
 								// Set up the hover actions for this user
-								$actions      = apply_filters( 'pmpro_approvals_user_row_actions', array(), $theuser );
+								$actions      = apply_filters( 'pmpro_approvals_user_row_actions', array(), $user_data, $approval_user );
 								$action_count = count( $actions );
 								$i            = 0;
 							if ( $action_count ) {
@@ -203,46 +213,46 @@ class="alternate"<?php } ?>>
 							}
 								?>
 							</td>
-							<td><?php echo trim( $theuser->first_name . ' ' . $theuser->last_name ); ?></td>							
-							<td><a href="mailto:<?php echo $theuser->user_email; ?>"><?php echo $theuser->user_email; ?></a></td>
-							<?php do_action( 'pmpro_approvals_list_extra_cols_body', $theuser ); ?>						
+							<td><?php echo trim( $user_data->first_name . ' ' . $user_data->last_name ); ?></td>							
+							<td><a href="mailto:<?php echo $user_data->user_email; ?>"><?php echo $user_data->user_email; ?></a></td>
+							<?php do_action( 'pmpro_approvals_list_extra_cols_body', $user_data ); ?>						
 							<td>
 								<?php
-								echo $auser->membership;
+								echo $approval_user->membership;
 								?>
 							</td>						
 							<td>										
 								<?php
 								$pmpro_approvals_nonce = wp_create_nonce( 'pmpro_approvals' );
 
-								if ( PMPro_Approvals::isApproved( $theuser->ID ) || PMPro_Approvals::isDenied( $theuser->ID ) ) {
+								if ( PMPro_Approvals::isApproved( $user_data->ID, $approval_user->membership_id) || PMPro_Approvals::isDenied( $user_data->ID, $approval_user->membership_id ) ) {
 
-									if ( ! PMPro_Approvals::getEmailConfirmation( $theuser->ID ) ) {
+									if ( ! PMPro_Approvals::getEmailConfirmation( $user_data->ID ) ) {
 										_e( 'Email Confirmation Required.', 'pmpro-approvals' );
 									} else {
 
-										echo PMPro_Approvals::getUserApprovalStatus( $theuser->ID, $theuser->membership_level->id, false );
+										echo PMPro_Approvals::getUserApprovalStatus( $user_data->ID, $approval_user->membership_id, false );
 
 										//link to unapprove
 										?>
-										[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $theuser->user_login; ?>?', '?page=pmpro-approvals&s=<?php echo esc_attr( $s ); ?>&l=<?php echo $l; ?>&limit=<?php echo intval( $limit ); ?>&status=<?php echo $status; ?>&sortby=<?php echo $sortby; ?>&sortorder=<?php echo $sortorder; ?>&pn=<?php echo intval( $pn ); ?>&unapprove=<?php echo $theuser->ID; ?>&pmpro_approvals_nonce=<?php echo urlencode( $pmpro_approvals_nonce ); ?>');">X</a>]
+										[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo $user_data->user_login; ?>?', '?page=pmpro-approvals&s=<?php echo esc_attr( $s ); ?>&l=<?php echo $approval_user->membership_id; ?>&limit=<?php echo intval( $limit ); ?>&status=<?php echo $status; ?>&sortby=<?php echo $sortby; ?>&sortorder=<?php echo $sortorder; ?>&pn=<?php echo intval( $pn ); ?>&unapprove=<?php echo $user_data->ID; ?>&pmpro_approvals_nonce=<?php echo urlencode( $pmpro_approvals_nonce ); ?>');">X</a>]
 										<?php
 									}
 								} else {
 									?>
 																			
-									<a href="?page=pmpro-approvals&s=<?php echo esc_attr( $s ); ?>&l=<?php echo $l; ?>&limit=<?php echo intval( $limit ); ?>&status=<?php echo $status; ?>&sortby=<?php echo $sortby; ?>&sortorder=<?php echo $sortorder; ?>&pn=<?php echo intval( $pn ); ?>&approve=<?php echo $theuser->ID; ?>&pmpro_approvals_nonce=<?php echo urlencode( $pmpro_approvals_nonce ); ?>"><?php _e('Approve', 'pmpro-approvals') ?></a> |
-									<a href="?page=pmpro-approvals&s=<?php echo esc_attr( $s ); ?>&l=<?php echo $l; ?>&limit=<?php echo intval( $limit ); ?>&status=<?php echo $status; ?>&sortby=<?php echo $sortby; ?>&sortorder=<?php echo $sortorder; ?>&pn=<?php echo intval( $pn ); ?>&deny=<?php echo $theuser->ID; ?>&pmpro_approvals_nonce=<?php echo urlencode( $pmpro_approvals_nonce ); ?>"><?php _e('Deny', 'pmpro-approvals') ?></a>
+									<a href="?page=pmpro-approvals&s=<?php echo esc_attr( $s ); ?>&l=<?php echo $approval_user->membership_id; ?>&limit=<?php echo intval( $limit ); ?>&status=<?php echo $status; ?>&sortby=<?php echo $sortby; ?>&sortorder=<?php echo $sortorder; ?>&pn=<?php echo intval( $pn ); ?>&approve=<?php echo $user_data->ID; ?>&pmpro_approvals_nonce=<?php echo urlencode( $pmpro_approvals_nonce ); ?>"><?php _e('Approve', 'pmpro-approvals') ?></a> |
+									<a href="?page=pmpro-approvals&s=<?php echo esc_attr( $s ); ?>&l=<?php echo $approval_user->membership_id; ?>&limit=<?php echo intval( $limit ); ?>&status=<?php echo $status; ?>&sortby=<?php echo $sortby; ?>&sortorder=<?php echo $sortorder; ?>&pn=<?php echo intval( $pn ); ?>&deny=<?php echo $user_data->ID; ?>&pmpro_approvals_nonce=<?php echo urlencode( $pmpro_approvals_nonce ); ?>"><?php _e('Deny', 'pmpro-approvals') ?></a>
 									<?php
 								}
 								?>
 							</td>
-							<td><?php echo date_i18n( get_option( 'date_format' ), strtotime( $theuser->user_registered ) ); ?></td>							
+							<td><?php echo date_i18n( get_option( 'date_format' ), strtotime( $user_data->user_registered ) ); ?></td>							
 						</tr>
 					<?php
 			}
 
-			if ( ! $theusers ) {
+			if ( ! $approval_users ) {
 				?>
 				<tr>
 				<td colspan="9"><p><?php _e( 'No pending members found.', 'pmpro-approvals' ); ?></p></td>
