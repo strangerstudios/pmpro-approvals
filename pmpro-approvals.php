@@ -1385,9 +1385,8 @@ class PMPro_Approvals {
 	/**
 	 * Custom confirmation message for levels that requires approval.
 	 */
-	public static function pmpro_confirmation_message( $confirmation_message, $pmpro_invoice ) {
-
-		global $current_user;
+public static function pmpro_confirmation_message( $confirmation_message, $pmpro_invoice ) {
+		global $current_user, $wpdb;
 
 		// Try to get the membership ID for the confirmation.
 		if ( ! empty( $pmpro_invoice ) ) {
@@ -1405,6 +1404,11 @@ class PMPro_Approvals {
 			return $confirmation_message;
 		}
 
+		// Allow user's to see the entire confirmation if already approved for this particular level.
+		if ( $approval_status === 'approved' ) {
+			return $confirmation_message;
+		}
+
 		// Get the specific membership level object for this confirmation.
 		$membership = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $membership_id );
 
@@ -1416,11 +1420,18 @@ class PMPro_Approvals {
 
 		$confirmation_message = '<p>' . sprintf( __( 'Thank you for your membership to %1$s. Your %2$s membership status is: <b>%3$s</b>.', 'pmpro-approvals' ), get_bloginfo( 'name' ), $membership->name, $approval_status ) . '</p>';
 
+		// Filter the custom level confirmation message to show to non-approved members. Default is false
+		if ( apply_filters( 'pmpro_approvals_show_confirmation_message', false ) ) {
+			$level_message = $wpdb->get_var("SELECT l.confirmation FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND mu.user_id = '" . intval( $current_user->ID ) . "' LIMIT 1");
+			if(!empty($level_message)) {
+				$confirmation_message .= "\n" . stripslashes( $level_message ) . "\n";
+			}
+		}
+
 		// Check instructions. $pmpro_invoice should not be empty when reaching here.
 		if ( ! empty( $pmpro_invoice ) && $pmpro_invoice->gateway == "check" && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
 			$confirmation_message .= '<div class="pmpro_payment_instructions">' . wpautop( wp_unslash( pmpro_getOption("instructions") ) ) . '</div>';
 		}
-
 
 		$confirmation_message .= '<p>' . sprintf( __( 'Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s.', 'pmpro-approvals' ), $current_user->user_email ) . '</p>';
 
