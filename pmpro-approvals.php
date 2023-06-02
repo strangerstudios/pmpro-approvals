@@ -1697,9 +1697,10 @@ class PMPro_Approvals {
 
 			if ( ! $results ) {
 				$number_of_users[$approval_status] = 0;
+			} else {
+				$number_of_users[$approval_status] = (int) $results[0]->count;
 			}
 
-			$number_of_users[$approval_status] = (int) $results[0]->count;
 			
 			set_transient( 'pmpro_approvals_approval_count', $number_of_users, 3600*24 );
 		}
