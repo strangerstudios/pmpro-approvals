@@ -867,9 +867,9 @@ class PMPro_Approvals {
 		if ( empty( $user_approval ) || ! is_array( $user_approval ) ) {
 			// Check if the user had this level before it was set to require approval.
 			if ( ! empty( $level_id ) && self::hasMembershipLevelSansApproval( $level_id, $user_id ) ) {
-				return true;
-			} else {
 				return false;
+			} else {
+				return true;
 			}
 		}
 
