@@ -1418,7 +1418,7 @@ class PMPro_Approvals {
 
 		// Check instructions. $pmpro_invoice should not be empty when reaching here.
 		if ( ! empty( $pmpro_invoice ) && $pmpro_invoice->gateway == "check" && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
-			$confirmation_message .= '<div class="pmpro_payment_instructions">' . wpautop( wp_unslash( pmpro_getOption("instructions") ) ) . '</div>';
+			$confirmation_message .= '<div class="pmpro_payment_instructions">' . wpautop( wp_unslash( get_option("pmpro_instructions") ) ) . '</div>';
 		}
 
 
