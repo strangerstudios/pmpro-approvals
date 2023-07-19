@@ -867,9 +867,9 @@ class PMPro_Approvals {
 		if ( empty( $user_approval ) || ! is_array( $user_approval ) ) {
 			// Check if the user had this level before it was set to require approval.
 			if ( ! empty( $level_id ) && self::hasMembershipLevelSansApproval( $level_id, $user_id ) ) {
-				return true;
-			} else {
 				return false;
+			} else {
+				return true;
 			}
 		}
 
@@ -1332,7 +1332,7 @@ class PMPro_Approvals {
 				// Check that the user has this level.
 				if ( self::hasMembershipLevelSansApproval( $approval_level_id ) ) {
 					$level = pmpro_getLevel( $approval_level_id );
-					printf( '<li><strong>' . esc_html( 'Approval Status for %s', 'pmpro-approvals' ) . ':' . '</strong> %s</li>', $level->name, $approval_statuses[ $approval_level_id ] );
+					printf( '<li><strong>' . esc_html__( 'Approval Status for %s', 'pmpro-approvals' ) . ':' . '</strong> %s</li>', $level->name, $approval_statuses[ $approval_level_id ] );
 				}
 			}
 		}
@@ -1697,9 +1697,10 @@ class PMPro_Approvals {
 
 			if ( ! $results ) {
 				$number_of_users[$approval_status] = 0;
+			} else {
+				$number_of_users[$approval_status] = (int) $results[0]->count;
 			}
 
-			$number_of_users[$approval_status] = (int) $results[0]->count;
 			
 			set_transient( 'pmpro_approvals_approval_count', $number_of_users, 3600*24 );
 		}
