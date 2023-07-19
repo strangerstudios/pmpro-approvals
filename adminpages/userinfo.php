@@ -46,7 +46,7 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 		<a href="<?php echo admin_url( 'user-edit.php?user_id=' . intval( $user->ID ) ); ?>" class="button button-primary"><?php esc_html_e( 'Edit Profile', 'pmpro-approvals' ); ?></a>
 	</h2>	
 	
-	<h3><?php esc_html_e( 'Account Information', 'pmpro-approvals' ); ?></h3>
+	<h2><?php esc_html_e( 'Account Information', 'pmpro-approvals' ); ?></h2>
 	<table class="form-table">
 		<tr>
 			<th><label><?php esc_html_e( 'User ID', 'pmpro-approvals' ); ?></label></th>
@@ -108,7 +108,7 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 					$box = pmprorh_getCheckoutBoxByName( $where );
 					?>
 					<?php if ( isset( $box->label ) ) { ?>
-						<h3><?php echo esc_html( $box->label ); ?></h3>
+						<h2><?php echo esc_html( $box->label ); ?></h2>
 					<?php } ?>
 
 					<table class="form-table">
