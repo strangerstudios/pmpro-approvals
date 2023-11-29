@@ -49,11 +49,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 			'sitename'              => get_option( 'blogname' ),
 			'membership_id'         => $level->id,
 			'membership_level_name' => $level->name,
-			'siteemail'             => pmpro_getOption( 'from_email' ),
+			'siteemail'             => get_option( 'pmpro_from_email' ),
 			'login_link'            => wp_login_url(),
 		);
-		$this->from     = pmpro_getOption( 'from' );
-		$this->fromname = pmpro_getOption( 'from_name' );
+		$this->from     = get_option( 'pmpro_from' );
+		$this->fromname = get_option( 'pmpro_from_name' );
 
 		$this->data = apply_filters( 'pmpro_approvals_member_approved_email_data', $this->data, $member, $level );
 
@@ -92,11 +92,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 			'sitename'              => get_option( 'blogname' ),
 			'membership_id'         => $level->id,
 			'membership_level_name' => $level->name,
-			'siteemail'             => pmpro_getOption( 'from_email' ),
+			'siteemail'             => get_option( 'pmpro_from_email' ),
 			'login_link'            => wp_login_url(),
 		);
-		$this->from     = pmpro_getOption( 'from' );
-		$this->fromname = pmpro_getOption( 'from_name' );
+		$this->from     = get_option( 'pmpro_from' );
+		$this->fromname = get_option( 'pmpro_from_name' );
 
 		$this->data = apply_filters( 'pmpro_approvals_member_denied_email_data', $this->data, $member, $level );
 
@@ -128,11 +128,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 			'name'                  => isset( $admin->display_name ) ? $admin->display_name : "",
 			'user_login'            => isset( $admin->user_login ) ? $admin->user_login : "",
 			'sitename'              => get_option( 'blogname' ),
-			'siteemail'             => pmpro_getOption( 'from_email' ),
+			'siteemail'             => get_option( 'pmpro_from_email' ),
 			'login_link'            => wp_login_url(),
 		);
-		$this->from     = pmpro_getOption( 'from' );
-		$this->fromname = pmpro_getOption( 'from_name' );
+		$this->from     = get_option( 'pmpro_from' );
+		$this->fromname = get_option( 'pmpro_from_name' );
 
 		if ( ! empty( $member ) ) {
 
@@ -186,11 +186,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 			'name'       => $admin->display_name,
 			'user_login' => $admin->user_login,
 			'sitename'   => get_option( 'blogname' ),
-			'siteemail'  => pmpro_getOption( 'from_email' ),
+			'siteemail'  => get_option( 'pmpro_from_email' ),
 			'login_link' => wp_login_url(),
 		);
-		$this->from     = pmpro_getOption( 'from' );
-		$this->fromname = pmpro_getOption( 'from_name' );
+		$this->from     = get_option( 'pmpro_from' );
+		$this->fromname = get_option( 'pmpro_from_name' );
 
 		// Let's add in the user approval data if it's available.
 		if ( ! empty( $member ) ) {
@@ -243,11 +243,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 			'name'       => $admin->display_name,
 			'user_login' => $admin->user_login,
 			'sitename'   => get_option( 'blogname' ),
-			'siteemail'  => pmpro_getOption( 'from_email' ),
+			'siteemail'  => get_option( 'pmpro_from_email' ),
 			'login_link' => wp_login_url(),
 		);
-		$this->from     = pmpro_getOption( 'from' );
-		$this->fromname = pmpro_getOption( 'from_name' );
+		$this->from     = get_option( 'pmpro_from' );
+		$this->fromname = get_option( 'pmpro_from_name' );
 
 		// Let's add in the user approval data if it's available.
 		if ( ! empty( $member ) ) {

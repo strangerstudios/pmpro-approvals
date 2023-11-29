@@ -83,14 +83,14 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 				} else {
 					echo PMPro_Approvals::getUserApprovalStatus( $user->ID, $l, false );
 				?>
-				[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo esc_attr( $user->user_login ); ?>?', '?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&unapprove=<?php echo $user->ID; ?>&l=<?php echo $l ?>');">X</a>]
+				[<a href="javascript:askfirst('Are you sure you want to reset approval for <?php echo esc_attr( $user->user_login ); ?>?', '?page=pmpro-approvals&user_id=<?php echo esc_attr( $user->ID ); ?>&unapprove=<?php echo esc_attr( $user->ID ); ?>&l=<?php echo esc_attr( $l ) ?>');">X</a>]
 				<?php
 				}   // end of email confirmation check.
 			} else {
 			?>
 													
-			<a href="?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&approve=<?php echo $user->ID; ?>&l=<?php echo $l ?>"><?php esc_html_e( 'Approve', 'pmpro-approvals' ); ?></a> |
-			<a href="?page=pmpro-approvals&user_id=<?php echo $user->ID; ?>&deny=<?php echo $user->ID; ?>&l=<?php echo $l ?>"><?php esc_html_e( 'Deny', 'pmpro-approvals' ); ?></a>
+			<a href="?page=pmpro-approvals&user_id=<?php echo esc_attr( $user->ID ); ?>&approve=<?php echo esc_attr( $user->ID ); ?>&l=<?php echo esc_attr( $l ) ?>"><?php esc_html_e( 'Approve', 'pmpro-approvals' ); ?></a> |
+			<a href="?page=pmpro-approvals&user_id=<?php echo esc_attr( $user->ID ); ?>&deny=<?php echo esc_attr( $user->ID ); ?>&l=<?php echo esc_attr( $l ) ?>"><?php esc_html_e( 'Deny', 'pmpro-approvals' ); ?></a>
 			<?php
 			}
 			?>
@@ -99,13 +99,13 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 	</table>
 	
 	<?php
-		if ( function_exists( 'pmprorh_getProfileFields' ) ) {
-			global $pmprorh_registration_fields, $pmprorh_checkout_boxes;
+		if ( function_exists( 'pmpro_get_user_fields_for_profile' ) ) {
+			global $pmpro_user_fields, $pmprorh_checkout_boxes;
 
 			//show the fields
-			if ( ! empty( $pmprorh_registration_fields ) ) {
-				foreach ( $pmprorh_registration_fields as $where => $fields ) {
-					$box = pmprorh_getCheckoutBoxByName( $where );
+			if ( ! empty( $pmpro_user_fields ) ) {
+				foreach ( $pmpro_user_fields as $where => $fields ) {
+					$box = pmpro_get_field_group_by_name( $where );
 					?>
 					<?php if ( isset( $box->label ) ) { ?>
 						<h3><?php echo esc_html( $box->label ); ?></h3>
@@ -120,7 +120,7 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 						if ( false != $field->profile ) {
 
 						// Check to see if level is set for the field.
-						if ( isset( $field->levels ) && ! in_array( $level_details->ID, $field->levels ) ) {
+						if ( ! empty( $field->levels ) && ! in_array( $level_details->ID, $field->levels ) ) {
 							continue;
 						}
 							
@@ -136,23 +136,23 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 
 
 							<?php } else { 
-								$register_helper_fields = get_user_meta( $user->ID, $field->name, true );
+								$user_field = get_user_meta( $user->ID, $field->name, true );
 
 								// Get all array option values and break up the array into readable content.
-								if ( is_array( $register_helper_fields ) ) {
-									 $rh_field_string = '';
-									 foreach( $register_helper_fields as $key => $value ) {
-										$rh_field_string .= $value . ', ';
+								if ( is_array( $user_field ) ) {
+									 $user_field_string = '';
+									 foreach( $user_field as $key => $value ) {
+										$user_field_string .= $value . ', ';
 									}
 
 									// remove trailing comma from string.
-									echo '<td>' . esc_html( rtrim( $rh_field_string, ', ' ) ) . '</td>';
+									echo '<td>' . esc_html( rtrim( $user_field_string, ', ' ) ) . '</td>';
 								} else {
 									// If Register Helper field is a valid URL, then let's make it clickable.
-									if ( wp_http_validate_url( $register_helper_fields ) ) {
-										echo '<td><a href="' . esc_url_raw( $register_helper_fields ) . '" target="_blank">' . esc_url( $register_helper_fields ) . '</a></td>';
+									if ( wp_http_validate_url( $user_field ) ) {
+										echo '<td><a href="' . esc_url_raw( $user_field ) . '" target="_blank">' . esc_url( $user_field ) . '</a></td>';
 									} else {
-										echo '<td>' . esc_html( $register_helper_fields ) . '</td>';
+										echo '<td>' . esc_html( $user_field ) . '</td>';
 									}
 								}
 							
@@ -168,5 +168,5 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 			}
 		}
 	?>
-	<a href="?page=pmpro-approvals" class="">&laquo; <?php _e( 'Back to Approvals', 'pmpro-approvals' ); ?></a>
+	<a href="?page=pmpro-approvals" class="">&laquo; <?php esc_html_e( 'Back to Approvals', 'pmpro-approvals' ); ?></a>
 </div>

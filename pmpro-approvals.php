@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.5
+Version: 1.5.1
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -867,9 +867,9 @@ class PMPro_Approvals {
 		if ( empty( $user_approval ) || ! is_array( $user_approval ) ) {
 			// Check if the user had this level before it was set to require approval.
 			if ( ! empty( $level_id ) && self::hasMembershipLevelSansApproval( $level_id, $user_id ) ) {
-				return true;
-			} else {
 				return false;
+			} else {
+				return true;
 			}
 		}
 
@@ -1332,7 +1332,7 @@ class PMPro_Approvals {
 				// Check that the user has this level.
 				if ( self::hasMembershipLevelSansApproval( $approval_level_id ) ) {
 					$level = pmpro_getLevel( $approval_level_id );
-					printf( '<li><strong>' . esc_html( 'Approval Status for %s', 'pmpro-approvals' ) . ':' . '</strong> %s</li>', $level->name, $approval_statuses[ $approval_level_id ] );
+					printf( '<li><strong>' . esc_html__( 'Approval Status for %s', 'pmpro-approvals' ) . ':' . '</strong> %s</li>', $level->name, $approval_statuses[ $approval_level_id ] );
 				}
 			}
 		}
@@ -1418,7 +1418,7 @@ class PMPro_Approvals {
 
 		// Check instructions. $pmpro_invoice should not be empty when reaching here.
 		if ( ! empty( $pmpro_invoice ) && $pmpro_invoice->gateway == "check" && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
-			$confirmation_message .= '<div class="pmpro_payment_instructions">' . wpautop( wp_unslash( pmpro_getOption("instructions") ) ) . '</div>';
+			$confirmation_message .= '<div class="pmpro_payment_instructions">' . wpautop( wp_unslash( get_option("pmpro_instructions") ) ) . '</div>';
 		}
 
 
@@ -1697,9 +1697,10 @@ class PMPro_Approvals {
 
 			if ( ! $results ) {
 				$number_of_users[$approval_status] = 0;
+			} else {
+				$number_of_users[$approval_status] = (int) $results[0]->count;
 			}
 
-			$number_of_users[$approval_status] = (int) $results[0]->count;
 			
 			set_transient( 'pmpro_approvals_approval_count', $number_of_users, 3600*24 );
 		}
