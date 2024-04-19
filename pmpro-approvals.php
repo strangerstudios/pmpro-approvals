@@ -1387,7 +1387,7 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_confirmation_message( $confirmation_message, $pmpro_invoice ) {
 
-		global $current_user;
+		global $current_user, $wpdb;
 
 		// Try to get the membership ID for the confirmation.
 		if ( ! empty( $pmpro_invoice ) ) {
@@ -1421,7 +1421,21 @@ class PMPro_Approvals {
 			$confirmation_message .= '<div class="pmpro_payment_instructions">' . wpautop( wp_unslash( get_option("pmpro_instructions") ) ) . '</div>';
 		}
 
+		/**
+		 * Filter to show the confirmation message for levels that require approval.
+		 * @param bool $show Whether to show the confirmation message or not.
+		 * @param int $membership_id The membership ID for the current view.
+		 * @since TBD
+		 */
+		if ( apply_filters( 'pmpro_approvals_show_confirmation_message', false, $pmpro_invoice->membership_id ) ) {
+			// Add the level confirmation message if set.
+			$level_message = $wpdb->get_var("SELECT confirmation FROM $wpdb->pmpro_membership_levels WHERE id = '" . intval( $pmpro_invoice->membership_id ) . "' LIMIT 1");
 
+			if ( ! empty( $level_message ) ) {
+				$confirmation_message .= wpautop( stripslashes( $level_message ) );
+			}
+		}
+		
 		$confirmation_message .= '<p>' . sprintf( __( 'Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s.', 'pmpro-approvals' ), $current_user->user_email ) . '</p>';
 
 		return $confirmation_message;
