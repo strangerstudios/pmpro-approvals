@@ -55,6 +55,19 @@ class PMPro_Approvals_Email extends PMProEmail {
 		$this->from     = get_option( 'pmpro_from' );
 		$this->fromname = get_option( 'pmpro_from_name' );
 
+		/**
+		 * Filters the email template.
+		 *
+		 * This filter allows modification of the email template before it is rendered.
+		 *
+		 * @since TBD
+		 *
+		 * @param string $message The custom message content.
+		 * @param WP_User $member The recipient of the email.
+		 * @param stdClass $level The level of the recipient.
+		 */
+		$this->template = apply_filters( 'pmpro_approvals_member_approved_email_template', $this->template, $member, $level );
+
 		$this->data = apply_filters( 'pmpro_approvals_member_approved_email_data', $this->data, $member, $level );
 
 		return $this->sendEmail();
@@ -97,6 +110,19 @@ class PMPro_Approvals_Email extends PMProEmail {
 		);
 		$this->from     = get_option( 'pmpro_from' );
 		$this->fromname = get_option( 'pmpro_from_name' );
+
+		/**
+		 * Filters the email template.
+		 *
+		 * This filter allows modification of the email template before it is rendered.
+		 *
+		 * @since TBD
+		 *
+		 * @param string $message The custom message content.
+		 * @param WP_User $member The recipient of the email.
+		 * @param stdClass $level The level of the recipient.
+		 */
+		$this->template = apply_filters( 'pmpro_approvals_member_denied_email_template', $this->template, $member, $level );
 
 		$this->data = apply_filters( 'pmpro_approvals_member_denied_email_data', $this->data, $member, $level );
 
