@@ -1316,9 +1316,9 @@ class PMPro_Approvals {
 				}
 
 				if ( self::isPending( $current_user->ID, $user_level->id ) ) {
-					return esc_html__( 'Your membership requires approval before you are able to view this content.', 'pmpro-approvals' );
+					return '<p>' . esc_html__( 'Your membership requires approval before you are able to view this content.', 'pmpro-approvals' ) . '</p>';
 				} elseif ( self::isDenied( $current_user->ID, $user_level->id ) ) {
-					return esc_html__( 'Your membership application has been denied. Contact the site owners if you believe this is an error.', 'pmpro-approvals' );
+					return '<p>' . esc_html__( 'Your membership application has been denied. Contact the site owners if you believe this is an error.', 'pmpro-approvals' ) . '</p>';
 				}
 			}
 		}
