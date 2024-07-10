@@ -111,7 +111,9 @@ class PMPro_Approvals {
 		add_action( 'pmpro_save_membership_level', array( 'PMPro_Approvals', 'pmpro_save_membership_level' ) );
 
 		//Add code for filtering checkouts, confirmation, and content filters
-		add_filter( 'pmpro_non_member_text_filter', array( 'PMPro_Approvals', 'pmpro_non_member_text_filter' ) );
+		add_filter( 'pmpro_no_access_message_header', array( 'PMPro_Approvals', 'pmpro_no_access_message_header' ) ); // PMPro v3.1+.
+		add_filter( 'pmpro_no_access_message_body', array( 'PMPro_Approvals', 'pmpro_non_member_text_filter' ) ); // PMPro v3.1+.
+		add_filter( 'pmpro_non_member_text_filter', array( 'PMPro_Approvals', 'pmpro_non_member_text_filter' ) ); // Pre-PMPro 3.1
 		add_action( 'pmpro_account_bullets_top', array( 'PMPro_Approvals', 'pmpro_account_bullets_top' ) );
 		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_confirmation_message' ), 10, 2 );
 		add_action( 'pmpro_before_change_membership_level', array( 'PMPro_Approvals', 'pmpro_before_change_membership_level' ), 10, 4 );
@@ -1261,11 +1263,46 @@ class PMPro_Approvals {
 	}
 
 	/**
+	 * Filter the header message for the no access message.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $header The header message for the no access message.
+	 * @return string The filtered header message for the no access message.
+	 */
+	public static function pmpro_no_access_message_header( $header ) {
+		global $current_user;
+
+		// We are running PMPro v3.1+, so make sure that deprecated filters don't run later.
+		remove_filter( 'pmpro_non_member_text_filter', array( 'PMPro_Approvals', 'pmpro_non_member_text_filter' ), 10 );
+
+		// If a user does not have a membership level, return default text.
+		if ( ! pmpro_hasMembershipLevel() ) {
+			return $header;
+		}
+
+		// Loop through all user levels and check if any are pending approval or denied.
+		$user_levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
+		foreach ( $user_levels as $user_level ) {
+			if ( ! self::requiresApproval( $user_level->id ) ) {
+				continue;
+			}
+
+			if ( self::isPending( $current_user->ID, $user_level->id ) ) {
+				return __( 'Membership Pending Approval', 'pmpro-approvals' );
+			} elseif ( self::isDenied( $current_user->ID, $user_level->id ) ) {
+				return __( 'Membership Denied', 'pmpro-approvals' );
+			}
+		}
+
+		return $header;
+	}
+
+	/**
 	 * Show a different message for users that have their membership awaiting approval.
 	 */
 	public static function pmpro_non_member_text_filter( $text ) {
-
-		global $current_user, $has_access;
+		global $current_user;
 
 		//if a user does not have a membership level, return default text.
 		if ( ! pmpro_hasMembershipLevel() ) {
