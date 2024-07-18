@@ -1427,7 +1427,7 @@ class PMPro_Approvals {
 		 * @param int $membership_id The membership ID for the current view.
 		 * @since TBD
 		 */
-		if ( apply_filters( 'pmpro_approvals_show_levels_confirmation_message', false, $pmpro_invoice->membership_id ) ) {
+		if ( apply_filters( 'pmpro_approvals_show_level_confirmation_message', false, $pmpro_invoice->membership_id ) ) {
 			// Add the level confirmation message if set.
 			$level_message = $wpdb->get_var("SELECT confirmation FROM $wpdb->pmpro_membership_levels WHERE id = '" . intval( $pmpro_invoice->membership_id ) . "' LIMIT 1");
 
