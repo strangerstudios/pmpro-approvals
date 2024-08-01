@@ -574,16 +574,9 @@ class PMPro_Approvals {
 			return $haslevel;
 		}
 
-		// Only check this inside admin of WordPress.
-		if ( is_admin() && function_exists( 'get_current_screen' ) ) {
-
-			// Ignore if on the edit user screen. This will allow admins/users to update custom fields.
-			$current_screen = get_current_screen();
-			
-			if ( !empty( $current_screen ) && ( $current_screen->base == 'user-edit' || $current_screen->base == 'profile' ) ) {
-				return $haslevel;
-			}
-
+		// Show the real levels in the admin.
+		if ( is_admin() ) {
+			return $haslevel;
 		}
 
 		//no user, skip
@@ -597,7 +590,7 @@ class PMPro_Approvals {
 		}
 
 		// If the current user doesn't have a level, bail.
-		if ( ! pmpro_hasMembershipLevel() ) {
+		if ( ! pmpro_hasMembershipLevel( null, $user_id ) ) {
 			return $haslevel;
 		}
 
