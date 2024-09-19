@@ -183,8 +183,8 @@ class PMPro_Approvals_Email extends PMProEmail {
 		$this->body     = file_get_contents( PMPRO_APP_DIR . '/email/admin_approved.html' );
 		$this->data     = array(
 			'subject'    => $this->subject,
-			'name'       => $admin->display_name,
-			'user_login' => $admin->user_login,
+			'name'       => isset( $admin->display_name ) ? $admin->display_name : "",
+			'user_login' => isset( $admin->user_login ) ? $admin->user_login : "",
 			'sitename'   => get_option( 'blogname' ),
 			'siteemail'  => get_option( 'pmpro_from_email' ),
 			'login_link' => wp_login_url(),
@@ -240,8 +240,8 @@ class PMPro_Approvals_Email extends PMProEmail {
 		$this->body     = file_get_contents( PMPRO_APP_DIR . '/email/admin_denied.html' );
 		$this->data     = array(
 			'subject'    => $this->subject,
-			'name'       => $admin->display_name,
-			'user_login' => $admin->user_login,
+			'name'       => isset( $admin->display_name ) ? $admin->display_name : "",
+			'user_login' => isset( $admin->user_login ) ? $admin->user_login : "",
 			'sitename'   => get_option( 'blogname' ),
 			'siteemail'  => get_option( 'pmpro_from_email' ),
 			'login_link' => wp_login_url(),
