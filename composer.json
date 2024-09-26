@@ -1,0 +1,9 @@
+{
+    "name": "strangerstudios/pmpro-approvals",
+    "type": "wordpress-plugin",
+    "description": "Paid Memberships Pro - Approval Process for Membership Plugin",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "composer/installers": "^1.0"
+    }
+}
