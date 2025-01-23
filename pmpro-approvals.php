@@ -1445,7 +1445,7 @@ class PMPro_Approvals {
 		}
 
 		$membership_name = $membership ? $membership->name : '';
-		$confirmation_message = '<p>' . sprintf( __( 'Thank you for your membership to %1$s. Your %2$s membership status is: <b>%3$s</b>.', 'pmpro-approvals' ), get_bloginfo( 'name' ),$membership_name, $approval_status ) . '</p>';
+		$confirmation_message = '<p>' . sprintf( __( 'Thank you for your membership to %1$s. Your %2$s membership status is: <b>%3$s</b>.', 'pmpro-approvals' ), get_bloginfo( 'name' ), $membership_name, $approval_status ) . '</p>';
 
 		// Check instructions. $pmpro_invoice should not be empty when reaching here.
 		if ( ! empty( $pmpro_invoice ) && $pmpro_invoice->gateway == "check" && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
