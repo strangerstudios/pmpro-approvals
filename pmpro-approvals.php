@@ -711,7 +711,7 @@ class PMPro_Approvals {
 		}
 
 		//make sure we have a user and level by this point
-		if ( empty( $user_id ) || empty( $level_id ) || empty( $level ) ) {
+		if ( empty( $level ) || empty( $user_id ) || empty( $level_id ) ) {
 			return false;
 		}
 
