@@ -544,16 +544,13 @@ class PMPro_Approvals {
 			return $access;
 		}
 
-		// If no levels are defined Let's set this to false. isApproved cannot be called without level.
-		if ( empty( $levels ) ) {
+		// If no levels are defined but they aren't approved. Let's set this to false.
+		if ( empty( $levels ) && ! self::isApproved( $current_user->ID ) ) {
 			return false;
 		}
 
-		foreach ( $levels as $level ) {
-			if( self::isApproved( $current_user->ID, $level ) ) {
-				return $access;
-				break;
-			}
+		if ( self::isApproved( $current_user->ID ) ) {
+			return $access;
 		}
 
 		return $access;
@@ -664,7 +661,6 @@ class PMPro_Approvals {
 		if ( ! empty( $user_id ) ) {
 			//default to the user's current level
 			if ( empty( $level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'You should pass a level ID to getUserApproval.', 'pmpro-approvals' ), '1.5' );
 				$level = pmpro_getMembershipLevelForUser( $user_id );
 				if ( ! empty( $level ) ) {
 					$level_id = $level->id;
@@ -792,10 +788,6 @@ class PMPro_Approvals {
 	 * Check if a user is approved.
 	 */
 	public static function isApproved( $user_id = null, $level_id = null ) {
-		//Bail if thre's no level ID. Otherwise it throws an error in  self::getUserApproval( $user_id, $level_id );
-		if ( empty( $level_id ) ) {
-			return false;
-		}
 		//default to the current user
 		if ( empty( $user_id ) ) {
 			global $current_user;
