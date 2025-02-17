@@ -20,6 +20,17 @@ function pmpro_approvals_plugins_loaded() {
 }
 add_action( 'plugins_loaded', 'pmpro_approvals_plugins_loaded' );
 
+function pmpro_approvals_require_email_classes() {
+	if ( class_exists( 'PMPro_Email_Template' ) ) {
+		require PMPRO_APP_DIR . '/classes/email-templates/class-pmpro-approvals-email-template-member-admin-approval.php';
+		require PMPRO_APP_DIR . '/classes/email-templates/class-pmpro-approvals-email-template-member-admin-denied.php';
+		require PMPRO_APP_DIR . '/classes/email-templates/class-pmpro-approvals-email-template-member-approved.php';
+		require PMPRO_APP_DIR . '/classes/email-templates/class-pmpro-approvals-email-template-member-denied.php';
+		require PMPRO_APP_DIR . '/classes/email-templates/class-pmpro-approvals-email-template-member-admin-pending.php';
+	}
+}
+add_action( 'init', 'pmpro_approvals_require_email_classes', 20 );
+
 class PMPro_Approvals {
 	/*
 		Attributes
