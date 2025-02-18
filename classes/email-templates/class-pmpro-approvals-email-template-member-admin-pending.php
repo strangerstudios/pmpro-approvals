@@ -5,9 +5,9 @@ class PMPro_Approvals_Email_Template_Member_Admin_Pending extends PMPro_Email_Te
 	/**
 	 * The user applying for membership.
 	 *
-	 * @var WP_User
+	 * @var int
 	 */
-	protected $member;
+	protected $member_id;
 
 	/**
 	 * The level id
@@ -31,8 +31,8 @@ class PMPro_Approvals_Email_Template_Member_Admin_Pending extends PMPro_Email_Te
 	 * @param WP_User $member The user applying for membership.
 	 * @param int $level_id The level id.
 	 */
-	public function __construct( WP_User $member, int $level_id, WP_User $admin ) {
-		$this->member = $member;
+	public function __construct( int $member_id, int $level_id, WP_User $admin ) {
+		$this->member_id = $member_id;
 		$this->level_id = $level_id;
 		$this->admin = $admin;
 	}
@@ -122,17 +122,32 @@ class PMPro_Approvals_Email_Template_Member_Admin_Pending extends PMPro_Email_Te
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
 	public function get_email_template_variables() {
-		$level = pmpro_getSpecificMembershipLevelForUser( $this->member->id, $this->level_id );
-		$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $this->member->id . '&l=' . $this->level_id );
-		$email_template_variables = array(
-			'member_name' => $this->member->display_name,
-			'member_email' => $this->member->user_email,
-			'membership_id' => $this->level_id,
-			'membership_level_name' => $level->name,
-			'view_profile' => $view_profile,
-			'approve_link' => $view_profile . '&approve=' . $this->member->id,
-			'deny_link' => $view_profile . '&deny=' . $this->member->id,
-		);
+		//get user by id
+		$member = get_user_by( 'ID', $this->member_id );
+		if( ! is_a( $member, 'WP_User' ) ) {
+			$email_template_variables = array(
+				'member_name' => esc_html__( 'User not found', 'pmpro-approvals' ),
+				'member_email' => '',
+				'membership_id' => $this->level_id,
+				'membership_level_name' => '',
+				'view_profile' => '',
+				'approve_link' => '',
+				'deny_link' => '',
+			);
+
+		} else {
+			$level = pmpro_getSpecificMembershipLevelForUser( $member->id, $this->level_id );
+			$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->id . '&l=' . $this->level_id );
+			$email_template_variables = array(
+				'member_name' => $member->display_name,
+				'member_email' => $member->user_email,
+				'membership_id' => $this->level_id,
+				'membership_level_name' => $level->name,
+				'view_profile' => $view_profile,
+				'approve_link' => $view_profile . '&approve=' . $member->id,
+				'deny_link' => $view_profile . '&deny=' . $member->id,
+			);
+		}
 
 		return $email_template_variables;
 	}

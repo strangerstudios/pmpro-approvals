@@ -138,9 +138,9 @@ class PMPro_Approvals_Email extends PMProEmail {
 			}
 		}
 
-		//Bail if couldn't find a user
+		//if couldn't find a user make it a "user not found string" to at least send the admin an email
 		if (! is_a( $member, 'WP_User' ) ) {
-			return;
+			$member =  "user not found";
 		}
 
 		if ( empty( $admin ) ) {
@@ -149,14 +149,20 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$admin = get_user_by( 'ID', $admin );
 		}
 
-		if ( empty( $level_id ) ) {
+		if ( empty( $level_id ) && is_a( $member, 'WP_User' ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
-		} else {
+		} else if ( ! empty( $level_id ) && is_a( $member, 'WP_User' ) ) {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 
 		if( $this->is_greater_than_v3dot4 ) {
-			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Admin_Pending( $member, $level->id, $admin );
+			 if( empty( $level_id ) && ! empty ( $level ) ) {
+				$level_id = $level->id;
+			 } elseif ( empty( $level_id ) && empty( $level ) ) {
+				$level_id = 0;
+			 }
+			$member_id = is_a( $member, 'WP_User' ) ? $member->ID : 0;
+			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Admin_Pending( $member_id, $level_id, $admin );
 			return $send_member_denied_email->send();
 		}
 
@@ -174,14 +180,15 @@ class PMPro_Approvals_Email extends PMProEmail {
 		);
 		$this->from     = get_option( 'pmpro_from' );
 		$this->fromname = get_option( 'pmpro_from_name' );
-
-		$this->data['member_name']  = $member->display_name;
-		$this->data['member_email'] = $member->user_email;
-		$this->data['membership_id']         = $level->id;
-		$this->data['membership_level_name'] = $level->name;
-		$this->data['view_profile'] = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
-		$this->data['approve_link'] = $this->data['view_profile'] . '&approve=' . $member->ID;
-		$this->data['deny_link']    = $this->data['view_profile'] . '&deny=' . $member->ID;
+		if ( is_a( $member, 'WP_User' ) ) {
+			$this->data['member_name']  = $member->display_name;
+			$this->data['member_email'] = $member->user_email;
+			$this->data['membership_id']         = $level->id;
+			$this->data['membership_level_name'] = $level->name;
+			$this->data['view_profile'] = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
+			$this->data['approve_link'] = $this->data['view_profile'] . '&approve=' . $member->ID;
+			$this->data['deny_link']    = $this->data['view_profile'] . '&deny=' . $member->ID;
+		}
 
 		$this->data = apply_filters( 'pmpro_approvals_admin_pending_email_data', $this->data, $member, $admin );
 
@@ -207,11 +214,6 @@ class PMPro_Approvals_Email extends PMProEmail {
 			}
 		}
 
-		//Bail if couldn't find a user
-		if (! is_a( $member, 'WP_User' ) ) {
-			return;
-		}
-
 		//Same for admin
 		if ( empty( $admin ) ) {
 			$admin = get_user_by( 'email', get_option( 'admin_email' ) );
@@ -223,8 +225,20 @@ class PMPro_Approvals_Email extends PMProEmail {
 			return;
 		}
 
+		if ( empty( $level_id ) && is_a( $member, 'WP_User' ) ) {
+			$level = pmpro_getMembershipLevelForUser( $member->ID );
+		} else if ( ! empty( $level_id ) && is_a( $member, 'WP_User' ) ) {
+			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		}
+
 		if( $this->is_greater_than_v3dot4 ) {
-			$send_member_approved_email = new PMPro_Approvals_Email_Template_Member_Admin_Approved( $member, $admin->ID, $level_id );
+			if( empty( $level_id )  &&   ! empty ( $level ) ) {
+				$level_id = $level->id;
+			 } elseif ( empty( $level_id ) && empty( $level ) ) {
+				$level_id = 0;
+			 }
+			$member_id = is_a( $member, 'WP_User' ) ? $member->ID : 0;
+			$send_member_approved_email = new PMPro_Approvals_Email_Template_Member_Admin_Approved( $member_id, $admin->ID, $level_id );
 			return $send_member_approved_email->send();
 		}
 
@@ -243,18 +257,13 @@ class PMPro_Approvals_Email extends PMProEmail {
 		$this->from     = get_option( 'pmpro_from' );
 		$this->fromname = get_option( 'pmpro_from_name' );
 
-		if ( empty( $level_id ) ) {
-			$level = pmpro_getMembershipLevelForUser( $member->ID );
-		} else {
-			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		if ( is_a( $member, 'WP_User' ) ) {
+			$this->data['membership_id']         = $level->id;
+			$this->data['membership_level_name'] = $level->name;
+			$this->data['member_email']          = $member->user_email;
+			$this->data['member_name']           = $member->display_name;
+			$this->data['view_profile']          = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
 		}
-
-		$this->data['membership_id']         = $level->id;
-		$this->data['membership_level_name'] = $level->name;
-		$this->data['member_email']          = $member->user_email;
-		$this->data['member_name']           = $member->display_name;
-		$this->data['view_profile']          = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
-
 		$this->data = apply_filters( 'pmpro_approvals_admin_approved_email_data', $this->data, $member, $admin );
 
 		return $this->sendEmail();
@@ -281,7 +290,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		//Bail if couldn't find a user
 		if (! is_a( $member, 'WP_User' ) ) {
-			return;
+			$member =  "user not found";
 		}
 
 		//Same for admin
@@ -291,8 +300,20 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$admin = get_user_by( 'ID', $admin );
 		}
 
+		if ( empty( $level_id ) && is_a( $member, 'WP_User' ) ) {
+			$level = pmpro_getMembershipLevelForUser( $member->ID );
+		} else if ( ! empty( $level_id ) && is_a( $member, 'WP_User' ) ) {
+			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		}
+
 		if ( $this->is_greater_than_v3dot4 ) {
-			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Admin_Denied( $member, $admin->ID, $level_id );
+			if( empty( $level_id )  &&   ! empty ( $level ) ) {
+				$level_id = $level->id;
+			 } elseif ( empty( $level_id ) && empty( $level ) ) {
+				$level_id = 0;
+			 }
+			$member_id = is_a( $member, 'WP_User' ) ? $member->ID : 0;
+			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Admin_Denied( $member_id, $admin->ID, $level_id );
 			return $send_member_denied_email->send();
 		}
 
@@ -311,19 +332,13 @@ class PMPro_Approvals_Email extends PMProEmail {
 		$this->from     = get_option( 'pmpro_from' );
 		$this->fromname = get_option( 'pmpro_from_name' );
 
-		if ( empty( $level_id ) ) {
-			$level = pmpro_getMembershipLevelForUser( $member->ID );
-		} else {
-			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		if ( is_a( $member, 'WP_User' ) ) {
+			$this->data['membership_id']         = $level->id;
+			$this->data['membership_level_name'] = $level->name;
+			$this->data['member_email']          = $member->user_email;
+			$this->data['member_name']           = $member->display_name;
+			$this->data['view_profile']          = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
 		}
-
-		$this->data['membership_id']         = $level->id;
-		$this->data['membership_level_name'] = $level->name;
-		$this->data['member_email']          = $member->user_email;
-		$this->data['member_name']           = $member->display_name;
-		$this->data['view_profile']          = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
-
-
 		$this->data = apply_filters( 'pmpro_approvals_admin_denied_email_data', $this->data, $member, $admin );
 
 		return $this->sendEmail();
