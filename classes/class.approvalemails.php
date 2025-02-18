@@ -40,12 +40,13 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		if ( empty( $level_id ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
+			$level_id = $level->id;
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 		
-		if( $this->is_greater_than_v3dot4 ) {
-			$send_member_approved_email = new PMPro_Approvals_Email_Template_Member_Approved( $member, $level->id );
+		if ( $this->is_greater_than_v3dot4 ) {
+			$send_member_approved_email = new PMPro_Approvals_Email_Template_Member_Approved( $member, $level_id );
 			return $send_member_approved_email->send();
 		}
 
@@ -88,12 +89,13 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		if ( empty( $level_id ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
+			$level_id = $level->id;
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 
-		if( $this->is_greater_than_v3dot4 ) {
-			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Denied( $member, $level->id );
+		if ( $this->is_greater_than_v3dot4 ) {
+			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Denied( $member, $level_id );
 			return $send_member_denied_email->send();
 		}
 
@@ -151,12 +153,13 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		if ( empty( $level_id ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
+			$level_id = $level->id;
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 
-		if( $this->is_greater_than_v3dot4 ) {
-			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Admin_Pending( $member, $level->id, $admin );
+		if ( $this->is_greater_than_v3dot4 ) {
+			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Admin_Pending( $member, $level_id, $admin );
 			return $send_member_denied_email->send();
 		}
 
@@ -218,12 +221,20 @@ class PMPro_Approvals_Email extends PMProEmail {
 		} elseif ( is_int( $admin ) ) {
 			$admin = get_user_by( 'ID', $admin );
 		}
+
 		//Bail if couldn't find a user
 		if ( ! is_a( $admin, 'WP_User' ) ) {
 			return;
 		}
 
-		if( $this->is_greater_than_v3dot4 ) {
+		if ( empty( $level_id ) ) {
+			$level = pmpro_getMembershipLevelForUser( $member->ID );
+			$level_id = $level->id;
+		} else {
+			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		}
+
+		if ( $this->is_greater_than_v3dot4 ) {
 			$send_member_approved_email = new PMPro_Approvals_Email_Template_Member_Admin_Approved( $member, $admin->ID, $level_id );
 			return $send_member_approved_email->send();
 		}
@@ -242,12 +253,6 @@ class PMPro_Approvals_Email extends PMProEmail {
 		);
 		$this->from     = get_option( 'pmpro_from' );
 		$this->fromname = get_option( 'pmpro_from_name' );
-
-		if ( empty( $level_id ) ) {
-			$level = pmpro_getMembershipLevelForUser( $member->ID );
-		} else {
-			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
-		}
 
 		$this->data['membership_id']         = $level->id;
 		$this->data['membership_level_name'] = $level->name;
@@ -291,6 +296,13 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$admin = get_user_by( 'ID', $admin );
 		}
 
+		if ( empty( $level_id ) ) {
+			$level = pmpro_getMembershipLevelForUser( $member->ID );
+			$level_id = $level->id;
+		} else {
+			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		}
+
 		if ( $this->is_greater_than_v3dot4 ) {
 			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Admin_Denied( $member, $admin->ID, $level_id );
 			return $send_member_denied_email->send();
@@ -310,12 +322,6 @@ class PMPro_Approvals_Email extends PMProEmail {
 		);
 		$this->from     = get_option( 'pmpro_from' );
 		$this->fromname = get_option( 'pmpro_from_name' );
-
-		if ( empty( $level_id ) ) {
-			$level = pmpro_getMembershipLevelForUser( $member->ID );
-		} else {
-			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
-		}
 
 		$this->data['membership_id']         = $level->id;
 		$this->data['membership_level_name'] = $level->name;

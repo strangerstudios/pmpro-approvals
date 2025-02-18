@@ -114,7 +114,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	 */
 	public function get_email_template_variables() {
 		$level = pmpro_getSpecificMembershipLevelForUser( $this->$member->ID, $this->$level_id );
-	$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $this->member->ID . '&l=' . $this->level_id );
+		$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $this->member->ID . '&l=' . $this->level_id );
 
 		$email_template_variables = array(
 			'member_name' => $this->member->display_name,
