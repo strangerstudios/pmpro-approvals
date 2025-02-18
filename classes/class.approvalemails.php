@@ -40,12 +40,13 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		if ( empty( $level_id ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
+			$level_id = $level->id;
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 		
 		if( $this->is_greater_than_v3dot4 ) {
-			$send_member_approved_email = new PMPro_Approvals_Email_Template_Member_Approved( $member, $level->id );
+			$send_member_approved_email = new PMPro_Approvals_Email_Template_Member_Approved( $member, $level_id );
 			return $send_member_approved_email->send();
 		}
 
@@ -88,12 +89,13 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		if ( empty( $level_id ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
+			$level_id = $level->id;
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 
 		if( $this->is_greater_than_v3dot4 ) {
-			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Denied( $member, $level->id );
+			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Denied( $member, $level_id );
 			return $send_member_denied_email->send();
 		}
 

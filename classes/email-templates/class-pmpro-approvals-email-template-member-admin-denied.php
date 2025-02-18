@@ -7,7 +7,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Denied extends PMPro_Email_Tem
 	 *
 	 * @var int
 	 */
-	protected $member_int;
+	protected $member_id;
 
 	/**
 	 * The level id
@@ -21,7 +21,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Denied extends PMPro_Email_Tem
 	 *
 	 * @since TBD
 	 *
-	 * @param WP_User $member The user applying for membership.
+	 * @param int $member The user applying for membership.
 	 * @param int $level_id The level id.
 	 */
 	public function __construct( int $member_id, int $level_id ) {
