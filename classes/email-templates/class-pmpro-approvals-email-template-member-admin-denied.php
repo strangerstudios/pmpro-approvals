@@ -10,11 +10,18 @@ class PMPro_Approvals_Email_Template_Member_Admin_Denied extends PMPro_Email_Tem
 	protected $member;
 
 	/**
+	 * The admin user will receive the email.
+	 *
+	 * @var WP_User
+	 */
+	protected $admin;
+
+	/**
 	 * The level id
 	 *
-	 * @var int
+	 * @var StdClass
 	 */
-	protected $level_id;
+	protected $level;
 
 	/**
 	 * Constructor.
@@ -24,9 +31,10 @@ class PMPro_Approvals_Email_Template_Member_Admin_Denied extends PMPro_Email_Tem
 	 * @param WP_User $member The user applying for membership.
 	 * @param int $level_id The level id.
 	 */
-	public function __construct( WP_User $member, int $level_id ) {
+	public function __construct( WP_User $member, WP_User $admin, StdClass $level ) {
 		$this->member = $member;
-		$this->level_id = $level_id;
+		$this->admin = $admin;
+		$this->level = $level;
 	}
 
 	/**
@@ -114,20 +122,22 @@ class PMPro_Approvals_Email_Template_Member_Admin_Denied extends PMPro_Email_Tem
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
 	public function get_email_template_variables() {
-		$level = pmpro_getSpecificMembershipLevelForUser( $this->$member->ID, $this->$level_id );
-		$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $this->member->ID . '&l=' . $this->level_id );
+		$level = $this->level;
+		$member = $this->member;
+		$admin = $this->admin;
+		$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
 
 		$email_template_variables = array(
-			'member_name' => $this->member->display_name,
-			'member_email' => $this->member->user_email,
-			'membership_id' => $this->level_id,
+			'member_name' => $member->display_name,
+			'member_email' => $member->user_email,
+			'membership_id' => $level->id,
 			'membership_level_name' => $level->name,
 			'view_profile' => $view_profile,
-			'approve_link' => $view_profile . '&approve=' . $this->member->ID,
-			'deny_link' => $view_profile . '&deny=' . $this->member->ID,
+			'approve_link' => $view_profile . '&approve=' . $member->ID,
+			'deny_link' => $view_profile . '&deny=' . $member->ID,
 		);
 
-		return $email_template_variables;
+		return apply_filters( 'pmpro_approvals_admin_denied_email_data', $email_template_variables, $member, $admin );
 	}
 
 	/**
@@ -138,7 +148,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Denied extends PMPro_Email_Tem
 	 * @return string The email address to send the email to.
 	 */
 	public function get_recipient_email() {
-		return get_bloginfo( 'admin_email' );
+		return ! empty( $this->admin->user_email ) ? $this->admin->user_email : get_bloginfo( 'admin_email' );
 	}
 
 	/**
@@ -149,9 +159,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Denied extends PMPro_Email_Tem
 	 * @return string The name of the email recipient.
 	 */
 	public function get_recipient_name() {
-		//get user by email
-		$user = get_user_by( 'email', $this->get_recipient_email() );
-		return empty( $user->display_name ) ? esc_html__( 'Admin', 'paid-memberships-pro' ) : $user->display_name;
+		return empty( $this->admin->display_name ) ? esc_html__( 'Admin', 'paid-memberships-pro' ) : $this->admin->display_name;
 	}
 }
 /**

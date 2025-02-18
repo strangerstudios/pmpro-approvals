@@ -12,9 +12,9 @@ class PMPro_Approvals_Email_Template_Member_Admin_Pending extends PMPro_Email_Te
 	/**
 	 * The level id
 	 *
-	 * @var int
+	 * @var stdClass
 	 */
-	protected $level_id;
+	protected $level;
 
 	/**
 	 * The admin user will receive the email.
@@ -31,9 +31,9 @@ class PMPro_Approvals_Email_Template_Member_Admin_Pending extends PMPro_Email_Te
 	 * @param WP_User $member The user applying for membership.
 	 * @param int $level_id The level id.
 	 */
-	public function __construct( WP_User $member, int $level_id, WP_User $admin ) {
+	public function __construct( WP_User $member, stdClass $level, WP_User $admin ) {
 		$this->member = $member;
-		$this->level_id = $level_id;
+		$this->level = $level;
 		$this->admin = $admin;
 	}
 
@@ -122,19 +122,21 @@ class PMPro_Approvals_Email_Template_Member_Admin_Pending extends PMPro_Email_Te
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
 	public function get_email_template_variables() {
-		$level = pmpro_getSpecificMembershipLevelForUser( $this->member->id, $this->level_id );
-		$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $this->member->id . '&l=' . $this->level_id );
+		$level = $this->level;
+		$member = $this->member;
+		$admin = $this->admin;
+		$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->id . '&l=' . $level->id );
 		$email_template_variables = array(
-			'member_name' => $this->member->display_name,
-			'member_email' => $this->member->user_email,
-			'membership_id' => $this->level_id,
+			'member_name' => $member->display_name,
+			'member_email' => $member->user_email,
+			'membership_id' => $level->id,
 			'membership_level_name' => $level->name,
 			'view_profile' => $view_profile,
-			'approve_link' => $view_profile . '&approve=' . $this->member->id,
-			'deny_link' => $view_profile . '&deny=' . $this->member->id,
+			'approve_link' => $view_profile . '&approve=' . $member->id,
+			'deny_link' => $view_profile . '&deny=' . $member->id,
 		);
 
-		return $email_template_variables;
+		return apply_filters( 'pmpro_approvals_admin_pending_email_data', $email_template_variables, $member, $admin );
 	}
 
 	/**
@@ -167,8 +169,8 @@ class PMPro_Approvals_Email_Template_Member_Admin_Pending extends PMPro_Email_Te
  * @param array $email_templates The email templates (template slug => email template class name)
  * @return array The modified email templates array.
  */
-function pmprogl_email_template_member_admin_pending( $email_templates ) {
+function pmpro_approval_email_template_member_admin_pending( $email_templates ) {
 	$email_templates['admin_notification_approval'] = 'PMPro_Approvals_Email_Template_Member_Admin_Pending';
 	return $email_templates;
 }
-add_filter( 'pmpro_email_templates', 'pmprogl_email_template_member_admin_pending' );
+add_filter( 'pmpro_email_templates', 'pmpro_approval_email_template_member_admin_pending' );

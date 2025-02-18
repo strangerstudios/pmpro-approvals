@@ -9,11 +9,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 	private static $instance;
 
 	//Define a boolean property to check if the PMPro version is greater than 3.4
-	private $is_greater_than_v3dot4;
+	private $is_greater_than_v3_4;
 
 	//contstructor
 	public function __construct() {
-		$this->is_greater_than_v3dot4 = defined( 'PMPRO_VERSION' ) && version_compare( PMPRO_VERSION, '3.4', '>=' );
+		$this->is_greater_than_v3_4 = defined( 'PMPRO_VERSION' ) && version_compare( PMPRO_VERSION, '3.4', '>=' );
 	}
 
 	public static function get_instance() {
@@ -40,13 +40,12 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		if ( empty( $level_id ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
-			$level_id = $level->id;
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 		
-		if ( $this->is_greater_than_v3dot4 ) {
-			$send_member_approved_email = new PMPro_Approvals_Email_Template_Member_Approved( $member, $level_id );
+		if ( $this->is_greater_than_v3_4 ) {
+			$send_member_approved_email = new PMPro_Approvals_Email_Template_Member_Approved( $member, $level );
 			return $send_member_approved_email->send();
 		}
 
@@ -89,13 +88,12 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		if ( empty( $level_id ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
-			$level_id = $level->id;
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 
-		if ( $this->is_greater_than_v3dot4 ) {
-			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Denied( $member, $level_id );
+		if ( $this->is_greater_than_v3_4 ) {
+			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Denied( $member, $level );
 			return $send_member_denied_email->send();
 		}
 
@@ -141,7 +139,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 		}
 
 		//Bail if couldn't find a user
-		if (! is_a( $member, 'WP_User' ) ) {
+		if ( ! is_a( $member, 'WP_User' ) ) {
 			return;
 		}
 
@@ -151,16 +149,20 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$admin = get_user_by( 'ID', $admin );
 		}
 
+		//Bail if couldn't find a user
+		if ( ! is_a( $admin, 'WP_User' ) ) {
+			return;
+		}
+
 		if ( empty( $level_id ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
-			$level_id = $level->id;
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 
-		if ( $this->is_greater_than_v3dot4 ) {
-			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Admin_Pending( $member, $level_id, $admin );
-			return $send_member_denied_email->send();
+		if ( $this->is_greater_than_v3_4 ) {
+			$send_admin_pending_email = new PMPro_Approvals_Email_Template_Member_Admin_Pending( $member, $level, $admin );
+			return $send_admin_pending_email->send();
 		}
 
 		$this->email    = get_bloginfo( 'admin_email' );
@@ -211,7 +213,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 		}
 
 		//Bail if couldn't find a user
-		if (! is_a( $member, 'WP_User' ) ) {
+		if ( ! is_a( $member, 'WP_User' ) ) {
 			return;
 		}
 
@@ -229,13 +231,12 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		if ( empty( $level_id ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
-			$level_id = $level->id;
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 
-		if ( $this->is_greater_than_v3dot4 ) {
-			$send_member_approved_email = new PMPro_Approvals_Email_Template_Member_Admin_Approved( $member, $admin->ID, $level_id );
+		if ( $this->is_greater_than_v3_4 ) {
+			$send_member_approved_email = new PMPro_Approvals_Email_Template_Member_Admin_Approved( $member, $admin, $level );
 			return $send_member_approved_email->send();
 		}
 
@@ -285,7 +286,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 		}
 
 		//Bail if couldn't find a user
-		if (! is_a( $member, 'WP_User' ) ) {
+		if ( ! is_a( $member, 'WP_User' ) ) {
 			return;
 		}
 
@@ -296,15 +297,19 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$admin = get_user_by( 'ID', $admin );
 		}
 
+		//Bail if couldn't find a user
+		if ( ! is_a( $admin, 'WP_User' ) ) {
+			return;
+		}
+
 		if ( empty( $level_id ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
-			$level_id = $level->id;
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 
-		if ( $this->is_greater_than_v3dot4 ) {
-			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Admin_Denied( $member, $admin->ID, $level_id );
+		if ( $this->is_greater_than_v3_4 ) {
+			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Admin_Denied( $member, $admin, $level );
 			return $send_member_denied_email->send();
 		}
 

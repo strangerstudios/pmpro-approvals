@@ -12,9 +12,9 @@ class PMPro_Approvals_Email_Template_Member_Denied extends PMPro_Email_Template 
 	/**
 	 * The level id
 	 *
-	 * @var int
+	 * @var StdClass
 	 */
-	protected $level_id;
+	protected $level;
 
 	/**
 	 * Constructor.
@@ -24,9 +24,9 @@ class PMPro_Approvals_Email_Template_Member_Denied extends PMPro_Email_Template 
 	 * @param WP_User $member The user applying for membership.
 	 * @param int $level_id The level id.
 	 */
-	public function __construct( WP_User $member, int $level_id ) {
+	public function __construct( WP_User $member, StdClass $level ) {
 		$this->member = $member;
-		$this->level_id = $level_id;
+		$this->level = $level;
 	}
 
 	/**
@@ -113,18 +113,19 @@ class PMPro_Approvals_Email_Template_Member_Denied extends PMPro_Email_Template 
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
 	public function get_email_template_variables() {
-		$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		$member = $this->member;
+		$level = $this->level;
 
 		$email_template_variables = array(
 			'subject' => $this->get_default_subject(),
-			'name' => $this->member->display_name,
-			'member_email' => $this->member->user_email,
-			'user_login' => $this->member->user_login,
-			'membership_id' => $this->level_id,
+			'name' => $member->display_name,
+			'member_email' => $member->user_email,
+			'user_login' => $member->user_login,
+			'membership_id' => $level->id,
 			'membership_level_name' => $level->name,
 			'login_link' => pmpro_login_url(),
 		);
-		return $email_template_variables;
+		return apply_filters( 'pmpro_approvals_member_denied_email_data', $email_template_variables, $member, $level );
 	}
 
 	/**

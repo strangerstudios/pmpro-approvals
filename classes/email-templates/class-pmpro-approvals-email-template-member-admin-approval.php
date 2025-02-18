@@ -10,11 +10,17 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	protected $member;
 
 	/**
+	 * The admin user.
+	 *
+	 * @var WP_User
+	 */
+	protected $admin;
+	/**
 	 * The level id
 	 *
-	 * @var int
+	 * @var StdClass
 	 */
-	protected $level_id;
+	protected $level;
 
 	/**
 	 * Constructor.
@@ -24,9 +30,10 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	 * @param WP_User $member The user applying for membership.
 	 * @param int $level_id The level id.
 	 */
-	public function __construct( WP_User $member, int $level_id ) {
+	public function __construct( WP_User $member, WP_User $admin, StdClass $level ) {
 		$this->member = $member;
-		$this->level_id = $level_id;
+		$this->admin = $admin;
+		$this->level_id = $level;
 	}
 
 	/**
@@ -81,7 +88,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __('<p>The user <a href="!!view_profile!!">!!member_name!!</a> has been approved.</p>
+		return wp_kses_post( __( '<p>The user <a href="!!view_profile!!">!!member_name!!</a> has been approved.</p>
 
 <p>Log in to your membership account here: !!login_link!!</p>' ), 'pmpro-approvals' );
 	}
@@ -113,20 +120,22 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
 	public function get_email_template_variables() {
-		$level = pmpro_getSpecificMembershipLevelForUser( $this->$member->ID, $this->$level_id );
-		$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $this->member->ID . '&l=' . $this->level_id );
+		$level = $this->$level;
+		$member = $this->member;
+		$admin = $this->admin;
+		$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
 
 		$email_template_variables = array(
-			'member_name' => $this->member->display_name,
-			'member_email' => $this->member->user_email,
-			'membership_id' => $this->level_id,
+			'member_name' => $member->display_name,
+			'member_email' => $member->user_email,
+			'membership_id' => $level->id,
 			'membership_level_name' => $level->name,
 			'view_profile' => $view_profile,
-			'approve_link' => $view_profile . '&approve=' . $this->member->ID,
-			'deny_link' => $view_profile . '&deny=' . $this->member->ID,
+			'approve_link' => $view_profile . '&approve=' . $member->ID,
+			'deny_link' => $view_profile . '&deny=' . $member->ID,
 		);
 
-		return $email_template_variables;
+		return $this->data = apply_filters( 'pmpro_approvals_admin_approved_email_data', $email_template_variables, $member, $admin );
 	}
 
 	/**
