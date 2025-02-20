@@ -22,7 +22,7 @@ add_action( 'plugins_loaded', 'pmpro_approvals_plugins_loaded' );
 
 function pmpro_approvals_load_email_templates() {
 	if ( class_exists( 'PMPro_Email_Template' ) ) {
-		require_once PMPRO_APP_DIR . '/classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approval.php';
+		require_once PMPRO_APP_DIR . '/classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php';
 		require_once PMPRO_APP_DIR . '/classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php';
 		require_once PMPRO_APP_DIR . '/classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php';
 		require_once PMPRO_APP_DIR . '/classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php';

@@ -16,7 +16,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Approved extends PMPro_Email_Tem
 	 */
 	protected $admin;
 	/**
-	 * The level id
+	 * The level object.
 	 *
 	 * @var StdClass
 	 */
@@ -33,7 +33,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Approved extends PMPro_Email_Tem
 	public function __construct( WP_User $member, WP_User $admin, StdClass $level ) {
 		$this->member = $member;
 		$this->admin = $admin;
-		$this->level_id = $level;
+		$this->level = $level;
 	}
 
 	/**
@@ -120,7 +120,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Approved extends PMPro_Email_Tem
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
 	public function get_email_template_variables() {
-		$level = $this->$level;
+		$level = $this->level;
 		$member = $this->member;
 		$admin = $this->admin;
 		$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
@@ -135,7 +135,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Approved extends PMPro_Email_Tem
 			'deny_link' => $view_profile . '&deny=' . $member->ID,
 		);
 
-		return $this->data = apply_filters( 'pmpro_approvals_admin_approved_email_data', $email_template_variables, $member, $admin );
+		return apply_filters( 'pmpro_approvals_admin_approved_email_data', $email_template_variables, $member, $admin );
 	}
 
 	/**

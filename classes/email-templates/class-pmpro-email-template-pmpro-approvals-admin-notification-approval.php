@@ -125,15 +125,15 @@ class PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval extends PM
 		$level = $this->level;
 		$member = $this->member;
 		$admin = $this->admin;
-		$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->id . '&l=' . $level->id );
+		$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
 		$email_template_variables = array(
 			'member_name' => $member->display_name,
 			'member_email' => $member->user_email,
 			'membership_id' => $level->id,
 			'membership_level_name' => $level->name,
 			'view_profile' => $view_profile,
-			'approve_link' => $view_profile . '&approve=' . $member->id,
-			'deny_link' => $view_profile . '&deny=' . $member->id,
+			'approve_link' => $view_profile . '&approve=' . $member->ID,
+			'deny_link' => $view_profile . '&deny=' . $member->ID,
 		);
 
 		return apply_filters( 'pmpro_approvals_admin_pending_email_data', $email_template_variables, $member, $admin );
