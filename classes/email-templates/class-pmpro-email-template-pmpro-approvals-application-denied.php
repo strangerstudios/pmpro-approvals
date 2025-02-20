@@ -1,6 +1,6 @@
 <?php 
 
-class PMPro_Approvals_Email_Template_Member_Denied extends PMPro_Email_Template {
+class PMPro_Email_Template_PMProApprovals_Application_Denied extends PMPro_Email_Template {
 
 	/**
 	 * The user applying for membership.
@@ -159,7 +159,7 @@ class PMPro_Approvals_Email_Template_Member_Denied extends PMPro_Email_Template 
  * @return array The modified email templates array.
  */
 function pmpro_approved_email_template_member_denied( $email_templates ) {
-	$email_templates['application_denied'] = 'PMPro_Approvals_Email_Template_Member_Denied';
+	$email_templates['application_denied'] = 'PMPro_Email_Template_PMProApprovals_Application_Denied';
 	return $email_templates;
 }
 add_filter( 'pmpro_email_templates', 'pmpro_approved_email_template_member_denied' );

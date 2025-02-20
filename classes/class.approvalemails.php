@@ -13,7 +13,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 	//contstructor
 	public function __construct() {
-		$this->is_greater_than_v3_4 = defined( 'PMPRO_VERSION' ) && version_compare( PMPRO_VERSION, '3.4', '>=' );
+		$this->is_greater_than_v3_4 = class_exists( 'PMPro_Email_Template' );
 	}
 
 	public static function get_instance() {
@@ -45,7 +45,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 		}
 		
 		if ( $this->is_greater_than_v3_4 ) {
-			$send_member_approved_email = new PMPro_Approvals_Email_Template_Member_Approved( $member, $level );
+			$send_member_approved_email = new PMPro_Email_Template_PMProApprovals_Application_Approved( $member, $level );
 			return $send_member_approved_email->send();
 		}
 
@@ -93,7 +93,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 		}
 
 		if ( $this->is_greater_than_v3_4 ) {
-			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Denied( $member, $level );
+			$send_member_denied_email = new PMPro_Email_Template_PMProApprovals_Application_Denied( $member, $level );
 			return $send_member_denied_email->send();
 		}
 
@@ -161,7 +161,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 		}
 
 		if ( $this->is_greater_than_v3_4 ) {
-			$send_admin_pending_email = new PMPro_Approvals_Email_Template_Member_Admin_Pending( $member, $level, $admin );
+			$send_admin_pending_email = new PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval( $member, $level, $admin );
 			return $send_admin_pending_email->send();
 		}
 
@@ -236,7 +236,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 		}
 
 		if ( $this->is_greater_than_v3_4 ) {
-			$send_member_approved_email = new PMPro_Approvals_Email_Template_Member_Admin_Approved( $member, $admin, $level );
+			$send_member_approved_email = new PMPro_Email_Template_PMProApprovals_Admin_Approved( $member, $admin, $level );
 			return $send_member_approved_email->send();
 		}
 
@@ -309,7 +309,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 		}
 
 		if ( $this->is_greater_than_v3_4 ) {
-			$send_member_denied_email = new PMPro_Approvals_Email_Template_Member_Admin_Denied( $member, $admin, $level );
+			$send_member_denied_email = new PMPro_Email_Template_PMProApprovals_Admin_Denied( $member, $admin, $level );
 			return $send_member_denied_email->send();
 		}
 

@@ -1,6 +1,6 @@
 <?php 
 
-class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_Template {
+class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Template {
 
 	/**
 	 * The user applying for membership.
@@ -10,11 +10,12 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	protected $member;
 
 	/**
-	 * The admin user.
+	 * The admin user will receive the email.
 	 *
 	 * @var WP_User
 	 */
 	protected $admin;
+
 	/**
 	 * The level id
 	 *
@@ -33,7 +34,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	public function __construct( WP_User $member, WP_User $admin, StdClass $level ) {
 		$this->member = $member;
 		$this->admin = $admin;
-		$this->level_id = $level;
+		$this->level = $level;
 	}
 
 	/**
@@ -44,7 +45,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	 * @return string The email template slug.
 	 */
 	public static function get_template_slug() {
-		return 'admin_approved';
+		return 'admin_denied';
 	}
 
 	/**
@@ -55,7 +56,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	 * @return string The "nice name" of the email template.
 	 */
 	public static function get_template_name() {
-		return esc_html__( 'Approval Approved (admin)', 'pmpro-approvals' );
+		return esc_html__( 'Approval Denied (admin)', 'pmpro-approvals' );
 	}
 
 	/**
@@ -66,7 +67,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	 * @return string The "help text" to display to the admin when editing the email template.
 	 */
 	public static function get_template_description() {
-		return  esc_html__( 'This email is sent to the admin when a new member is approved.', 'pmpro-approvals' );
+		return esc_html__( 'This email is sent to the admin when a member is denied.', 'pmpro-approvals' );
 	}
 
 	/**
@@ -77,7 +78,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	 * @return string The default subject for the email.
 	 */
 	public static function get_default_subject() {
-		return esc_html( sprintf( __( 'A member at %s has been approved.', 'pmpro-approvals' ), get_bloginfo( 'name' ) ) );
+		return esc_html( sprintf( __( 'A member at %s has been denied.', 'pmpro-approvals' ), get_bloginfo( 'name' ) ) );
 	}
 
 	/**
@@ -88,10 +89,11 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>The user <a href="!!view_profile!!">!!member_name!!</a> has been approved.</p>
+		return wp_kses_post( __( '<p>The user <a href="!!view_profile!!">!!member_name!!</a> has been denied.</p>
 
 <p>Log in to your membership account here: !!login_link!!</p>' ), 'pmpro-approvals' );
 	}
+
 
 	/**
 	 * Get the email template variables for the email paired with a description of the variable.
@@ -120,7 +122,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
 	public function get_email_template_variables() {
-		$level = $this->$level;
+		$level = $this->level;
 		$member = $this->member;
 		$admin = $this->admin;
 		$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
@@ -135,7 +137,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 			'deny_link' => $view_profile . '&deny=' . $member->ID,
 		);
 
-		return $this->data = apply_filters( 'pmpro_approvals_admin_approved_email_data', $email_template_variables, $member, $admin );
+		return apply_filters( 'pmpro_approvals_admin_denied_email_data', $email_template_variables, $member, $admin );
 	}
 
 	/**
@@ -146,7 +148,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	 * @return string The email address to send the email to.
 	 */
 	public function get_recipient_email() {
-		return get_bloginfo( 'admin_email' );
+		return ! empty( $this->admin->user_email ) ? $this->admin->user_email : get_bloginfo( 'admin_email' );
 	}
 
 	/**
@@ -157,9 +159,7 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
 	 * @return string The name of the email recipient.
 	 */
 	public function get_recipient_name() {
-		//get user by email
-		$user = get_user_by( 'email', $this->get_recipient_email() );
-		return empty( $user->display_name ) ? esc_html__( 'Admin', 'paid-memberships-pro' ) : $user->display_name;
+		return empty( $this->admin->display_name ) ? esc_html__( 'Admin', 'paid-memberships-pro' ) : $this->admin->display_name;
 	}
 }
 /**
@@ -170,8 +170,8 @@ class PMPro_Approvals_Email_Template_Member_Admin_Approved extends PMPro_Email_T
  * @param array $email_templates The email templates (template slug => email template class name)
  * @return array The modified email templates array.
  */
-function pmpro_approvals_email_template_member_admin_approved( $email_templates ) {
-	$email_templates['admin_approved'] = 'PMPro_Approvals_Email_Template_Member_Admin_Approved';
+function pmpro_email_template_pmpro_approval_admin_denied( $email_templates ) {
+	$email_templates['admin_denied'] = 'PMPro_Email_Template_PMProApprovals_Admin_Denied';
 	return $email_templates;
 }
-add_filter( 'pmpro_email_templates', 'pmpro_approvals_email_template_member_admin_approved' );
+add_filter( 'pmpro_email_templates', 'pmpro_email_template_pmpro_approval_admin_denied' );
