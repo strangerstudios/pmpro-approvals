@@ -100,7 +100,6 @@ class PMPro_Approvals {
 		//filter membership and content access
 		add_filter( 'pmpro_has_membership_level', array( 'PMPro_Approvals', 'pmpro_has_membership_level' ), 10, 3 );
 		add_filter( 'pmpro_has_membership_access_filter', array( 'PMPro_Approvals', 'pmpro_has_membership_access_filter' ), 10, 4 );
-		add_filter( 'pmpro_member_shortcode_access', array( 'PMPro_Approvals', 'pmpro_member_shortcode_access' ), 10, 4 );
 
 		//load checkbox in membership level edit page for users to select.
 		if ( defined( 'PMPRO_VERSION' ) && PMPRO_VERSION >= '2.9' ) {
@@ -530,8 +529,11 @@ class PMPro_Approvals {
 	/**
 	 * Deny access for shortcode specific content to pending members.
 	 * @since 1.4
+	 * @deprecated TBD
 	 */
 	public static function pmpro_member_shortcode_access( $access, $content, $levels, $delay ) {
+		_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_has_membership_level' );
+
 		global $current_user;
 		
 		// Bail if they are not logged-in, default behavior.
@@ -584,14 +586,34 @@ class PMPro_Approvals {
 			return $haslevel;
 		}
 
-		//no levels, skip
-		if ( empty( $levels ) ) {
-			return $haslevel;
-		}
+		// Ensure that $levels is an array and process special cases.
+		if ( $levels !== '0' && $levels !== 0 && empty( $levels ) ) {
+			// This is a special case that checks if the user has access to any level.
+			$user_levels = pmpro_getMembershipLevelsForUser( $user_id );
+			$levels = wp_list_pluck( $user_levels, 'id' );
+		} else {
+			// Make sure that $levels is an array.
+			$levels = is_array( $levels ) ? $levels : array( $levels );
 
-		// If the current user doesn't have a level, bail.
-		if ( ! pmpro_hasMembershipLevel( null, $user_id ) ) {
-			return $haslevel;
+			// These are cases that we specifically don't handle.
+			// Also don't handle negative cases.
+			$unhandled_cases = array(
+				0, // No level.
+				'0', // No level.
+				'L', // Logged in.
+				'l', // Logged in.
+				'E', // Expired
+				'e', // Expired.
+			);
+			foreach( $levels as $level ) {
+				if ( in_array( $level, $unhandled_cases, true ) ) { // Strict comparison to ensure type safety.
+					return $haslevel;
+				}
+
+				if ( '-' === substr( (string) $level, 0, 1 ) ) {
+					return $haslevel;
+				}
+			}
 		}
 
 		//now we need to check if the user is approved for ANY of the $levels
@@ -661,6 +683,7 @@ class PMPro_Approvals {
 		if ( ! empty( $user_id ) ) {
 			//default to the user's current level
 			if ( empty( $level_id ) ) {
+				_doing_it_wrong( __FUNCTION__, __( 'You should pass a level ID to getUserApproval.', 'pmpro-approvals' ), '1.5' );
 				$level = pmpro_getMembershipLevelForUser( $user_id );
 				if ( ! empty( $level ) ) {
 					$level_id = $level->id;
