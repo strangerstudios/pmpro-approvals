@@ -107,8 +107,6 @@ class PMPro_Email_Template_PMProApprovals_Admin_Approved extends PMPro_Email_Tem
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'pmpro-approvals' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'pmpro-approvals' ),
 			'!!view_profile!!' => esc_html__( 'The URL of the profile page for the member.', 'pmpro-approvals' ),
-			'!!approve_link!!' => esc_html__( 'The URL to approve the member.', 'pmpro-approvals' ),
-			'!!deny_link!!' => esc_html__( 'The URL to deny the member.', 'pmpro-approvals' ),
 		);
 	}
 
@@ -131,8 +129,11 @@ class PMPro_Email_Template_PMProApprovals_Admin_Approved extends PMPro_Email_Tem
 			'membership_id' => $level->id,
 			'membership_level_name' => $level->name,
 			'view_profile' => $view_profile,
-			'approve_link' => $view_profile . '&approve=' . $member->ID,
-			'deny_link' => $view_profile . '&deny=' . $member->ID,
+			'subject' => $this->get_default_subject(),
+			'name' => $this->get_recipient_name(),
+			'user_login' => isset( $admin->user_login ) ? $admin->user_login : "",
+
+
 		);
 
 		return apply_filters( 'pmpro_approvals_admin_approved_email_data', $email_template_variables, $member, $admin );
@@ -146,7 +147,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Approved extends PMPro_Email_Tem
 	 * @return string The email address to send the email to.
 	 */
 	public function get_recipient_email() {
-		return get_bloginfo( 'admin_email' );
+		return ! empty( $this->admin->user_email ) ? $this->admin->user_email : get_bloginfo( 'admin_email' );
 	}
 
 	/**
@@ -157,9 +158,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Approved extends PMPro_Email_Tem
 	 * @return string The name of the email recipient.
 	 */
 	public function get_recipient_name() {
-		//get user by email
-		$user = get_user_by( 'email', $this->get_recipient_email() );
-		return empty( $user->display_name ) ? esc_html__( 'Admin', 'paid-memberships-pro' ) : $user->display_name;
+		return empty( $this->admin->display_name ) ? esc_html__( 'Admin', 'pmpro-approvals' ) : $this->admin->display_name;
 	}
 }
 /**

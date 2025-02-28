@@ -95,13 +95,9 @@ class PMPro_Email_Template_PMProApprovals_Application_Denied extends PMPro_Email
 	 */
 	public static function get_email_template_variables_with_description() {
 		return array(
-			'!!subject!!' => esc_html__( 'The subject of the email.', 'pmpro-approvals' ),
-			'!!name!!' => esc_html__( 'The name of the member.', 'pmpro-approvals' ),
 			'!!member_email!!' => esc_html__( 'The email address of the member.', 'pmpro-approvals' ),
-			'!!user_login!!' => esc_html__( 'The username of the member.', 'pmpro-approvals' ),
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'pmpro-approvals' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'pmpro-approvals' ),
-			'!!login_link!!' => esc_html__( 'The URL of the login page.', 'pmpro-approvals' ),
 		);
 	}
 
@@ -123,7 +119,6 @@ class PMPro_Email_Template_PMProApprovals_Application_Denied extends PMPro_Email
 			'user_login' => $member->user_login,
 			'membership_id' => $level->id,
 			'membership_level_name' => $level->name,
-			'login_link' => pmpro_login_url(),
 		);
 		return apply_filters( 'pmpro_approvals_member_denied_email_data', $email_template_variables, $member, $level );
 	}

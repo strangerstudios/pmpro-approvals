@@ -33,7 +33,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 	public function sendMemberApproved( $member, $level_id = null ) {
 
 		if ( empty( $member ) ) {
-			return;
+			return false;
 		} elseif ( is_int( $member ) ) {
 			$member = get_user_by( 'ID', $member );
 		}
@@ -81,7 +81,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 	public function sendMemberDenied( $member, $level_id = null ) {
 
 		if ( empty( $member ) ) {
-			return;
+			return false;
 		} elseif ( is_int( $member ) ) {
 			$member = get_user_by( 'ID', $member );
 		}
@@ -140,7 +140,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		//Bail if couldn't find a user
 		if ( ! is_a( $member, 'WP_User' ) ) {
-			return;
+			return false;
 		}
 
 		if ( empty( $admin ) ) {
@@ -151,7 +151,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		//Bail if couldn't find a user
 		if ( ! is_a( $admin, 'WP_User' ) ) {
-			return;
+			return false;
 		}
 
 		if ( empty( $level_id ) ) {
@@ -214,7 +214,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		//Bail if couldn't find a user
 		if ( ! is_a( $member, 'WP_User' ) ) {
-			return;
+			return false;
 		}
 
 		//Same for admin
@@ -226,7 +226,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		//Bail if couldn't find a user
 		if ( ! is_a( $admin, 'WP_User' ) ) {
-			return;
+			return false;
 		}
 
 		if ( empty( $level_id ) ) {
@@ -287,7 +287,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		//Bail if couldn't find a user
 		if ( ! is_a( $member, 'WP_User' ) ) {
-			return;
+			return false;
 		}
 
 		//Same for admin
@@ -299,7 +299,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 
 		//Bail if couldn't find a user
 		if ( ! is_a( $admin, 'WP_User' ) ) {
-			return;
+			return false;
 		}
 
 		if ( empty( $level_id ) ) {
