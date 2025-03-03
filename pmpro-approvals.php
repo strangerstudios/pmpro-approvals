@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.6.1
+Version: 1.6.2
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -542,10 +542,10 @@ class PMPro_Approvals {
 	/**
 	 * Deny access for shortcode specific content to pending members.
 	 * @since 1.4
-	 * @deprecated TBD
+	 * @deprecated 1.6.2
 	 */
 	public static function pmpro_member_shortcode_access( $access, $content, $levels, $delay ) {
-		_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_has_membership_level' );
+		_deprecated_function( __FUNCTION__, '1.6.2', 'pmpro_has_membership_level' );
 
 		global $current_user;
 		
@@ -1293,7 +1293,7 @@ class PMPro_Approvals {
 	/**
 	 * Filter the header message for the no access message.
 	 *
-	 * @since TBD
+	 * @since 1.6.2
 	 *
 	 * @param string $header The header message for the no access message.
 	 * @return string The filtered header message for the no access message.
@@ -1491,7 +1491,7 @@ class PMPro_Approvals {
 		 * Filter to show the confirmation message for levels that require approval.
 		 * @param bool $show Whether to show the confirmation message or not.
 		 * @param int $membership_id The membership ID for the current view.
-		 * @since TBD
+		 * @since 1.6.2
 		 */
 		if ( apply_filters( 'pmpro_approvals_show_level_confirmation_message', false, $pmpro_invoice->membership_id ) ) {
 			// Add the level confirmation message if set.
