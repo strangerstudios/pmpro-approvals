@@ -1709,10 +1709,10 @@ class PMPro_Approvals {
 		}
 
 		// Check for a cached value in the transient.
-		$number_of_users = get_transient( 'pmpro_approvals_approval_count' );	
+		$number_of_users = get_transient( 'pmpro_approvals_approval_count' );
 		
-		// Store results in an array to support different statuses.
-		if ( ! isset( $number_of_users ) ) {
+		// If get_transient above returns false, set to an empty array.
+		if ( ! $number_of_users ) {
 			$number_of_users = array();
 		}
 		
