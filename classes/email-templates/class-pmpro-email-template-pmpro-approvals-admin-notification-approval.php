@@ -109,6 +109,8 @@ class PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval extends PM
 			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'pmpro-approvals' ),
 			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'pmpro-approvals' ),
 			'!!view_profile!!' => esc_html__( 'The URL of the profile page for the member.', 'pmpro-approvals' ),
+			'!!approve_link!!' => esc_html__( 'The URL to approve the member.', 'pmpro-approvals' ),
+			'!!deny_link!!' => esc_html__( 'The URL to deny the member.', 'pmpro-approvals' ),
 		);
 	}
 
