@@ -27,7 +27,9 @@ function pmpro_approvals_load_email_templates() {
 		require_once PMPRO_APP_DIR . '/classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php';
 		require_once PMPRO_APP_DIR . '/classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php';
 		require_once PMPRO_APP_DIR . '/classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php';
-
+	} else {
+		// Legacy email templates.
+		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
 	}
 }
 add_action( 'init', 'pmpro_approvals_load_email_templates', 8 );
@@ -51,8 +53,7 @@ class PMPro_Approvals {
 		add_action( 'init', array( 'PMPro_Approvals', 'init' ) );
 		add_action( 'plugins_loaded', array( 'PMPro_Approvals', 'text_domain' ) );
 
-		//add support for PMPro Email Templates Add-on
-		add_filter( 'pmproet_templates', array( 'PMPro_Approvals', 'pmproet_templates' ) );
+		// Filter the checkout email.
 		add_filter( 'pmpro_email_filter', array( 'PMPro_Approvals', 'pmpro_email_filter' ) );
 
 		//add support for PMPro BuddyPress Add On
