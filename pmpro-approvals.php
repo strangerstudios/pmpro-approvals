@@ -507,36 +507,23 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_has_membership_access_filter( $access, $post, $user, $levels ) {
 
-		//if we don't have access now, we still won't
+		// If we don't have access now, we still won't
 		if ( ! $access ) {
 			return $access;
 		}
 
-		//no user, this must be open to everyone
+		// No user, this must be open to everyone.
 		if ( empty( $user ) || empty( $user->ID ) ) {
 			return $access;
 		}
 
-		//no levels, must be open
+		// No levels, must be open
 		if ( empty( $levels ) ) {
 			return $access;
 		}
 
-		// If the current user doesn't have a level, bail.
-		if ( ! pmpro_hasMembershipLevel() ) {
-			return $access;
-		}
-
-		//now we need to check if the user is approved for ANY of the $levels
-		$access = false;    //assume no access
-		foreach ( $levels as $level ) {
-			if ( self::isApproved( $user->ID, $level->id ) ) {
-				$access = true;
-				break;
-			}
-		}
-
-		return $access;
+		// Return whether the user has this level.
+		return self::pmpro_has_membership_level( $access, $user->ID, wp_list_pluck( $levels, 'id' ) );
 	}
 
 	/**
@@ -1305,12 +1292,12 @@ class PMPro_Approvals {
 		remove_filter( 'pmpro_non_member_text_filter', array( 'PMPro_Approvals', 'pmpro_non_member_text_filter' ), 10 );
 
 		// If a user does not have a membership level, return default text.
-		if ( ! pmpro_hasMembershipLevel() ) {
+		$user_levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
+		if ( empty( $user_levels ) ) {
 			return $header;
 		}
 
 		// Loop through all user levels and check if any are pending approval or denied.
-		$user_levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 		foreach ( $user_levels as $user_level ) {
 			if ( ! self::requiresApproval( $user_level->id ) ) {
 				continue;
@@ -1333,11 +1320,11 @@ class PMPro_Approvals {
 		global $current_user;
 
 		//if a user does not have a membership level, return default text.
-		if ( ! pmpro_hasMembershipLevel() ) {
+		$user_levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
+		if ( empty( $user_levels ) ) {
 			return $text;
 		} else {
 			// Loop through all user levels and check if any are pending approval or denied.
-			$user_levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 			foreach ( $user_levels as $user_level ) {
 				if ( ! self::requiresApproval( $user_level->id ) ) {
 					continue;
@@ -1350,7 +1337,6 @@ class PMPro_Approvals {
 				}
 			}
 		}
-
 		return $text;
 	}
 
