@@ -130,6 +130,7 @@ class PMPro_Approvals {
 		add_filter( 'pmpro_confirmation_message', array( 'PMPro_Approvals', 'pmpro_confirmation_message' ), 10, 2 );
 		add_action( 'pmpro_before_change_membership_level', array( 'PMPro_Approvals', 'pmpro_before_change_membership_level' ), 10, 4 );
 		add_action( 'pmpro_after_change_membership_level', array( 'PMPro_Approvals', 'pmpro_after_change_membership_level' ), 10, 2 );
+		add_action( 'pmpro_after_all_membership_level_changes', array( 'PMPro_Approvals', 'pmpro_after_all_membership_level_changes' ) );
 
 		//Integrate with Member Directory.
 		add_filter( 'pmpro_member_directory_sql_parts', array( 'PMPro_Approvals', 'pmpro_member_directory_sql_parts'), 10, 9 );
@@ -1275,6 +1276,32 @@ class PMPro_Approvals {
 		//send email to admin that a new member requires approval.
 		$email = new PMPro_Approvals_Email();
 		$email->sendAdminPending( $user_id, null, $level_id );
+	}
+
+	/**
+	 * Clean up approval data for pending memberships that were lost
+	 */
+	public static function pmpro_after_all_membership_level_changes( $old_user_levels ) {
+
+		// Loop through old levels
+		foreach ( $old_user_levels as $user_id => $old_levels ) {
+			// Get the IDs of the user's old levels.
+			$old_level_ids = wp_list_pluck( $old_levels, 'id' );
+	
+			// Get the new level for this user.
+			$new_levels    = pmpro_getMembershipLevelsForUser( $user_id );
+			$new_level_ids = wp_list_pluck( $new_levels, 'id' );
+	
+			// Get the levels that the user lost.
+			$lost_level_ids = array_diff( $old_level_ids, $new_level_ids );
+	
+			// Check if the lost level IDs were pending approval. If so, try to clean up approval data
+			foreach ( $lost_level_ids as $lost_level_id ) {
+				if ( self::isPending( $user_id, $lost_level_id ) ) {
+					self::clearApprovalData( $user_id, $lost_level_id );
+				}
+			}
+		}
 	}
 
 	/**
