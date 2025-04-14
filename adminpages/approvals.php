@@ -90,13 +90,13 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 		<input class="button" type="submit" value="<?php _e( 'Search Approvals', 'pmpro-approvals' ); ?>"/>
 	</p>
 	<div class="tablenav top">	
-		<?php _e( 'Show', 'pmpro-approvals' ); ?> 
+		<?php esc_html_e( 'Show', 'pmpro-approvals' ); ?> 
 		<select name="l" onchange="jQuery('#posts-filter').submit();">
 			<option value="" 
 				<?php if ( ! $l ) { ?>
 					selected="selected"
 				<?php } ?>>
-				<?php _e( 'All Levels', 'pmpro-approvals' ); ?>
+				<?php esc_html_e( 'All Levels', 'pmpro-approvals' ); ?>
 			</option>
 			<?php
 				$approval_level_ids = PMPro_Approvals::getApprovalLevels();
