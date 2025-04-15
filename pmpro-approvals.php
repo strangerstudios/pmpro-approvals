@@ -1296,13 +1296,13 @@ class PMPro_Approvals {
 			$new_levels    = pmpro_getMembershipLevelsForUser( $user_id );
 			$new_level_ids = wp_list_pluck( $new_levels, 'id' );
 	
-			// Get the levels that the user lost.
-			$lost_level_ids = array_diff( $old_level_ids, $new_level_ids );
+			// Get the levels that the user removed.
+			$removed_level_ids = array_diff( $old_level_ids, $new_level_ids );
 	
-			// Check if the lost level IDs were pending approval. If so, try to clean up approval data
-			foreach ( $lost_level_ids as $lost_level_id ) {
-				if ( self::isPending( $user_id, $lost_level_id ) ) {
-					self::clearApprovalData( $user_id, $lost_level_id );
+			// Check if the removed level IDs were pending approval. If so, try to clean up approval data.
+			foreach ( $removed_level_ids as $removed_level_id ) {
+				if ( self::isPending( $user_id, $removed_level_id ) ) {
+					self::clearApprovalData( $user_id, $removed_level_id );
 				}
 			}
 		}
