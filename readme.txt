@@ -2,8 +2,8 @@
 Contributors: strangerstudios, andrewza
 Tags: paid memberships pro, pmpro, approval, approvals, workflow
 Requires at least: 5.0
-Tested up to: 6.6
-Stable tag: 1.6.3
+Tested up to: 6.8
+Stable tag: 1.6.4
 
 Grants administrators the ability to approve/deny memberships after signup.
 
@@ -36,6 +36,10 @@ Members pending approval will not have access to view members-only content until
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
+= 1.6.4 - 2025-04-15 =
+* BUG FIX: Fixed an error when viewing the Approvals settings page without any level configured for approval. (@dwanjuki)
+* BUG FIX: Fixed an issue when a member changed their membership level and the approval meta was not correctly cleared. (@dwanjuki)
+
 = 1.6.3 - 2025-03-06 =
 * BUG FIX: Fixed an issue where the "Require Membership" checkbox would not consider a user's approval status. #201 (@dparker1005)
 * BUG FIX: Fixed an issue where the "Membership Pending Approval" message may not overwrite the default message when content is restricted. #201 (@dparker1005)
