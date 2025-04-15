@@ -1283,7 +1283,7 @@ class PMPro_Approvals {
 	 *
 	 * @since TBD
 	 *
-	 * @param array $old_user_levels The old levels the users had.
+	 * @param array $old_user_levels array of user_id => array( old_level_objs )
 	 */
 	public static function pmpro_after_all_membership_level_changes( $old_user_levels ) {
 
