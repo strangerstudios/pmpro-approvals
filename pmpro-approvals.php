@@ -925,6 +925,11 @@ class PMPro_Approvals {
 	public static function getApprovals( $l = false, $s = '', $status = 'pending', $sortby = 'user_registered', $sortorder = 'ASC', $pn = 1, $limit = 15 ) {
 		global $wpdb;
 
+		$approval_levels = self::getApprovalLevels();
+		if ( empty( $approval_levels ) ) {
+			return array();
+		}
+
 		$end   = $pn * $limit;
 		$start = $end - $limit;
 
@@ -946,7 +951,7 @@ class PMPro_Approvals {
 		if ( $l ) {
 			$sql_parts['WHERE'] .= "AND mu.membership_id = '" . esc_sql( $l ) . "' ";
 		} else {
-			$sql_parts['WHERE'] .= "AND mu.membership_id IN(" . implode( ',', self::getApprovalLevels() ) . ") ";
+			$sql_parts['WHERE'] .= "AND mu.membership_id IN(" . implode( ',', $approval_levels ) . ") ";
 		}
 
 		if ( ! empty( $status ) && $status != 'all' ) {
@@ -1719,6 +1724,12 @@ class PMPro_Approvals {
 		if ( ! isset( $number_of_users[$approval_status] ) ) {
 
 			$approval_levels = self::get_all_approval_level_ids(); // Get level ID's that require approvals only and search against those.
+
+			// return 0 if no levels require approval.
+			if ( empty( $approval_levels ) ) {
+				$number_of_users[$approval_status] = 0;
+				return $number_of_users[$approval_status];
+			}
 
 			$sql_parts = array();
 			$sql_parts['SELECT'] = "SELECT COUNT(mu.user_id) as count FROM $wpdb->pmpro_memberships_users mu ";
