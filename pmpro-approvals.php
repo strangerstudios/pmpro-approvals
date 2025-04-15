@@ -1279,7 +1279,11 @@ class PMPro_Approvals {
 	}
 
 	/**
-	 * Clean up approval data for pending memberships that were lost
+	 * When a user loses a level, check if the level was pending approval. If so, clean up approval data.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $old_user_levels The old levels the users had.
 	 */
 	public static function pmpro_after_all_membership_level_changes( $old_user_levels ) {
 
