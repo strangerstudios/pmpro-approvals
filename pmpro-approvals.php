@@ -1222,6 +1222,11 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_before_change_membership_level( $level_id, $user_id, $old_levels, $cancel_level ) {
 
+		// Let the `after_all_membership_level_changes` function handle cleanup instead.
+		if ( ! empty( $cancel_level ) ) {
+			return;
+		}
+
 		//check if level requires approval, if not stop executing this function and don't send email.
 		if ( ! self::requiresApproval( $level_id ) ) {
 			return;
