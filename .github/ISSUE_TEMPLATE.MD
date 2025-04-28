@@ -33,7 +33,7 @@ I was expecting to see...
 <!-- MARK COMPLETED ITEMS WITH AN [x] -->
 
 - [ ] This bug happens with only this plugin and Paid Memberships Pro active
-- [ ] This bug happens with a default WordPress theme active, or [Memberlite](https://wordpress.org/themes/memberlite/)
+- [ ] This bug happens with a default WordPress theme active, or [Memberlite](https://www.paidmembershipspro.com/themes/memberlite/)
 - [ ] I can reproduce this bug consistently using the steps above
 
 ## WordPress Environment
