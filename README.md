@@ -35,3 +35,4 @@ Here are some ways for **non-developers to contribute** to Approval Process for 
 
 1. Translate Approval Process for Membership into your own [language](https://www.paidmembershipspro.com/paid-memberships-pro-in-your-language/).
 2. [Purchase a plus membership](https://paidmembershipspro.com/pricing) to help fund ongoing development and bug fixes.
+3. Leave an honest review for [Approval Process for Membership](https://www.paidmembershipspro.com/submit-testimonial/).
