@@ -45,7 +45,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Templ
 	 * @return string The email template slug.
 	 */
 	public static function get_template_slug() {
-		return 'admin_denied';
+		return 'admin_denied_admin';
 	}
 
 	/**
