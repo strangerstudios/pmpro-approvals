@@ -44,7 +44,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Approved extends PMPro_Email_Tem
 	 * @return string The email template slug.
 	 */
 	public static function get_template_slug() {
-		return 'admin_approved';
+		return 'admin_approved_admin';
 	}
 
 	/**
