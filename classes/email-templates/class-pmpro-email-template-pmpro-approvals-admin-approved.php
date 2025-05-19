@@ -170,7 +170,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Approved extends PMPro_Email_Tem
  * @return array The modified email templates array.
  */
 function pmpro_email_template_pmpro_approval_admin_approved( $email_templates ) {
-	$email_templates['admin_approved'] = 'PMPro_Email_Template_PMProApprovals_Admin_Approved';
+	$email_templates['admin_approved_admin'] = 'PMPro_Email_Template_PMProApprovals_Admin_Approved';
 	return $email_templates;
 }
 add_filter( 'pmpro_email_templates', 'pmpro_email_template_pmpro_approval_admin_approved' );
