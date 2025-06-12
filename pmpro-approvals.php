@@ -1417,7 +1417,7 @@ class PMPro_Approvals {
 				// Check that the user has this level.
 				if ( self::hasMembershipLevelSansApproval( $approval_level_id ) ) {
 					$level = pmpro_getLevel( $approval_level_id );
-					printf( '<li><strong>' . esc_html__( 'Approval Status for %s', 'pmpro-approvals' ) . ':' . '</strong> %s</li>', $level->name, $approval_statuses[ $approval_level_id ] );
+					printf( '<li class="' . esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ) . '"><strong>' . esc_html__( 'Approval Status for %s', 'pmpro-approvals' ) . ':' . '</strong> %s</li>', $level->name, $approval_statuses[ $approval_level_id ] );
 				}
 			}
 		}
