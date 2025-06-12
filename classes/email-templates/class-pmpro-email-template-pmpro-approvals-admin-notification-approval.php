@@ -45,7 +45,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval extends PM
 	 * @return string The email template slug.
 	 */
 	public static function get_template_slug() {
-		return 'admin_notification_approval';
+		return 'admin_notification_approval_admin';
 	}
 
 	/**
@@ -173,7 +173,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval extends PM
  * @return array The modified email templates array.
  */
 function pmpro_email_template_pmpro_approvals_admin_notification_approval( $email_templates ) {
-	$email_templates['admin_notification_approval'] = 'PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval';
+	$email_templates['admin_notification_approval_admin'] = 'PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval';
 	return $email_templates;
 }
 add_filter( 'pmpro_email_templates', 'pmpro_email_template_pmpro_approvals_admin_notification_approval' );
