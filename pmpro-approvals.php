@@ -55,6 +55,7 @@ class PMPro_Approvals {
 
 		// Filter the checkout email.
 		add_filter( 'pmpro_email_filter', array( 'PMPro_Approvals', 'pmpro_email_filter' ) );
+		add_filter( 'pmpro_email_filter', array( 'PMPro_Approvals', 'pmpro_include_user_fields_in_approvals_emails' ), 50 );
 
 		//add support for PMPro BuddyPress Add On
 		add_filter( 'pmpro_bp_directory_sql_parts', array( 'PMPro_Approvals', 'buddypress_sql' ), 10, 2 );
@@ -1586,6 +1587,62 @@ class PMPro_Approvals {
 
 		return $email;
 
+	}
+
+	/**
+	 * Include user fields in the admin approval emails automatically.
+	 *
+	 * @since TBD
+	 * 
+	 * @param object $email The email object.
+	 */
+	public static function pmpro_include_user_fields_in_approvals_emails( $email ) {
+
+		// Bail if we don't have an $email object or the template is missing from the object.
+		if ( empty( $email ) || ! is_object( $email ) || ! isset( $email->template ) ) {
+			return;
+		}
+
+		// If the email is an admin email, include user fields for all Approval emails.
+		if ( ! in_array( $email->template, array( 'admin_approved', 'admin_denied', 'admin_notification_approval' ) ) ) {
+			return;
+		}
+
+		// Get the user_id from the email
+		$user = get_user_by( 'email', $email->data['user_email'] );
+		$user_id = $user ? $user->ID : 0;
+
+		if ( ! empty( $user_id ) ) {
+			//add to bottom of email
+			$field_groups = PMPro_Field_Group::get_all();
+			if ( ! empty( $field_groups ) ) {
+				$fields_content = "<p>" . esc_html__( 'Extra Fields:', 'paid-memberships-pro' ) . "<br />";
+				$added_field = false;
+				// Loop through all the field groups.
+				foreach( $field_groups as $group_name => $group ) {
+					// Loop through all the fields in the group.
+					$fields = $group->get_fields_to_display(
+						array(
+							'scope' => 'checkout',
+							'user_id' => $user_id,
+						)
+					);
+					foreach( $fields as $field ) {
+						$fields_content .= "- " . esc_html( $field->label ) . ": ";
+						$fields_content .= $field->displayValue( get_user_meta( $user_id, $field->name, true), false );
+						$fields_content .= "<br />";
+						$added_field = true;
+					}
+				}
+
+				$fields_content .= "</p>";
+				if ( $added_field ) {
+					$email->body .= $fields_content;
+				}
+			}
+		}
+
+		return $email;
 	}
 
 	//Approve members from edit profile in WordPress.
