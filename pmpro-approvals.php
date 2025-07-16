@@ -567,6 +567,10 @@ class PMPro_Approvals {
 	public static function pmpro_has_membership_level( $haslevel, $user_id, $levels ) {
 		global $pmpro_pages;
 
+		// Remove this from the global, because we may want to restrict the directory and profile pages.
+		unset( $pmpro_pages['directory'] );
+		unset( $pmpro_pages['profile'] );
+		
 		// Let members access PMPro pages, PMPro can handle the cases here.
 		if ( is_page( $pmpro_pages ) ) {
 			return $haslevel;
