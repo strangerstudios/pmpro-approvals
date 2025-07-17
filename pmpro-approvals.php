@@ -567,12 +567,15 @@ class PMPro_Approvals {
 	public static function pmpro_has_membership_level( $haslevel, $user_id, $levels ) {
 		global $pmpro_pages;
 
-		// Remove this from the global, because we may want to restrict the directory and profile pages.
-		unset( $pmpro_pages['directory'] );
-		unset( $pmpro_pages['profile'] );
+		// Create a local copy of the global $pmpro_pages array.
+		$allowed_pages = $pmpro_pages;
+
+		// Remove these pages from the local copy, because we may want to restrict the directory and profile pages.
+		unset( $allowed_pages['directory'] );
+		unset( $allowed_pages['profile'] );
 		
 		// Let members access PMPro pages, PMPro can handle the cases here.
-		if ( is_page( $pmpro_pages ) ) {
+		if ( is_page( $allowed_pages ) ) {
 			return $haslevel;
 		}
 
