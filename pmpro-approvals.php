@@ -1598,14 +1598,19 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_include_user_fields_in_approvals_emails( $email ) {
 
+		// Make sure that the PMPro_Field_Group class exists to add the extra fields.
+		if ( ! class_exists( 'PMPro_Field_Group' ) ) {
+			return $email;
+		}
+
 		// Bail if we don't have an $email object or the template is missing from the object.
 		if ( empty( $email ) || ! is_object( $email ) || ! isset( $email->template ) ) {
-			return;
+			return $email;
 		}
 
 		// If the email is an admin email, include user fields for all Approval emails.
 		if ( ! in_array( $email->template, array( 'admin_approved', 'admin_denied', 'admin_notification_approval' ) ) ) {
-			return;
+			return $email;
 		}
 
 		// Get the user_id from the email
@@ -1616,7 +1621,7 @@ class PMPro_Approvals {
 			//add to bottom of email
 			$field_groups = PMPro_Field_Group::get_all();
 			if ( ! empty( $field_groups ) ) {
-				$fields_content = "<p>" . esc_html__( 'Extra Fields:', 'paid-memberships-pro' ) . "<br />";
+				$fields_content = "<p>" . esc_html__( 'Extra Fields:', 'pmpro-approvals' ) . "<br />";
 				$added_field = false;
 				// Loop through all the field groups.
 				foreach( $field_groups as $group_name => $group ) {
