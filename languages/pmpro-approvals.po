@@ -2,16 +2,16 @@
 # This file is distributed under the same license as the Paid Memberships Pro - Approvals Add On plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Approvals Add On 1.6.4\n"
+"Project-Id-Version: Paid Memberships Pro - Approvals Add On 1.6.5\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-04-15T11:05:59+00:00\n"
+"POT-Creation-Date: 2025-07-25T13:55:49+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pmpro-approvals\n"
 
 #. Plugin Name of the plugin
@@ -64,6 +64,8 @@ msgstr ""
 #: pmpro-approvals.php:213
 #: pmpro-approvals.php:215
 #: pmpro-approvals.php:231
+#: pmpro-approvals.php:195
+#: pmpro-approvals.php:232
 msgid "Approvals"
 msgstr ""
 
@@ -82,6 +84,7 @@ msgstr ""
 #: pmpro-approvals.php:1424
 #: pmpro-approvals.php:1410
 #: pmpro-approvals.php:1446
+#: pmpro-approvals.php:1452
 msgid "Pending"
 msgstr ""
 
@@ -94,6 +97,7 @@ msgstr ""
 #: pmpro-approvals.php:786
 #: pmpro-approvals.php:773
 #: pmpro-approvals.php:774
+#: pmpro-approvals.php:782
 msgid "Approved"
 msgstr ""
 
@@ -211,6 +215,7 @@ msgstr ""
 
 #: adminpages/userinfo.php:31
 #: adminpages/userinfo.php:37
+#, php-format
 msgid "No user found with ID %d."
 msgstr ""
 
@@ -248,6 +253,7 @@ msgstr ""
 #: classes/class.approvalemails.php:41
 #: classes/class.approvalemails.php:45
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:73
+#, php-format
 msgid "Your membership at %s has been approved."
 msgstr ""
 
@@ -255,6 +261,7 @@ msgstr ""
 #: classes/class.approvalemails.php:84
 #: classes/class.approvalemails.php:93
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:73
+#, php-format
 msgid "Your membership at %s has been denied."
 msgstr ""
 
@@ -262,6 +269,7 @@ msgstr ""
 #: classes/class.approvalemails.php:123
 #: classes/class.approvalemails.php:161
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:81
+#, php-format
 msgid "A member at %s is waiting approval."
 msgstr ""
 
@@ -269,6 +277,7 @@ msgstr ""
 #: classes/class.approvalemails.php:181
 #: classes/class.approvalemails.php:236
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:80
+#, php-format
 msgid "A member at %s has been approved."
 msgstr ""
 
@@ -276,6 +285,7 @@ msgstr ""
 #: classes/class.approvalemails.php:238
 #: classes/class.approvalemails.php:309
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:81
+#, php-format
 msgid "A member at %s has been denied."
 msgstr ""
 
@@ -284,6 +294,7 @@ msgstr ""
 #: pmpro-approvals.php:375
 #: pmpro-approvals.php:389
 #: pmpro-approvals.php:390
+#: pmpro-approvals.php:391
 msgid "Approval Settings"
 msgstr ""
 
@@ -292,6 +303,7 @@ msgstr ""
 #: pmpro-approvals.php:382
 #: pmpro-approvals.php:396
 #: pmpro-approvals.php:397
+#: pmpro-approvals.php:398
 msgid "Requires Approval?"
 msgstr ""
 
@@ -300,6 +312,7 @@ msgstr ""
 #: pmpro-approvals.php:385
 #: pmpro-approvals.php:399
 #: pmpro-approvals.php:400
+#: pmpro-approvals.php:401
 msgid "No."
 msgstr ""
 
@@ -308,6 +321,7 @@ msgstr ""
 #: pmpro-approvals.php:386
 #: pmpro-approvals.php:400
 #: pmpro-approvals.php:401
+#: pmpro-approvals.php:402
 msgid "Yes. Admin must approve new members for this level."
 msgstr ""
 
@@ -316,6 +330,7 @@ msgstr ""
 #: pmpro-approvals.php:388
 #: pmpro-approvals.php:402
 #: pmpro-approvals.php:403
+#: pmpro-approvals.php:404
 msgid "Yes. User must have an approved membership for a different level."
 msgstr ""
 
@@ -324,6 +339,7 @@ msgstr ""
 #: pmpro-approvals.php:389
 #: pmpro-approvals.php:403
 #: pmpro-approvals.php:404
+#: pmpro-approvals.php:405
 msgid "Yes. User must have an approved membership for a different level AND admin must approve new members for this level."
 msgstr ""
 
@@ -332,6 +348,7 @@ msgstr ""
 #: pmpro-approvals.php:400
 #: pmpro-approvals.php:414
 #: pmpro-approvals.php:415
+#: pmpro-approvals.php:416
 msgid "Which Level?"
 msgstr ""
 
@@ -342,6 +359,7 @@ msgstr ""
 #: pmpro-approvals.php:653
 #: pmpro-approvals.php:640
 #: pmpro-approvals.php:641
+#: pmpro-approvals.php:649
 msgid "Your previous application for this level has been denied. You will not be allowed to check out."
 msgstr ""
 
@@ -352,6 +370,8 @@ msgstr ""
 #: pmpro-approvals.php:663
 #: pmpro-approvals.php:650
 #: pmpro-approvals.php:651
+#: pmpro-approvals.php:659
+#, php-format
 msgid "Since your application to the %s level has been denied, you may not check out for this level."
 msgstr ""
 
@@ -362,6 +382,8 @@ msgstr ""
 #: pmpro-approvals.php:669
 #: pmpro-approvals.php:656
 #: pmpro-approvals.php:657
+#: pmpro-approvals.php:665
+#, php-format
 msgid "Your application to %s is still pending."
 msgstr ""
 
@@ -372,6 +394,8 @@ msgstr ""
 #: pmpro-approvals.php:673
 #: pmpro-approvals.php:660
 #: pmpro-approvals.php:661
+#: pmpro-approvals.php:669
+#, php-format
 msgid "You must be approved for %s before checking out here."
 msgstr ""
 
@@ -382,6 +406,8 @@ msgstr ""
 #: pmpro-approvals.php:675
 #: pmpro-approvals.php:662
 #: pmpro-approvals.php:663
+#: pmpro-approvals.php:671
+#, php-format
 msgid "You must register and be approved for <a href=\"%1$s\">%2$s</a> before checking out here."
 msgstr ""
 
@@ -392,6 +418,7 @@ msgstr ""
 #: pmpro-approvals.php:767
 #: pmpro-approvals.php:754
 #: pmpro-approvals.php:755
+#: pmpro-approvals.php:763
 msgid "approved"
 msgstr ""
 
@@ -402,6 +429,8 @@ msgstr ""
 #: pmpro-approvals.php:781
 #: pmpro-approvals.php:768
 #: pmpro-approvals.php:769
+#: pmpro-approvals.php:777
+#, php-format
 msgid "%1$s on %2$s by %3$s"
 msgstr ""
 
@@ -412,6 +441,8 @@ msgstr ""
 #: pmpro-approvals.php:783
 #: pmpro-approvals.php:770
 #: pmpro-approvals.php:771
+#: pmpro-approvals.php:779
+#, php-format
 msgid "%1$s on %2$s"
 msgstr ""
 
@@ -430,6 +461,8 @@ msgstr ""
 #: pmpro-approvals.php:1465
 #: pmpro-approvals.php:780
 #: pmpro-approvals.php:1501
+#: pmpro-approvals.php:788
+#: pmpro-approvals.php:1507
 msgid "pending"
 msgstr ""
 
@@ -440,6 +473,8 @@ msgstr ""
 #: pmpro-approvals.php:794
 #: pmpro-approvals.php:781
 #: pmpro-approvals.php:782
+#: pmpro-approvals.php:790
+#, php-format
 msgid "Pending Approval for %s"
 msgstr ""
 
@@ -464,6 +499,9 @@ msgstr ""
 #: pmpro-approvals.php:1062
 #: pmpro-approvals.php:1130
 #: pmpro-approvals.php:1183
+#: pmpro-approvals.php:1070
+#: pmpro-approvals.php:1138
+#: pmpro-approvals.php:1191
 msgid "You do not have permission to perform approvals."
 msgstr ""
 
@@ -474,6 +512,7 @@ msgstr ""
 #: pmpro-approvals.php:1098
 #: pmpro-approvals.php:1085
 #: pmpro-approvals.php:1091
+#: pmpro-approvals.php:1099
 msgid "Member was approved."
 msgstr ""
 
@@ -484,6 +523,7 @@ msgstr ""
 #: pmpro-approvals.php:1166
 #: pmpro-approvals.php:1153
 #: pmpro-approvals.php:1159
+#: pmpro-approvals.php:1167
 msgid "Member was denied."
 msgstr ""
 
@@ -494,6 +534,7 @@ msgstr ""
 #: pmpro-approvals.php:1217
 #: pmpro-approvals.php:1204
 #: pmpro-approvals.php:1210
+#: pmpro-approvals.php:1218
 msgid "Approval reset."
 msgstr ""
 
@@ -505,6 +546,7 @@ msgstr ""
 #: pmpro-approvals.php:1347
 #: pmpro-approvals.php:1334
 #: pmpro-approvals.php:1370
+#: pmpro-approvals.php:1376
 msgid "Your membership requires approval before you are able to view this content."
 msgstr ""
 
@@ -516,6 +558,7 @@ msgstr ""
 #: pmpro-approvals.php:1349
 #: pmpro-approvals.php:1336
 #: pmpro-approvals.php:1372
+#: pmpro-approvals.php:1378
 msgid "Your membership application has been denied. Contact the site owners if you believe this is an error."
 msgstr ""
 
@@ -532,6 +575,8 @@ msgstr ""
 #: pmpro-approvals.php:1483
 #: pmpro-approvals.php:1469
 #: pmpro-approvals.php:1505
+#: pmpro-approvals.php:1511
+#, php-format
 msgid "Thank you for your membership to %1$s. Your %2$s membership status is: <b>%3$s</b>."
 msgstr ""
 
@@ -543,6 +588,8 @@ msgstr ""
 #: pmpro-approvals.php:1505
 #: pmpro-approvals.php:1491
 #: pmpro-approvals.php:1527
+#: pmpro-approvals.php:1533
+#, php-format
 msgid "Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s."
 msgstr ""
 
@@ -554,6 +601,7 @@ msgstr ""
 #: pmpro-approvals.php:1517
 #: pmpro-approvals.php:1503
 #: pmpro-approvals.php:1539
+#: pmpro-approvals.php:1545
 msgid "A user has been approved for !!membership_level_name!!"
 msgstr ""
 
@@ -565,6 +613,7 @@ msgstr ""
 #: pmpro-approvals.php:1518
 #: pmpro-approvals.php:1504
 #: pmpro-approvals.php:1540
+#: pmpro-approvals.php:1546
 msgid "Approvals - Approved Email (admin)"
 msgstr ""
 
@@ -576,6 +625,7 @@ msgstr ""
 #: pmpro-approvals.php:1523
 #: pmpro-approvals.php:1509
 #: pmpro-approvals.php:1545
+#: pmpro-approvals.php:1551
 msgid "A user has been denied for !!membership_level_name!!"
 msgstr ""
 
@@ -587,6 +637,7 @@ msgstr ""
 #: pmpro-approvals.php:1524
 #: pmpro-approvals.php:1510
 #: pmpro-approvals.php:1546
+#: pmpro-approvals.php:1552
 msgid "Approvals - Denied Email (admin)"
 msgstr ""
 
@@ -598,6 +649,7 @@ msgstr ""
 #: pmpro-approvals.php:1529
 #: pmpro-approvals.php:1515
 #: pmpro-approvals.php:1551
+#: pmpro-approvals.php:1557
 msgid "A user requires approval"
 msgstr ""
 
@@ -609,6 +661,7 @@ msgstr ""
 #: pmpro-approvals.php:1530
 #: pmpro-approvals.php:1516
 #: pmpro-approvals.php:1552
+#: pmpro-approvals.php:1558
 msgid "Approvals - Requires Approval (admin)"
 msgstr ""
 
@@ -620,6 +673,7 @@ msgstr ""
 #: pmpro-approvals.php:1537
 #: pmpro-approvals.php:1523
 #: pmpro-approvals.php:1559
+#: pmpro-approvals.php:1565
 msgid "Your membership to !!sitename!! has been approved."
 msgstr ""
 
@@ -631,6 +685,7 @@ msgstr ""
 #: pmpro-approvals.php:1538
 #: pmpro-approvals.php:1524
 #: pmpro-approvals.php:1560
+#: pmpro-approvals.php:1566
 msgid "Approvals - Approved Email"
 msgstr ""
 
@@ -642,6 +697,7 @@ msgstr ""
 #: pmpro-approvals.php:1543
 #: pmpro-approvals.php:1529
 #: pmpro-approvals.php:1565
+#: pmpro-approvals.php:1571
 msgid "Your membership to !!sitename!! has been denied."
 msgstr ""
 
@@ -653,6 +709,7 @@ msgstr ""
 #: pmpro-approvals.php:1544
 #: pmpro-approvals.php:1530
 #: pmpro-approvals.php:1566
+#: pmpro-approvals.php:1572
 msgid "Approvals - Denied Email"
 msgstr ""
 
@@ -664,6 +721,7 @@ msgstr ""
 #: pmpro-approvals.php:1563
 #: pmpro-approvals.php:1549
 #: pmpro-approvals.php:1585
+#: pmpro-approvals.php:1591
 msgid "Your membership account is now pending. You will be notified once your account has been approved/denied."
 msgstr ""
 
@@ -675,6 +733,7 @@ msgstr ""
 #: pmpro-approvals.php:1593
 #: pmpro-approvals.php:1579
 #: pmpro-approvals.php:1615
+#: pmpro-approvals.php:1682
 msgid "User Approval Log"
 msgstr ""
 
@@ -691,6 +750,7 @@ msgstr ""
 #: pmpro-approvals.php:1704
 #: pmpro-approvals.php:1690
 #: pmpro-approvals.php:1726
+#: pmpro-approvals.php:1793
 msgid "No approval history found."
 msgstr ""
 
@@ -702,6 +762,7 @@ msgstr ""
 #: pmpro-approvals.php:1907
 #: pmpro-approvals.php:1893
 #: pmpro-approvals.php:1935
+#: pmpro-approvals.php:2002
 msgid "View Documentation"
 msgstr ""
 
@@ -713,6 +774,7 @@ msgstr ""
 #: pmpro-approvals.php:1907
 #: pmpro-approvals.php:1893
 #: pmpro-approvals.php:1935
+#: pmpro-approvals.php:2002
 msgid "Docs"
 msgstr ""
 
@@ -724,6 +786,7 @@ msgstr ""
 #: pmpro-approvals.php:1908
 #: pmpro-approvals.php:1894
 #: pmpro-approvals.php:1936
+#: pmpro-approvals.php:2003
 msgid "Visit Customer Support Forum"
 msgstr ""
 
@@ -735,6 +798,7 @@ msgstr ""
 #: pmpro-approvals.php:1908
 #: pmpro-approvals.php:1894
 #: pmpro-approvals.php:1936
+#: pmpro-approvals.php:2003
 msgid "Support"
 msgstr ""
 
@@ -750,6 +814,7 @@ msgstr ""
 #: pmpro-approvals.php:1322
 #: pmpro-approvals.php:1309
 #: pmpro-approvals.php:1345
+#: pmpro-approvals.php:1351
 msgid "Membership Denied"
 msgstr ""
 
@@ -760,6 +825,7 @@ msgstr ""
 #: pmpro-approvals.php:699
 #: pmpro-approvals.php:686
 #: pmpro-approvals.php:687
+#: pmpro-approvals.php:695
 msgid "You should pass a level ID to getUserApproval."
 msgstr ""
 
@@ -769,6 +835,7 @@ msgstr ""
 #: pmpro-approvals.php:737
 #: pmpro-approvals.php:724
 #: pmpro-approvals.php:725
+#: pmpro-approvals.php:733
 msgid "You should pass a level ID to getUserApprovalStatus."
 msgstr ""
 
@@ -778,6 +845,7 @@ msgstr ""
 #: pmpro-approvals.php:1076
 #: pmpro-approvals.php:1063
 #: pmpro-approvals.php:1069
+#: pmpro-approvals.php:1077
 msgid "No level ID given. Please pass a level ID to approveMember()."
 msgstr ""
 
@@ -787,6 +855,7 @@ msgstr ""
 #: pmpro-approvals.php:1144
 #: pmpro-approvals.php:1131
 #: pmpro-approvals.php:1137
+#: pmpro-approvals.php:1145
 msgid "No level ID given. Please pass a level ID to denyMember()."
 msgstr ""
 
@@ -796,6 +865,7 @@ msgstr ""
 #: pmpro-approvals.php:1197
 #: pmpro-approvals.php:1184
 #: pmpro-approvals.php:1190
+#: pmpro-approvals.php:1198
 msgid "No level ID given. Please pass a level ID to resetMember()."
 msgstr ""
 
@@ -804,6 +874,7 @@ msgstr ""
 #: pmpro-approvals.php:1320
 #: pmpro-approvals.php:1307
 #: pmpro-approvals.php:1343
+#: pmpro-approvals.php:1349
 msgid "Membership Pending Approval"
 msgstr ""
 
@@ -813,6 +884,8 @@ msgstr ""
 #: pmpro-approvals.php:1400
 #: pmpro-approvals.php:1386
 #: pmpro-approvals.php:1422
+#: pmpro-approvals.php:1428
+#, php-format
 msgid "Approval Status for %s"
 msgstr ""
 
@@ -822,6 +895,7 @@ msgstr ""
 #: pmpro-approvals.php:1577
 #: pmpro-approvals.php:1563
 #: pmpro-approvals.php:1599
+#: pmpro-approvals.php:1666
 msgid "Approval Statuses"
 msgstr ""
 
@@ -831,6 +905,7 @@ msgstr ""
 #: pmpro-approvals.php:1584
 #: pmpro-approvals.php:1570
 #: pmpro-approvals.php:1606
+#: pmpro-approvals.php:1673
 msgid "Manage Approval Statuses"
 msgstr ""
 
@@ -853,6 +928,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:108
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:97
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:98
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:96
 msgid "The email address of the member."
 msgstr ""
 
@@ -861,6 +937,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:109
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:98
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:99
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:97
 msgid "The ID of the membership level."
 msgstr ""
 
@@ -869,6 +946,7 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:110
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:99
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:100
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:98
 msgid "The name of the membership level."
 msgstr ""
 
@@ -929,4 +1007,12 @@ msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:62
 msgid "This Email is sent to the member when their membership application is denied."
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:84
+msgid "Your membership account has been denied."
+msgstr ""
+
+#: pmpro-approvals.php:1631
+msgid "Extra Fields:"
 msgstr ""
