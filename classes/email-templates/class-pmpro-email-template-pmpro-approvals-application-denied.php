@@ -144,6 +144,35 @@ class PMPro_Email_Template_PMProApprovals_Application_Denied extends PMPro_Email
 	public function get_recipient_name() {
 		return $this->member->display_name;
 	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 * Note: This requires Paid Memberships Pro V3.5 or later.
+	 * 
+	 * @since TBD
+	 * 
+	 * @return array $test_data An array of contructor arguments (member, admin, level).
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user, $pmpro_email_test_level;
+
+		// Get the test level.
+		if ( empty( $pmpro_email_test_level ) ) {
+			$levels = pmpro_getAllLevels( true );
+			$pmpro_email_test_level = current( $levels );
+		}
+		
+		// Get a random member from the users table.
+		$random_user = get_users( array( 
+			'number' => 1,
+			'orderby' => 'ID',
+			'order'  => 'DESC',
+		) );
+
+		$member = $random_user ? $random_user[0] : $current_user;
+
+		return array( $member, $pmpro_email_test_level );
+	}
 }
 /**
  * Register the email template.

@@ -31,7 +31,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval extends PM
 	 * @param WP_User $member The user applying for membership.
 	 * @param int $level_id The level id.
 	 */
-	public function __construct( WP_User $member, stdClass $level, WP_User $admin ) {
+	public function __construct( WP_User $member, WP_User $admin, stdClass $level ) {
 		$this->member = $member;
 		$this->level = $level;
 		$this->admin = $admin;
@@ -162,6 +162,35 @@ class PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval extends PM
 	 */
 	public function get_recipient_name() {
 		return empty( $this->admin->display_name ) ? esc_html__( 'Admin', 'pmpro-approvals' ) : $this->admin->display_name;
+	}
+
+	/**
+	 * Returns the arguments to send the test email from the abstract class.
+	 * Note: This requires Paid Memberships Pro V3.5 or later.
+	 * 
+	 * @since TBD
+	 * 
+	 * @return array $test_data An array of contructor arguments (member, admin, level).
+	 */
+	public static function get_test_email_constructor_args() {
+		global $current_user, $pmpro_email_test_level;
+
+		// Get the test level.
+		if ( empty( $pmpro_email_test_level ) ) {
+			$levels = pmpro_getAllLevels( true );
+			$pmpro_email_test_level = current( $levels );
+		}
+		
+		// Get a random member from the users table.
+		$random_user = get_users( array( 
+			'number' => 1,
+			'orderby' => 'ID',
+			'order'  => 'DESC',
+		) );
+
+		$member = $random_user ? $random_user[0] : $current_user;
+
+		return array( $member, $current_user, $pmpro_email_test_level );
 	}
 }
 /**

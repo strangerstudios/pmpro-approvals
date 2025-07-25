@@ -153,7 +153,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 		}
 
 		if ( class_exists( 'PMPro_Email_Template' ) ) {
-			$send_admin_pending_email = new PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval( $member, $level, $admin );
+			$send_admin_pending_email = new PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval( $member, $admin, $level );
 			return $send_admin_pending_email->send();
 		}
 
