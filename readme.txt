@@ -3,7 +3,7 @@ Contributors: strangerstudios, andrewza
 Tags: paid memberships pro, pmpro, approval, approvals, workflow
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 1.6.4
+Stable tag: 1.6.5
 
 Grants administrators the ability to approve/deny memberships after signup.
 
@@ -36,6 +36,13 @@ Members pending approval will not have access to view members-only content until
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
+= 1.6.5 - 2025-07-25 =
+* ENHANCEMENT: Added "Extra Fields" to the admin approval emails. This will include any user fields that are shown on checkout. (@andrewlimaza)
+* ENHANCEMENT: Added support for sending a test email within the Email Templates editor screen. This requires Paid Memberships Pro v3.5 or later. (@andrewlimaza)
+* BUG FIX: Fixed an issue where the default recipient would always show "member" for admin emails (@dwanjuki)
+* BUG FIX: Adjusted the membership account approval status to use the CSS class "pmpro_list_item" to match styling for Paid Memberships Pro V3.0+ (@andrewlimaza)
+
+
 = 1.6.4 - 2025-04-15 =
 * BUG FIX: Fixed an error when viewing the Approvals settings page without any level configured for approval. (@dwanjuki)
 * BUG FIX: Fixed an issue when a member changed their membership level and the approval meta was not correctly cleared. (@dwanjuki)

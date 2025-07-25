@@ -166,7 +166,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Templ
 	 * Returns the arguments to send the test email from the abstract class.
 	 * Note: This requires Paid Memberships Pro V3.5 or later.
 	 * 
-	 * @since TBD
+	 * @since 1.6.5
 	 * 
 	 * @return array $test_data An array of contructor arguments (member, admin, level).
 	 */
