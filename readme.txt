@@ -42,6 +42,7 @@ View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-
 * BUG FIX: Fixed an issue where the default recipient would always show "member" for admin emails (@dwanjuki)
 * BUG FIX: Adjusted the membership account approval status to use the CSS class "pmpro_list_item" to match styling for Paid Memberships Pro V3.0+ (@andrewlimaza)
 * BUG FIX: Resolved an issue with the Membership Directory Add On that allowed non-approved members to access restricted pages. (@andrewlimaza)
+* BUG FIX: Corrected the body content in the default email sent to members when their application is denied. (@andrewlimaza)
 
 = 1.6.4 - 2025-04-15 =
 * BUG FIX: Fixed an error when viewing the Approvals settings page without any level configured for approval. (@dwanjuki)

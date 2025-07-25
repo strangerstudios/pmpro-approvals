@@ -81,9 +81,7 @@ class PMPro_Email_Template_PMProApprovals_Application_Denied extends PMPro_Email
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>The user <a href="!!view_profile!!">!!member_name!!</a> has been denied.</p>
-
-<p>Log in to your membership account here: !!login_link!!</p>' ) );
+		return wp_kses_post( '<p>' . __( 'Your membership account has been denied.', 'pmpro-approvals' ) . '</p>' );
 	}
 
 	/**
