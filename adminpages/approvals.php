@@ -149,7 +149,7 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 	}
 
 		$approval_users  = PMPro_Approvals::getApprovals( $l, $s, $status, $sortby, $sortorder, $pn, $limit );
-		$totalrows = $wpdb->get_var( 'SELECT FOUND_ROWS() as found_rows' );
+		$totalrows = PMPro_Approvals::getApprovalCount( $status, $l, $s );
 
 	if ( $approval_users ) {
 		?>
