@@ -392,6 +392,12 @@ class PMPro_Approvals {
 				</button>
 			</div>
 			<div class="pmpro_section_inside" <?php echo $section_visibility === 'hidden' ? 'style="display: none"' : ''; ?>>
+				<p>
+					<?php
+					$approval_settings_link = '<a title="' . esc_attr__( 'Approval Process for Membership', 'pmpro-approvals' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/add-ons/approval-process-membership/?utm_source=plugin&utm_medium=pmpro-approvals&utm_campaign=add-ons&utm_content=&utm_term=">' . esc_html__( 'Approval Settings', 'pmpro-approvals' ) . '</a>';
+					printf( esc_html__( 'Learn more about %s.', 'pmpro-approvals' ), $approval_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					?>
+				</p>
 				<table class="form-table">
 					<tbody>
 						<tr>
