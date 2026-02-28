@@ -55,33 +55,35 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 
 	require_once PMPRO_DIR . '/adminpages/admin_header.php';
 ?>
-	
-	<form id="posts-filter" method="get" action="">	
-	<h2>
-		<?php _e( 'Approvals', 'pmpro-approvals' ); ?>
-	</h2>	
-	<ul class="subsubsub">
-		<li class="all"><a href="<?php echo admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $s ) . "&l=$l&status=all" ); ?>" class="
-											<?php
-											if ( $status == 'all' ) {
-										?>
-									 current<?php } ?>"><?php _e( 'All', 'pmpro-approvals' ); ?></a></li> |
-		<li class="pending"><a href="<?php echo admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $s ) . "&l=$l&status=pending" ); ?>" class="
-												<?php
-												if ( $status == 'pending' || empty( $status ) ) {
-											?>
-										 current<?php } ?>"><?php _e( 'Pending', 'pmpro-approvals' ); ?></a></li> |
-		<li class="approved"><a href="<?php echo admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $s ) . "&l=$l&status=approved" ); ?>" class="
-													<?php
-													if ( $status == 'approved' ) {
-												?>
-											 current<?php } ?>"><?php _e( 'Approved', 'pmpro-approvals' ); ?></a></li> |
-		<li class="denied"><a href="<?php echo admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $s ) . "&l=$l&status=denied" ); ?>" class="
-												<?php
-												if ( $status == 'denied' ) {
-											?>
-										 current<?php } ?>"><?php _e( 'Denied', 'pmpro-approvals' ); ?></a></li>			
-	</ul>
+<hr class="wp-header-end" />
+<h1><?php esc_html_e( 'Approvals', 'pmpro-approvals' ); ?></h1>
+<p>
+	<?php
+		$approval_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Approvals Add On Documentation', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/add-ons/approval-process-membership/?utm_source=plugin&utm_medium=pmpro-approvals&utm_campaign=add-ons">' . esc_html__( 'Approvals Add On', 'pmpro-approvals' ) . '</a>';
+		// translators: %s: Link to Approvals Add On documentation.
+		printf( esc_html__('Learn more about using the %s.', 'pmpro-approvals' ), $approval_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	?>
+</p>
+<ul class="subsubsub">
+<?php
+	$statuses_labels = [
+		'all'      => __( 'All', 'pmpro-approvals' ),
+		'pending'  => __( 'Pending', 'pmpro-approvals' ),
+		'approved' => __( 'Approved', 'pmpro-approvals' ),
+		'denied'   => __( 'Denied', 'pmpro-approvals' ),
+	];
+
+	$items = [];
+	foreach ( $statuses_labels as $key => $label ) {
+		$url     = admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $s ) . "&l=$l&status=$key" );
+		$current = ( $status === $key || ( $key === 'pending' && empty( $status ) ) ) ? 'class="current"' : '';
+		$items[] = '<li class="' . esc_attr( $key ) . '"><a href="' . esc_url( $url ) . '" ' . $current . '>' . esc_html( $label ) . '</a></li>';
+	}
+
+	echo implode( ' | ', $items );
+?>
+</ul>
+<form id="posts-filter" method="get" action="">
 	<p class="search-box">
 		<label class="hidden" for="post-search-input"><?php _e( 'Search Approvals', 'pmpro-approvals' ); ?>:</label>
 		<input type="hidden" name="page" value="pmpro-approvals" />
@@ -156,9 +158,12 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 		<p class="clear">
 			<?php
 			if ( $status === 'pending' ) {
+				printf(
+					esc_html( _n( '%s application awaiting review', '%s applications awaiting review', $totalrows, 'pmpro-approvals' ) ),
+					esc_html( $totalrows )
+				);
+			}
 			?>
-				<?php echo $totalrows; ?> <?php _e( 'applications awaiting review', 'pmpro-approvals' ); ?>.
-			<?php } ?>
 		</p>
 		<?php
 	}
