@@ -156,10 +156,8 @@ class PMPro_Approvals {
 			return;
 		}
 		
-		// Add custom capability to administrator (only if not already present)
-		if ( ! $role->has_cap( 'pmpro_approvals' ) ) {
-			$role->add_cap( 'pmpro_approvals' );
-		}
+		// Add custom capability to administrator (add_cap is idempotent)
+		$role->add_cap( 'pmpro_approvals' );
 		
 		// Make sure the current user has the updated cap
 		global $current_user;
