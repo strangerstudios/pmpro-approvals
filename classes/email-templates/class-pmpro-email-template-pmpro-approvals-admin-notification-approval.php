@@ -31,7 +31,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval extends PM
 	 * @param WP_User $member The user applying for membership.
 	 * @param int $level_id The level id.
 	 */
-	public function __construct( WP_User $member, WP_User $admin, stdClass $level ) {
+	public function __construct( WP_User $member, $admin = NULL, stdClass $level ) {
 		$this->member = $member;
 		$this->level = $level;
 		$this->admin = $admin;
