@@ -9,7 +9,6 @@ class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Templ
 	 */
 	protected $member;
 
-
 	/**
 	 * The level id
 	 *
@@ -128,7 +127,18 @@ class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Templ
 			'user_login' => $this->get_recipient_name()
 		);
 
-		return apply_filters( 'pmpro_approvals_admin_denied_email_data', $email_template_variables, $member, null );
+		// Preserve backward compatibility by passing an admin context object  
+        // (WP_User when available, or false otherwise) as the third argument.  
+        $admin_user  = false;  
+        $admin_email = $this->get_recipient_email();  
+        if ( ! empty( $admin_email ) && function_exists( 'is_email' ) && is_email( $admin_email ) ) {  
+            $resolved_admin = get_user_by( 'email', $admin_email );  
+            if ( $resolved_admin instanceof WP_User ) {  
+                $admin_user = $resolved_admin;  
+            } 
+		}
+			
+		return apply_filters( 'pmpro_approvals_admin_denied_email_data', $email_template_variables, $member, $admin_user );
 	}
 
 	/**
@@ -180,7 +190,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Templ
 
 		$member = $random_user ? $random_user[0] : $current_user;
 
-		return array( $member, $current_user, $pmpro_email_test_level );
+		return array( $member, $pmpro_email_test_level );
 	}
 }
 /**

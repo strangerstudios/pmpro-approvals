@@ -153,7 +153,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 
-		// Use the new email templates if the are available.
+		// Use the new email templates if they are available.
 		if ( class_exists( 'PMPro_Email_Template' ) ) {
 			$send_admin_pending_email = new PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval( $member, $level );
 			return $send_admin_pending_email->send();
@@ -233,7 +233,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 
-		// Use the new email templates if the are available.
+		// Use the new email templates if they are available.
 		if ( class_exists( 'PMPro_Email_Template' ) ) {
 			$send_member_approved_email = new PMPro_Email_Template_PMProApprovals_Admin_Approved( $member, $level );
 			return $send_member_approved_email->send();
@@ -314,9 +314,9 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 
-		// Use the new email templates if the are available.
+		// Use the new email templates if they are available.
 		if ( class_exists( 'PMPro_Email_Template' ) ) {
-			$send_member_denied_email = new PMPro_Email_Template_PMProApprovals_Admin_Denied( $member, $admin, $level );
+			$send_member_denied_email = new PMPro_Email_Template_PMProApprovals_Admin_Denied( $member, $level );
 			return $send_member_denied_email->send();
 		}
 
