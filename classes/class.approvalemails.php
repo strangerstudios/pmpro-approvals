@@ -141,9 +141,15 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$admin = get_user_by( 'ID', $admin );
 		}
 
-		//Bail if couldn't find a user
+		// If the admin email address is not associated with a WP user (e.g. a shared
+		// inbox or external address), fall back gracefully so the email still sends.
+		// PMPro core admin email templates use get_bloginfo( 'admin_email' ) directly
+		// without requiring a WP_User object, avoiding this issue entirely.
 		if ( ! is_a( $admin, 'WP_User' ) ) {
-			return false;
+			$admin               = new stdClass();
+			$admin->user_email   = get_bloginfo( 'admin_email' );
+			$admin->display_name = '';
+			$admin->user_login   = '';
 		}
 
 		if ( empty( $level_id ) ) {
@@ -216,9 +222,15 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$admin = get_user_by( 'ID', $admin );
 		}
 
-		//Bail if couldn't find a user
+		// If the admin email address is not associated with a WP user (e.g. a shared
+		// inbox or external address), fall back gracefully so the email still sends.
+		// PMPro core admin email templates use get_bloginfo( 'admin_email' ) directly
+		// without requiring a WP_User object, avoiding this issue entirely.
 		if ( ! is_a( $admin, 'WP_User' ) ) {
-			return false;
+			$admin               = new stdClass();
+			$admin->user_email   = get_bloginfo( 'admin_email' );
+			$admin->display_name = '';
+			$admin->user_login   = '';
 		}
 
 		if ( empty( $level_id ) ) {
@@ -253,7 +265,7 @@ class PMPro_Approvals_Email extends PMProEmail {
 		$this->data['member_name']           = $member->display_name;
 		$this->data['view_profile']          = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
 
-		$this->data = apply_filters( 'pmpro_approvals_admin_approved_email_data', $this->data, $member, $admin );
+		$this->data = apply_filters( 'pmpro_approvals_admin_approval_email_data', $this->data, $member, $admin );
 
 		return $this->sendEmail();
 	}
@@ -289,9 +301,15 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$admin = get_user_by( 'ID', $admin );
 		}
 
-		//Bail if couldn't find a user
+		// If the admin email address is not associated with a WP user (e.g. a shared
+		// inbox or external address), fall back gracefully so the email still sends.
+		// PMPro core admin email templates use get_bloginfo( 'admin_email' ) directly
+		// without requiring a WP_User object, avoiding this issue entirely.
 		if ( ! is_a( $admin, 'WP_User' ) ) {
-			return false;
+			$admin               = new stdClass();
+			$admin->user_email   = get_bloginfo( 'admin_email' );
+			$admin->display_name = '';
+			$admin->user_login   = '';
 		}
 
 		if ( empty( $level_id ) ) {
