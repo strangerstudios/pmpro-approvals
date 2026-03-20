@@ -141,9 +141,12 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$admin = get_user_by( 'ID', $admin );
 		}
 
-		//Bail if couldn't find a user
+		//Default to the blog admin if the admin user cannot be found in WordPress.
 		if ( ! is_a( $admin, 'WP_User' ) ) {
-			return false;
+			$admin = new stdClass();
+			$admin->user_email = get_bloginfo( 'admin_email' );
+			$admin->display_name = esc_html__( 'Admin', 'pmpro-approvals' );
+			$admin->user_login = '';
 		}
 
 		if ( empty( $level_id ) ) {
@@ -216,9 +219,12 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$admin = get_user_by( 'ID', $admin );
 		}
 
-		//Bail if couldn't find a user
+		//Default to the blog admin if the admin user cannot be found in WordPress.
 		if ( ! is_a( $admin, 'WP_User' ) ) {
-			return false;
+			$admin = new stdClass();
+			$admin->user_email = get_bloginfo( 'admin_email' );
+			$admin->display_name = esc_html__( 'Admin', 'pmpro-approvals' );
+			$admin->user_login = '';
 		}
 
 		if ( empty( $level_id ) ) {
@@ -289,9 +295,12 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$admin = get_user_by( 'ID', $admin );
 		}
 
-		//Bail if couldn't find a user
+		//Default to the blog admin if the admin user cannot be found in WordPress.
 		if ( ! is_a( $admin, 'WP_User' ) ) {
-			return false;
+			$admin = new stdClass();
+			$admin->user_email = get_bloginfo( 'admin_email' );
+			$admin->display_name = esc_html__( 'Admin', 'pmpro-approvals' );
+			$admin->user_login = '';
 		}
 
 		if ( empty( $level_id ) ) {
