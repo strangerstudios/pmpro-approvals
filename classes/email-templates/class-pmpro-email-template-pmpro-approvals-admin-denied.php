@@ -9,12 +9,6 @@ class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Templ
 	 */
 	protected $member;
 
-	/**
-	 * The admin user will receive the email.
-	 *
-	 * @var WP_User
-	 */
-	protected $admin;
 
 	/**
 	 * The level id
@@ -31,9 +25,8 @@ class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Templ
 	 * @param WP_User $member The user applying for membership.
 	 * @param int $level_id The level id.
 	 */
-	public function __construct( WP_User $member, $admin = NULL, StdClass $level ) {
+	public function __construct( WP_User $member, StdClass $level ) {
 		$this->member = $member;
-		$this->admin = $admin;
 		$this->level = $level;
 	}
 
@@ -122,7 +115,6 @@ class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Templ
 	public function get_email_template_variables() {
 		$level = $this->level;
 		$member = $this->member;
-		$admin = $this->admin;
 		$view_profile = admin_url( 'admin.php?page=pmpro-approvals&user_id=' . $member->ID . '&l=' . $level->id );
 
 		$email_template_variables = array(
@@ -133,11 +125,10 @@ class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Templ
 			'view_profile' => $view_profile,
 			'subject' => $this->get_default_subject(),
 			'name' => $this->get_recipient_name(),
-			'user_login' => isset( $admin->user_login ) ? $admin->user_login : "",
-
+			'user_login' => $this->get_recipient_name()
 		);
 
-		return apply_filters( 'pmpro_approvals_admin_denied_email_data', $email_template_variables, $member, $admin );
+		return apply_filters( 'pmpro_approvals_admin_denied_email_data', $email_template_variables, $member, null );
 	}
 
 	/**
@@ -148,7 +139,7 @@ class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Templ
 	 * @return string The email address to send the email to.
 	 */
 	public function get_recipient_email() {
-		return ! empty( $this->admin->user_email ) ? $this->admin->user_email : get_bloginfo( 'admin_email' );
+		return get_bloginfo( 'admin_email' );
 	}
 
 	/**
@@ -159,7 +150,8 @@ class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Templ
 	 * @return string The name of the email recipient.
 	 */
 	public function get_recipient_name() {
-		return empty( $this->admin->display_name ) ? esc_html__( 'Admin', 'pmpro-approvals' ) : $this->admin->display_name;
+		$user = get_user_by( 'email', $this->get_recipient_email() );
+		return empty( $user->display_name ) ? esc_html__( 'Admin', 'pmpro-approvals' ) : $user->display_name;
 	}
 
 	/**
