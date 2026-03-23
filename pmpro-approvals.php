@@ -943,7 +943,7 @@ class PMPro_Approvals {
 		$start = $end - $limit;
 
 		$sql_parts = array();
-		$sql_parts['SELECT'] = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u ";
+		$sql_parts['SELECT'] = "SELECT u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(u.user_registered) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, m.name as membership FROM $wpdb->users u ";
 		$sql_parts['JOIN'] = "LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id ";
 		$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND mu.membership_id > 0 ";
 		$sql_parts['GROUP'] = "";
@@ -1801,7 +1801,7 @@ class PMPro_Approvals {
 	 * @return (int) Numeric value of members.
 	 * @since 1.0.2
 	 */
-	public static function getApprovalCount( $approval_status = null ) {
+	public static function getApprovalCount( $approval_status = null, $l = false, $s = '' ) {
 
 		global $wpdb, $menu, $submenu;
 
@@ -1818,24 +1818,33 @@ class PMPro_Approvals {
 			$number_of_users = array();
 		}
 		
-		// If we don't have this value yet, get all users with 'pending' status.
-		if ( ! isset( $number_of_users[$approval_status] ) ) {
+		// If we don't have this value  or we're filtering, get all users with 'pending' status.
+		if ( ! isset( $number_of_users[$approval_status] ) || ! empty( $l ) || ! empty( $s ) ) {
 
-			$approval_levels = self::get_all_approval_level_ids(); // Get level ID's that require approvals only and search against those.
+			if ( empty( $l ) ) {
+				$approval_levels = self::get_all_approval_level_ids(); // Get level ID's that require approvals only and search against those.
+			} else {
+				$approval_levels = array( intval( $l ) ); // Search against specific level ID only.
+			}
 
 			// return 0 if no levels require approval.
 			if ( empty( $approval_levels ) ) {
-				$number_of_users[$approval_status] = 0;
-				return $number_of_users[$approval_status];
+				return 0;
 			}
 
 			$sql_parts = array();
 			$sql_parts['SELECT'] = "SELECT COUNT(mu.user_id) as count FROM $wpdb->pmpro_memberships_users mu ";
 			$sql_parts['JOIN'] = "LEFT JOIN $wpdb->usermeta um ON um.user_id = mu.user_id AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) ";
-			$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND mu.membership_id IN (" . implode( ',', $approval_levels ) . ") AND um.meta_value LIKE '%" . esc_sql( $approval_status ) . "%'";
+			$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND mu.membership_id IN (" . implode( ',', $approval_levels ) . ") AND um.meta_value LIKE '%" . esc_sql( $approval_status ) . "%' ";
 			$sql_parts['GROUP'] = "";
 			$sql_parts['ORDER'] = "";
 			$sql_parts['LIMIT'] = "";
+
+			// If filtering by search string.
+			if ( ! empty( $s ) ) {
+				$sql_parts['JOIN']  .= "LEFT JOIN $wpdb->users u ON u.ID = mu.user_id ";
+				$sql_parts['WHERE'] .= "AND (u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR u.display_name LIKE '%" . esc_sql( $s ) . "%') ";
+			}
 
 			/**
 			 * Filters SQL parts for the query to get pending approvals count.
@@ -1844,11 +1853,15 @@ class PMPro_Approvals {
 			 *
 			 * @param array  $sql_parts       The current SQL query parts
 			 * @param string $approval_status Approval status
+			 * @param int    $l               Level ID
+			 * @param string $s               Search string
 			 */
 			$sql_parts = apply_filters(
 				'pmpro_approvals_approval_count_sql_parts',
 				$sql_parts,
-				$approval_status
+				$approval_status,
+				$l,
+				$s
 			);
 
 			$sqlQuery = $sql_parts['SELECT'] . $sql_parts['JOIN'] . $sql_parts['WHERE'] . $sql_parts['GROUP'] . $sql_parts['ORDER'] . $sql_parts['LIMIT'];
@@ -1860,12 +1873,16 @@ class PMPro_Approvals {
 			 *
 			 * @param array  $sql_parts       The current SQL query parts
 			 * @param string $approval_status Approval status
+			 * @param int    $l               Level ID
+			 * @param string $s               Search string
 			*
 			*/
 			$sqlQuery = apply_filters(
 				'pmpro_approvals_approval_count_sql',
 				$sqlQuery,
-				$approval_status
+				$approval_status,
+				$l,
+				$s
 			);
 
 			$results         = $wpdb->get_results( $sqlQuery );
@@ -1876,8 +1893,10 @@ class PMPro_Approvals {
 				$number_of_users[$approval_status] = (int) $results[0]->count;
 			}
 
-			
-			set_transient( 'pmpro_approvals_approval_count', $number_of_users, 3600*24 );
+			// Only set transient if we're not filtering by level or search.
+			if ( empty( $l ) && empty( $s ) ) {
+				set_transient( 'pmpro_approvals_approval_count', $number_of_users, 3600*24 );
+			}
 		}
 
 		return $number_of_users[$approval_status];
