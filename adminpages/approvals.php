@@ -59,21 +59,22 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 <h1><?php esc_html_e( 'Approvals', 'pmpro-approvals' ); ?></h1>
 <p>
 	<?php
-		$approval_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Approvals Add On Documentation', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/add-ons/approval-process-membership/?utm_source=plugin&utm_medium=pmpro-approvals&utm_campaign=add-ons">' . esc_html__( 'Approvals Add On', 'pmpro-approvals' ) . '</a>';
+		$approval_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Approvals Add On Documentation', 'pmpro-approvals' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/add-ons/approval-process-membership/?utm_source=plugin&utm_medium=pmpro-approvals&utm_campaign=add-ons">' . esc_html__( 'Approvals Add On', 'pmpro-approvals' ) . '</a>';
 		// translators: %s: Link to Approvals Add On documentation.
-		printf( esc_html__('Learn more about using the %s.', 'pmpro-approvals' ), $approval_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		$approval_settings_text = sprintf( esc_html__( 'Learn more about using the %s.', 'pmpro-approvals' ), $approval_settings_link );
+		echo wp_kses_post( $approval_settings_text );
 	?>
 </p>
 <ul class="subsubsub">
 <?php
-	$statuses_labels = [
+	$statuses_labels = array(
 		'all'      => __( 'All', 'pmpro-approvals' ),
 		'pending'  => __( 'Pending', 'pmpro-approvals' ),
 		'approved' => __( 'Approved', 'pmpro-approvals' ),
 		'denied'   => __( 'Denied', 'pmpro-approvals' ),
-	];
+	);
 
-	$items = [];
+	$items = array();
 	foreach ( $statuses_labels as $key => $label ) {
 		$url     = admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $s ) . "&l=$l&status=$key" );
 		$current = ( $status === $key || ( $key === 'pending' && empty( $status ) ) ) ? 'class="current"' : '';
@@ -159,8 +160,8 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 			<?php
 			if ( $status === 'pending' ) {
 				printf(
-					esc_html( _n( '%s application awaiting review', '%s applications awaiting review', $totalrows, 'pmpro-approvals' ) ),
-					esc_html( $totalrows )
+					esc_html( _n( '%d application awaiting review', '%d applications awaiting review', (int) $totalrows, 'pmpro-approvals' ) ),
+					esc_html( (int) $totalrows )
 				);
 			}
 			?>
