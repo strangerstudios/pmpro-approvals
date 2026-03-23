@@ -30,6 +30,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$member = get_user_by( 'ID', $member );
 		}
 
+		// Bail if the member couldn't be found.
+		if ( ! $member ) {
+			return false;
+		}
+
 		if ( empty( $level_id ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
 		} else {
@@ -78,6 +83,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$member = get_user_by( 'ID', $member );
 		}
 
+		// Bail if the member couldn't be found.
+		if ( ! $member ) {
+			return false;
+		}
+
 		if ( empty( $level_id ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
 		} else {
@@ -88,6 +98,8 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$send_member_denied_email = new PMPro_Email_Template_PMProApprovals_Application_Denied( $member, $level );
 			return $send_member_denied_email->send();
 		}
+
+		// ---- Legacy email logic ----
 
 		$this->email    = $member->user_email;
 		$this->subject  = sprintf( __( 'Your membership at %s has been denied.', 'pmpro-approvals' ), get_bloginfo( 'name' ) );
@@ -135,26 +147,32 @@ class PMPro_Approvals_Email extends PMProEmail {
 			return false;
 		}
 
-		if ( empty( $admin ) ) {
-			$admin = get_user_by( 'email', get_option( 'admin_email' ) );
-		} elseif ( is_int( $admin ) ) {
-			$admin = get_user_by( 'ID', $admin );
-		}
-
-		//Bail if couldn't find a user
-		if ( ! is_a( $admin, 'WP_User' ) ) {
-			return false;
-		}
-
 		if ( empty( $level_id ) ) {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 
+		// Use the new email templates if they are available.
 		if ( class_exists( 'PMPro_Email_Template' ) ) {
-			$send_admin_pending_email = new PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval( $member, $admin, $level );
+			$send_admin_pending_email = new PMPro_Email_Template_PMProApprovals_Admin_Notification_Approval( $member, $level );
 			return $send_admin_pending_email->send();
+		}
+
+		// ---- Legacy email logic ----
+
+		if ( empty( $admin ) ) {
+			$admin = get_user_by( 'email', get_option( 'admin_email' ) );
+		} elseif ( is_int( $admin ) ) {
+			$admin = get_user_by( 'ID', $admin );
+		}
+
+		//Default to the blog admin if the admin user cannot be found in WordPress.
+		if ( ! is_a( $admin, 'WP_User' ) ) {
+			$admin = new stdClass();
+			$admin->user_email = get_bloginfo( 'admin_email' );
+			$admin->display_name = esc_html__( 'Admin', 'pmpro-approvals' );
+			$admin->user_login = '';
 		}
 
 		$this->email    = get_bloginfo( 'admin_email' );
@@ -209,6 +227,20 @@ class PMPro_Approvals_Email extends PMProEmail {
 			return false;
 		}
 
+		if ( empty( $level_id ) ) {
+			$level = pmpro_getMembershipLevelForUser( $member->ID );
+		} else {
+			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		}
+
+		// Use the new email templates if they are available.
+		if ( class_exists( 'PMPro_Email_Template' ) ) {
+			$send_member_approved_email = new PMPro_Email_Template_PMProApprovals_Admin_Approved( $member, $level );
+			return $send_member_approved_email->send();
+		}
+		
+		// ---- Legacy email logic ----
+
 		//Same for admin
 		if ( empty( $admin ) ) {
 			$admin = get_user_by( 'email', get_option( 'admin_email' ) );
@@ -216,21 +248,15 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$admin = get_user_by( 'ID', $admin );
 		}
 
-		//Bail if couldn't find a user
+		//Default to the blog admin if the admin user cannot be found in WordPress.
 		if ( ! is_a( $admin, 'WP_User' ) ) {
-			return false;
+			$admin = new stdClass();
+			$admin->user_email = get_bloginfo( 'admin_email' );
+			$admin->display_name = esc_html__( 'Admin', 'pmpro-approvals' );
+			$admin->user_login = '';
 		}
 
-		if ( empty( $level_id ) ) {
-			$level = pmpro_getMembershipLevelForUser( $member->ID );
-		} else {
-			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
-		}
-
-		if ( class_exists( 'PMPro_Email_Template' ) ) {
-			$send_member_approved_email = new PMPro_Email_Template_PMProApprovals_Admin_Approved( $member, $admin, $level );
-			return $send_member_approved_email->send();
-		}
+		
 
 		$this->email    = get_bloginfo( 'admin_email' );
 		$this->subject  = sprintf( __( 'A member at %s has been approved.', 'pmpro-approvals' ), get_bloginfo( 'name' ) );
@@ -282,6 +308,20 @@ class PMPro_Approvals_Email extends PMProEmail {
 			return false;
 		}
 
+		if ( empty( $level_id ) ) {
+			$level = pmpro_getMembershipLevelForUser( $member->ID );
+		} else {
+			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		}
+
+		// Use the new email templates if they are available.
+		if ( class_exists( 'PMPro_Email_Template' ) ) {
+			$send_member_denied_email = new PMPro_Email_Template_PMProApprovals_Admin_Denied( $member, $level );
+			return $send_member_denied_email->send();
+		}
+
+		// ---- Legacy email logic ----
+
 		//Same for admin
 		if ( empty( $admin ) ) {
 			$admin = get_user_by( 'email', get_option( 'admin_email' ) );
@@ -289,20 +329,12 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$admin = get_user_by( 'ID', $admin );
 		}
 
-		//Bail if couldn't find a user
+		//Default to the blog admin if the admin user cannot be found in WordPress.
 		if ( ! is_a( $admin, 'WP_User' ) ) {
-			return false;
-		}
-
-		if ( empty( $level_id ) ) {
-			$level = pmpro_getMembershipLevelForUser( $member->ID );
-		} else {
-			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
-		}
-
-		if ( class_exists( 'PMPro_Email_Template' ) ) {
-			$send_member_denied_email = new PMPro_Email_Template_PMProApprovals_Admin_Denied( $member, $admin, $level );
-			return $send_member_denied_email->send();
+			$admin = new stdClass();
+			$admin->user_email = get_bloginfo( 'admin_email' );
+			$admin->display_name = esc_html__( 'Admin', 'pmpro-approvals' );
+			$admin->user_login = '';
 		}
 
 		$this->email    = get_bloginfo( 'admin_email' );
