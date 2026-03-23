@@ -147,14 +147,23 @@ class PMPro_Approvals {
 	* Run code on admin init
 	*/
 	public static function admin_init() {
-		//get role of administrator
+		// Get role of administrator
 		$role = get_role( 'administrator' );
-		//add custom capability to administrator
+		
+		// Check if role exists
+		if ( ! $role ) {
+			// Role not available yet, try again on next init
+			return;
+		}
+		
+		// Add custom capability to administrator (add_cap is idempotent)
 		$role->add_cap( 'pmpro_approvals' );
-
-		//make sure the current user has the updated cap
+		
+		// Make sure the current user has the updated cap
 		global $current_user;
-		setup_userdata( $current_user->ID );
+		if ( isset( $current_user->ID ) && $current_user->ID > 0 ) {
+			setup_userdata( $current_user->ID );
+		}
 	}
 
 	/**
