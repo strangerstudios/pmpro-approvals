@@ -1,15 +1,15 @@
-# Copyright (C) 2025 Stranger Studios
+# Copyright (C) 2026 Stranger Studios
 # This file is distributed under the same license as the Paid Memberships Pro - Approvals Add On plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Approvals Add On 1.6.5\n"
+"Project-Id-Version: Paid Memberships Pro - Approvals Add On 1.7\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-25T13:55:49+00:00\n"
+"POT-Creation-Date: 2026-03-23T09:16:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pmpro-approvals\n"
@@ -43,96 +43,116 @@ msgstr ""
 msgid "You do not have permissions to perform this action."
 msgstr ""
 
-#: adminpages/approvals.php:61
-#: pmpro-approvals.php:195
-#: pmpro-approvals.php:214
-#: pmpro-approvals.php:216
-#: pmpro-approvals.php:232
+#: adminpages/approvals.php:59
+#: pmpro-approvals.php:204
+#: pmpro-approvals.php:223
+#: pmpro-approvals.php:225
+#: pmpro-approvals.php:241
 msgid "Approvals"
 msgstr ""
 
-#: adminpages/approvals.php:68
+#: adminpages/approvals.php:62
+#: pmpro-approvals.php:406
+msgid "Paid Memberships Pro - Approvals Add On Documentation"
+msgstr ""
+
+#: adminpages/approvals.php:62
+#: pmpro-approvals.php:406
+msgid "Approvals Add On"
+msgstr ""
+
+#. translators: %s: Link to Approvals Add On documentation.
+#: adminpages/approvals.php:64
+#: pmpro-approvals.php:410
+#, php-format
+msgid "Learn more about using the %s."
+msgstr ""
+
+#: adminpages/approvals.php:71
 msgid "All"
 msgstr ""
 
-#: adminpages/approvals.php:73
-#: pmpro-approvals.php:1452
+#: adminpages/approvals.php:72
+#: pmpro-approvals.php:1474
 msgid "Pending"
 msgstr ""
 
-#: adminpages/approvals.php:78
-#: pmpro-approvals.php:782
+#: adminpages/approvals.php:73
+#: pmpro-approvals.php:804
 msgid "Approved"
 msgstr ""
 
-#: adminpages/approvals.php:83
+#: adminpages/approvals.php:74
 msgid "Denied"
 msgstr ""
 
-#: adminpages/approvals.php:86
-#: adminpages/approvals.php:90
+#: adminpages/approvals.php:89
+#: adminpages/approvals.php:93
 msgid "Search Approvals"
 msgstr ""
 
-#: adminpages/approvals.php:93
+#: adminpages/approvals.php:96
 msgid "Show"
 msgstr ""
 
-#: adminpages/approvals.php:99
+#: adminpages/approvals.php:102
 msgid "All Levels"
 msgstr ""
 
-#: adminpages/approvals.php:160
-msgid "applications awaiting review"
-msgstr ""
+#: adminpages/approvals.php:163
+#, php-format
+msgid "%d application awaiting review"
+msgid_plural "%d applications awaiting review"
+msgstr[0] ""
+msgstr[1] ""
 
-#: adminpages/approvals.php:169
+#: adminpages/approvals.php:175
 msgid "ID"
 msgstr ""
 
-#: adminpages/approvals.php:170
+#: adminpages/approvals.php:176
 #: adminpages/userinfo.php:56
 msgid "Username"
 msgstr ""
 
-#: adminpages/approvals.php:171
+#: adminpages/approvals.php:177
 msgid "Name"
 msgstr ""
 
-#: adminpages/approvals.php:172
+#: adminpages/approvals.php:178
 #: adminpages/userinfo.php:60
 msgid "Email"
 msgstr ""
 
-#: adminpages/approvals.php:174
+#: adminpages/approvals.php:180
 msgid "Membership"
 msgstr ""
 
-#: adminpages/approvals.php:175
+#: adminpages/approvals.php:181
 #: adminpages/userinfo.php:76
 msgid "Approval Status"
 msgstr ""
 
-#: adminpages/approvals.php:180
+#: adminpages/approvals.php:186
 msgid "Joined"
 msgstr ""
 
-#: adminpages/approvals.php:236
+#: adminpages/approvals.php:242
 #: adminpages/userinfo.php:82
 msgid "Email Confirmation Required."
 msgstr ""
 
-#: adminpages/approvals.php:249
+#: adminpages/approvals.php:255
 #: adminpages/userinfo.php:92
 msgid "Approve"
 msgstr ""
 
-#: adminpages/approvals.php:250
+#: adminpages/approvals.php:256
 #: adminpages/userinfo.php:93
 msgid "Deny"
 msgstr ""
 
-#: adminpages/approvals.php:263
+#: adminpages/approvals.php:269
 msgid "No pending members found."
 msgstr ""
 
@@ -169,114 +189,117 @@ msgstr ""
 msgid "Back to Approvals"
 msgstr ""
 
-#: classes/class.approvalemails.php:45
+#: classes/class.approvalemails.php:50
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:73
 #, php-format
 msgid "Your membership at %s has been approved."
 msgstr ""
 
-#: classes/class.approvalemails.php:93
+#: classes/class.approvalemails.php:105
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:73
 #, php-format
 msgid "Your membership at %s has been denied."
 msgstr ""
 
-#: classes/class.approvalemails.php:161
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:81
+#: classes/class.approvalemails.php:174
+#: classes/class.approvalemails.php:255
+#: classes/class.approvalemails.php:336
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:163
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:164
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:167
+msgid "Admin"
+msgstr ""
+
+#: classes/class.approvalemails.php:179
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:73
 #, php-format
 msgid "A member at %s is waiting approval."
 msgstr ""
 
-#: classes/class.approvalemails.php:236
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:80
+#: classes/class.approvalemails.php:262
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:73
 #, php-format
 msgid "A member at %s has been approved."
 msgstr ""
 
-#: classes/class.approvalemails.php:309
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:81
+#: classes/class.approvalemails.php:341
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:73
 #, php-format
 msgid "A member at %s has been denied."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:58
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:51
 msgid "Approval Approved (admin)"
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:69
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:62
 msgid "This email is sent to the admin when a new member is approved."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:105
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:107
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:107
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:98
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:99
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:99
 msgid "The name of the member."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:106
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:108
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:108
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:99
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:100
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:100
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:97
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:96
 msgid "The email address of the member."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:107
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:109
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:109
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:100
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:101
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:101
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:98
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:97
 msgid "The ID of the membership level."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:108
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:110
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:110
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:101
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:102
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:102
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:99
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:98
 msgid "The name of the membership level."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:109
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:111
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:111
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:102
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:103
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:103
 msgid "The URL of the profile page for the member."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:161
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:162
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:164
-msgid "Admin"
-msgstr ""
-
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:59
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:51
 msgid "Approval Denied (admin)"
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:70
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:62
 msgid "This email is sent to the admin when a member is denied."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:59
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:51
 msgid "Approval Pending (admin)"
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:70
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:62
 msgid "This email is sent to the admin when a new member is waiting for approval."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:92
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:84
 msgid ""
 "<p>The user !!member_name!! is pending approval.</p>\n"
 "\n"
 "<p>View the user's profile here: !!view_profile!!</p>"
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:112
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:104
 msgid "The URL to approve the member."
 msgstr ""
 
-#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:113
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:105
 msgid "The URL to deny the member."
 msgstr ""
 
@@ -300,227 +323,227 @@ msgstr ""
 msgid "Your membership account has been denied."
 msgstr ""
 
-#: pmpro-approvals.php:391
+#: pmpro-approvals.php:400
 msgid "Approval Settings"
 msgstr ""
 
-#: pmpro-approvals.php:398
+#: pmpro-approvals.php:420
 msgid "Requires Approval?"
 msgstr ""
 
-#: pmpro-approvals.php:401
+#: pmpro-approvals.php:423
 msgid "No."
 msgstr ""
 
-#: pmpro-approvals.php:402
+#: pmpro-approvals.php:424
 msgid "Yes. Admin must approve new members for this level."
 msgstr ""
 
-#: pmpro-approvals.php:404
+#: pmpro-approvals.php:426
 msgid "Yes. User must have an approved membership for a different level."
 msgstr ""
 
-#: pmpro-approvals.php:405
+#: pmpro-approvals.php:427
 msgid "Yes. User must have an approved membership for a different level AND admin must approve new members for this level."
 msgstr ""
 
-#: pmpro-approvals.php:416
+#: pmpro-approvals.php:438
 msgid "Which Level?"
 msgstr ""
 
-#: pmpro-approvals.php:649
+#: pmpro-approvals.php:671
 msgid "Your previous application for this level has been denied. You will not be allowed to check out."
 msgstr ""
 
-#: pmpro-approvals.php:659
+#: pmpro-approvals.php:681
 #, php-format
 msgid "Since your application to the %s level has been denied, you may not check out for this level."
 msgstr ""
 
-#: pmpro-approvals.php:665
+#: pmpro-approvals.php:687
 #, php-format
 msgid "Your application to %s is still pending."
 msgstr ""
 
-#: pmpro-approvals.php:669
+#: pmpro-approvals.php:691
 #, php-format
 msgid "You must be approved for %s before checking out here."
 msgstr ""
 
-#: pmpro-approvals.php:671
+#: pmpro-approvals.php:693
 #, php-format
 msgid "You must register and be approved for <a href=\"%1$s\">%2$s</a> before checking out here."
 msgstr ""
 
-#: pmpro-approvals.php:695
+#: pmpro-approvals.php:717
 msgid "You should pass a level ID to getUserApproval."
 msgstr ""
 
-#: pmpro-approvals.php:733
+#: pmpro-approvals.php:755
 msgid "You should pass a level ID to getUserApprovalStatus."
 msgstr ""
 
-#: pmpro-approvals.php:763
+#: pmpro-approvals.php:785
 msgid "approved"
 msgstr ""
 
-#: pmpro-approvals.php:777
+#: pmpro-approvals.php:799
 #, php-format
 msgid "%1$s on %2$s by %3$s"
 msgstr ""
 
-#: pmpro-approvals.php:779
+#: pmpro-approvals.php:801
 #, php-format
 msgid "%1$s on %2$s"
 msgstr ""
 
-#: pmpro-approvals.php:788
-#: pmpro-approvals.php:1507
+#: pmpro-approvals.php:810
+#: pmpro-approvals.php:1529
 msgid "pending"
 msgstr ""
 
-#: pmpro-approvals.php:790
+#: pmpro-approvals.php:812
 #, php-format
 msgid "Pending Approval for %s"
 msgstr ""
 
-#: pmpro-approvals.php:1070
-#: pmpro-approvals.php:1138
-#: pmpro-approvals.php:1191
+#: pmpro-approvals.php:1092
+#: pmpro-approvals.php:1160
+#: pmpro-approvals.php:1213
 msgid "You do not have permission to perform approvals."
 msgstr ""
 
-#: pmpro-approvals.php:1077
+#: pmpro-approvals.php:1099
 msgid "No level ID given. Please pass a level ID to approveMember()."
 msgstr ""
 
-#: pmpro-approvals.php:1099
+#: pmpro-approvals.php:1121
 msgid "Member was approved."
 msgstr ""
 
-#: pmpro-approvals.php:1145
+#: pmpro-approvals.php:1167
 msgid "No level ID given. Please pass a level ID to denyMember()."
 msgstr ""
 
-#: pmpro-approvals.php:1167
+#: pmpro-approvals.php:1189
 msgid "Member was denied."
 msgstr ""
 
-#: pmpro-approvals.php:1198
+#: pmpro-approvals.php:1220
 msgid "No level ID given. Please pass a level ID to resetMember()."
 msgstr ""
 
-#: pmpro-approvals.php:1218
+#: pmpro-approvals.php:1240
 msgid "Approval reset."
 msgstr ""
 
-#: pmpro-approvals.php:1349
+#: pmpro-approvals.php:1371
 msgid "Membership Pending Approval"
 msgstr ""
 
-#: pmpro-approvals.php:1351
+#: pmpro-approvals.php:1373
 msgid "Membership Denied"
 msgstr ""
 
-#: pmpro-approvals.php:1376
+#: pmpro-approvals.php:1398
 msgid "Your membership requires approval before you are able to view this content."
 msgstr ""
 
-#: pmpro-approvals.php:1378
+#: pmpro-approvals.php:1400
 msgid "Your membership application has been denied. Contact the site owners if you believe this is an error."
 msgstr ""
 
-#: pmpro-approvals.php:1428
+#: pmpro-approvals.php:1450
 #, php-format
 msgid "Approval Status for %s"
 msgstr ""
 
-#: pmpro-approvals.php:1511
+#: pmpro-approvals.php:1533
 #, php-format
 msgid "Thank you for your membership to %1$s. Your %2$s membership status is: <b>%3$s</b>."
 msgstr ""
 
-#: pmpro-approvals.php:1533
+#: pmpro-approvals.php:1555
 #, php-format
 msgid "Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s."
 msgstr ""
 
-#: pmpro-approvals.php:1545
+#: pmpro-approvals.php:1567
 msgid "A user has been approved for !!membership_level_name!!"
 msgstr ""
 
-#: pmpro-approvals.php:1546
+#: pmpro-approvals.php:1568
 msgid "Approvals - Approved Email (admin)"
 msgstr ""
 
-#: pmpro-approvals.php:1551
+#: pmpro-approvals.php:1573
 msgid "A user has been denied for !!membership_level_name!!"
 msgstr ""
 
-#: pmpro-approvals.php:1552
+#: pmpro-approvals.php:1574
 msgid "Approvals - Denied Email (admin)"
 msgstr ""
 
-#: pmpro-approvals.php:1557
+#: pmpro-approvals.php:1579
 msgid "A user requires approval"
 msgstr ""
 
-#: pmpro-approvals.php:1558
+#: pmpro-approvals.php:1580
 msgid "Approvals - Requires Approval (admin)"
 msgstr ""
 
-#: pmpro-approvals.php:1565
+#: pmpro-approvals.php:1587
 msgid "Your membership to !!sitename!! has been approved."
 msgstr ""
 
-#: pmpro-approvals.php:1566
+#: pmpro-approvals.php:1588
 msgid "Approvals - Approved Email"
 msgstr ""
 
-#: pmpro-approvals.php:1571
+#: pmpro-approvals.php:1593
 msgid "Your membership to !!sitename!! has been denied."
 msgstr ""
 
-#: pmpro-approvals.php:1572
+#: pmpro-approvals.php:1594
 msgid "Approvals - Denied Email"
 msgstr ""
 
-#: pmpro-approvals.php:1591
+#: pmpro-approvals.php:1613
 msgid "Your membership account is now pending. You will be notified once your account has been approved/denied."
 msgstr ""
 
-#: pmpro-approvals.php:1631
+#: pmpro-approvals.php:1653
 msgid "Extra Fields:"
 msgstr ""
 
-#: pmpro-approvals.php:1666
+#: pmpro-approvals.php:1688
 msgid "Approval Statuses"
 msgstr ""
 
-#: pmpro-approvals.php:1673
+#: pmpro-approvals.php:1695
 msgid "Manage Approval Statuses"
 msgstr ""
 
-#: pmpro-approvals.php:1682
+#: pmpro-approvals.php:1704
 msgid "User Approval Log"
 msgstr ""
 
-#: pmpro-approvals.php:1793
+#: pmpro-approvals.php:1815
 msgid "No approval history found."
 msgstr ""
 
-#: pmpro-approvals.php:2002
+#: pmpro-approvals.php:2043
 msgid "View Documentation"
 msgstr ""
 
-#: pmpro-approvals.php:2002
+#: pmpro-approvals.php:2043
 msgid "Docs"
 msgstr ""
 
-#: pmpro-approvals.php:2003
+#: pmpro-approvals.php:2044
 msgid "Visit Customer Support Forum"
 msgstr ""
 
-#: pmpro-approvals.php:2003
+#: pmpro-approvals.php:2044
 msgid "Support"
 msgstr ""
