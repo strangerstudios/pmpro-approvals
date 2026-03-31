@@ -81,9 +81,15 @@ class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Templ
 	 * @return string The default body content for the email.
 	 */
 	public static function get_default_body() {
-		return wp_kses_post( __( '<p>The user <a href="!!view_profile!!">!!member_name!!</a> has been denied.</p>
+		if ( ! class_exists( 'PMPro_Liquid_Renderer' ) ) {
+			// Running a version of PMPro before liquid email rendering was available.
+			return wp_kses_post( __( '<p>The user <a href="!!view_profile!!">!!member_name!!</a> has been denied.</p>
 
 <p>Log in to your membership account here: !!login_link!!</p>' ), 'pmpro-approvals' );
+		}
+		return wp_kses_post( __( '<p>The user <a href="{{ view_profile }}">{{ member_name }}</a> has been denied.</p>
+
+<p>Log in to your membership account here: {{ login_link }}</p>' ), 'pmpro-approvals' );
 	}
 
 
@@ -95,12 +101,22 @@ class PMPro_Email_Template_PMProApprovals_Admin_Denied extends PMPro_Email_Templ
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
 	public static function get_email_template_variables_with_description() {
+		if ( ! class_exists( 'PMPro_Liquid_Renderer' ) ) {
+			// Running a version of PMPro before liquid email rendering was available.
+			return array(
+				'!!member_name!!' => esc_html__( 'The name of the member.', 'pmpro-approvals' ),
+				'!!member_email!!' => esc_html__( 'The email address of the member.', 'pmpro-approvals' ),
+				'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'pmpro-approvals' ),
+				'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'pmpro-approvals' ),
+				'!!view_profile!!' => esc_html__( 'The URL of the profile page for the member.', 'pmpro-approvals' ),
+			);
+		}
 		return array(
-			'!!member_name!!' => esc_html__( 'The name of the member.', 'pmpro-approvals' ),
-			'!!member_email!!' => esc_html__( 'The email address of the member.', 'pmpro-approvals' ),
-			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'pmpro-approvals' ),
-			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'pmpro-approvals' ),
-			'!!view_profile!!' => esc_html__( 'The URL of the profile page for the member.', 'pmpro-approvals' ),
+			'{{ member_name }}' => esc_html__( 'The name of the member.', 'pmpro-approvals' ),
+			'{{ member_email }}' => esc_html__( 'The email address of the member.', 'pmpro-approvals' ),
+			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'pmpro-approvals' ),
+			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'pmpro-approvals' ),
+			'{{ view_profile }}' => esc_html__( 'The URL of the profile page for the member.', 'pmpro-approvals' ),
 		);
 	}
 
