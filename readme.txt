@@ -3,7 +3,7 @@ Contributors: strangerstudios, andrewza
 Tags: paid memberships pro, pmpro, approval, approvals, workflow
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.7
+Stable tag: 1.7.1
 
 Grants administrators the ability to approve/deny memberships after signup.
 
@@ -36,6 +36,10 @@ Members pending approval will not have access to view members-only content until
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
+= 1.7.1 - 2026-05-05 =
+* ENHANCEMENT: Updated default email templates to use the new `{{ variable }}` Liquid syntax when running Paid Memberships Pro 3.7 or higher, while preserving the legacy `!!variable!!` syntax for older versions. #220 (@dparker1005)
+* BUG FIX: Fixed textdomain placement on default email body strings in the Admin Approved, Admin Denied, and Application Approved templates so they are correctly translatable under the `pmpro-approvals` textdomain. #220 (@dparker1005)
+
 = 1.7 - 2026-03-23 =
 * ENHANCEMENT: Improved links in the admin area to help site owners reach documentation and helpful articles quicker. (@kimcoleman)
 * BUG FIX/ENHANCEMENT: Fixed email sending issues when the admin email address is not associated with a WordPress account. (@andrewlimaza)
