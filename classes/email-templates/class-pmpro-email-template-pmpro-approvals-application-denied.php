@@ -92,10 +92,18 @@ class PMPro_Email_Template_PMProApprovals_Application_Denied extends PMPro_Email
 	 * @return array The email template variables for the email (key => value pairs).
 	 */
 	public static function get_email_template_variables_with_description() {
+		if ( ! class_exists( 'PMPro_Liquid_Renderer' ) ) {
+			// Running a version of PMPro before liquid email rendering was available.
+			return array(
+				'!!member_email!!' => esc_html__( 'The email address of the member.', 'pmpro-approvals' ),
+				'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'pmpro-approvals' ),
+				'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'pmpro-approvals' ),
+			);
+		}
 		return array(
-			'!!member_email!!' => esc_html__( 'The email address of the member.', 'pmpro-approvals' ),
-			'!!membership_id!!' => esc_html__( 'The ID of the membership level.', 'pmpro-approvals' ),
-			'!!membership_level_name!!' => esc_html__( 'The name of the membership level.', 'pmpro-approvals' ),
+			'{{ member_email }}' => esc_html__( 'The email address of the member.', 'pmpro-approvals' ),
+			'{{ membership_id }}' => esc_html__( 'The ID of the membership level.', 'pmpro-approvals' ),
+			'{{ membership_level_name }}' => esc_html__( 'The name of the membership level.', 'pmpro-approvals' ),
 		);
 	}
 
