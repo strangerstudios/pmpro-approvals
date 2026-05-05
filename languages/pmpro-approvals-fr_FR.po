@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro - Approvals Add On plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Approvals Add On 1.7\n"
+"Project-Id-Version: Paid Memberships Pro - Approvals Add On 1.7.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-03-23T09:16:58+00:00\n"
+"POT-Creation-Date: 2026-05-05T14:29:11+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pmpro-approvals\n"
@@ -1212,6 +1212,10 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:98
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:99
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:99
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:106
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:114
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:115
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:117
 msgid "The name of the member."
 msgstr ""
 
@@ -1224,6 +1228,13 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:99
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:100
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:100
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:107
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:115
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:116
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:118
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:104
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:110
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:104
 msgid "The email address of the member."
 msgstr ""
 
@@ -1236,6 +1247,13 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:100
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:101
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:101
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:108
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:116
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:117
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:119
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:105
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:111
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:105
 msgid "The ID of the membership level."
 msgstr ""
 
@@ -1248,6 +1266,13 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:101
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:102
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:102
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:109
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:117
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:118
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:120
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:106
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:112
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:106
 msgid "The name of the membership level."
 msgstr ""
 
@@ -1257,6 +1282,10 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:102
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:103
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:103
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:110
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:118
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:119
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:121
 msgid "The URL of the profile page for the member."
 msgstr ""
 
@@ -1269,6 +1298,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:163
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:164
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:167
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:179
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:180
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:185
 msgid "Admin"
 msgstr ""
 
@@ -1294,6 +1326,7 @@ msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:92
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:84
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:86
 msgid ""
 "<p>The user !!member_name!! is pending approval.</p>\n"
 "\n"
@@ -1302,11 +1335,13 @@ msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:112
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:104
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:122
 msgid "The URL to approve the member."
 msgstr ""
 
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:113
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:105
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:123
 msgid "The URL to deny the member."
 msgstr ""
 
@@ -1358,3 +1393,50 @@ msgid "%d application awaiting review"
 msgid_plural "%d applications awaiting review"
 msgstr[0] ""
 msgstr[1] ""
+
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:86
+msgid ""
+"<p>The user <a href=\"!!view_profile!!\">!!member_name!!</a> has been approved.</p>\n"
+"\n"
+"<p>Log in to your membership account here: !!login_link!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:90
+msgid ""
+"<p>The user <a href=\"{{ view_profile }}\">{{ member_name }}</a> has been approved.</p>\n"
+"\n"
+"<p>Log in to your membership account here: {{ login_link }}</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:86
+msgid ""
+"<p>The user <a href=\"!!view_profile!!\">!!member_name!!</a> has been denied.</p>\n"
+"\n"
+"<p>Log in to your membership account here: !!login_link!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:90
+msgid ""
+"<p>The user <a href=\"{{ view_profile }}\">{{ member_name }}</a> has been denied.</p>\n"
+"\n"
+"<p>Log in to your membership account here: {{ login_link }}</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:90
+msgid ""
+"<p>The user {{ member_name }} is pending approval.</p>\n"
+"\n"
+"<p>View the user's profile here: {{ view_profile }}</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:86
+msgid ""
+"<p>Your membership account at !!sitename!! has been approved.</p>\n"
+"<p>Log in to your membership account here: !!login_link!!</p>"
+msgstr ""
+
+#: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:89
+msgid ""
+"<p>Your membership account at {{ sitename }} has been approved.</p>\n"
+"<p>Log in to your membership account here: {{ login_link }}</p>"
+msgstr ""
