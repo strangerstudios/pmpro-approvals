@@ -84,10 +84,10 @@ class PMPro_Email_Template_PMProApprovals_Application_Approved extends PMPro_Ema
 		if ( ! class_exists( 'PMPro_Liquid_Renderer' ) ) {
 			// Running a version of PMPro before liquid email rendering was available.
 			return wp_kses_post( __( '<p>Your membership account at !!sitename!! has been approved.</p>
-<p>Log in to your membership account here: !!login_link!!</p>' ) );
+<p>Log in to your membership account here: !!login_link!!</p>', 'pmpro-approvals' ) );
 		}
 		return wp_kses_post( __( '<p>Your membership account at {{ sitename }} has been approved.</p>
-<p>Log in to your membership account here: {{ login_link }}</p>' ) );
+<p>Log in to your membership account here: {{ login_link }}</p>', 'pmpro-approvals' ) );
 	}
 
 	/**

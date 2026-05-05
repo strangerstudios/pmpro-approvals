@@ -85,11 +85,11 @@ class PMPro_Email_Template_PMProApprovals_Admin_Approved extends PMPro_Email_Tem
 			// Running a version of PMPro before liquid email rendering was available.
 			return wp_kses_post( __( '<p>The user <a href="!!view_profile!!">!!member_name!!</a> has been approved.</p>
 
-<p>Log in to your membership account here: !!login_link!!</p>' ), 'pmpro-approvals' );
+<p>Log in to your membership account here: !!login_link!!</p>', 'pmpro-approvals' ) );
 		}
 		return wp_kses_post( __( '<p>The user <a href="{{ view_profile }}">{{ member_name }}</a> has been approved.</p>
 
-<p>Log in to your membership account here: {{ login_link }}</p>' ), 'pmpro-approvals' );
+<p>Log in to your membership account here: {{ login_link }}</p>', 'pmpro-approvals' ) );
 	}
 
 	/**
