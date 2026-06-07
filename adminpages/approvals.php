@@ -105,38 +105,40 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 			echo wp_kses_post( $approval_settings_text );
 		?>
 	</p>
-	<?php if ( $approval_users ) { ?>
-		<div class="tablenav top">
-			<div class="alignleft actions">
-				<label class="screen-reader-text" for="filter-by-level"><?php esc_html_e( 'Filter by level', 'pmpro-approvals' ); ?></label>
-				<select name="l" id="filter-by-level">
-					<option value="0"><?php esc_html_e( 'All Levels', 'pmpro-approvals' ); ?></option>
-					<?php
-						$approval_level_ids = PMPro_Approvals::getApprovalLevels();
-						if ( ! empty( $approval_level_ids ) ) {
-							$levels = $wpdb->get_results( "SELECT id, name FROM $wpdb->pmpro_membership_levels WHERE id IN(" . implode( ',', $approval_level_ids ) . ') ORDER BY name' );
-							foreach ( $levels as $level ) {
-								?>
-								<option value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $l, $level->id ); ?>><?php echo esc_html( $level->name ); ?></option>
-								<?php
-							}
+	<div class="tablenav top">
+		<div class="alignleft actions">
+			<label class="screen-reader-text" for="filter-by-level"><?php esc_html_e( 'Filter by level', 'pmpro-approvals' ); ?></label>
+			<select name="l" id="filter-by-level">
+				<option value="0"><?php esc_html_e( 'All Levels', 'pmpro-approvals' ); ?></option>
+				<?php
+					$approval_level_ids = PMPro_Approvals::getApprovalLevels();
+					if ( ! empty( $approval_level_ids ) ) {
+						$levels = $wpdb->get_results( "SELECT id, name FROM $wpdb->pmpro_membership_levels WHERE id IN(" . implode( ',', $approval_level_ids ) . ') ORDER BY name' );
+						foreach ( $levels as $level ) {
+							?>
+							<option value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $l, $level->id ); ?>><?php echo esc_html( $level->name ); ?></option>
+							<?php
 						}
-					?>
-				</select>
-				<label class="screen-reader-text" for="filter-by-status"><?php esc_html_e( 'Filter by status', 'pmpro-approvals' ); ?></label>
-				<select name="status" id="filter-by-status">
-					<option value="all" <?php selected( $status, 'all' ); ?>><?php esc_html_e( 'All Statuses', 'pmpro-approvals' ); ?></option>
-					<option value="pending" <?php selected( $status, 'pending' ); ?>><?php esc_html_e( 'Pending', 'pmpro-approvals' ); ?></option>
-					<option value="approved" <?php selected( $status, 'approved' ); ?>><?php esc_html_e( 'Approved', 'pmpro-approvals' ); ?></option>
-					<option value="denied" <?php selected( $status, 'denied' ); ?>><?php esc_html_e( 'Denied', 'pmpro-approvals' ); ?></option>
-				</select>
-				<?php submit_button( __( 'Filter', 'pmpro-approvals' ), '', 'filter_action', false ); ?>
-			</div>
-			<div class="tablenav-pages">
-				<span class="displaying-num"><?php echo esc_html( sprintf( _n( '1 item', '%s items', $totalrows, 'pmpro-approvals' ), number_format_i18n( $totalrows ) ) ); ?></span>
-			</div>
+					}
+				?>
+			</select>
+			<label class="screen-reader-text" for="filter-by-status"><?php esc_html_e( 'Filter by status', 'pmpro-approvals' ); ?></label>
+			<select name="status" id="filter-by-status">
+				<option value="all" <?php selected( $status, 'all' ); ?>><?php esc_html_e( 'All Statuses', 'pmpro-approvals' ); ?></option>
+				<option value="pending" <?php selected( $status, 'pending' ); ?>><?php esc_html_e( 'Pending', 'pmpro-approvals' ); ?></option>
+				<option value="approved" <?php selected( $status, 'approved' ); ?>><?php esc_html_e( 'Approved', 'pmpro-approvals' ); ?></option>
+				<option value="denied" <?php selected( $status, 'denied' ); ?>><?php esc_html_e( 'Denied', 'pmpro-approvals' ); ?></option>
+			</select>
+			<?php submit_button( __( 'Filter', 'pmpro-approvals' ), '', 'filter_action', false ); ?>
 		</div>
-	
+		<?php if ( $approval_users ) { ?>
+		<div class="tablenav-pages">
+			<span class="displaying-num"><?php echo esc_html( sprintf( _n( '1 item', '%s items', $totalrows, 'pmpro-approvals' ), number_format_i18n( $totalrows ) ) ); ?></span>
+		</div>
+		<?php } ?>
+	</div>
+
+	<?php if ( $approval_users ) { ?>
 		<table class="widefat striped pmpro_responsive_table">
 			<thead>
 				<tr class="thead">
@@ -160,7 +162,7 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 					$user_data = get_userdata( $approval_user->ID );
 					?>
 					<tr>
-						<td data-colname="<?php esc_attr_e( 'ID', 'pmpro-approvals' ); ?>"><?php echo $user_data->ID; ?></td>
+						<td data-colname="<?php esc_attr_e( 'ID', 'pmpro-approvals' ); ?>"><?php echo intval( $user_data->ID ); ?></td>
 						<td class="username column-username has-row-actions" data-colname="<?php esc_attr_e( 'Applicant', 'pmpro-approvals' ); ?>">
 							<?php echo get_avatar( $user_data->ID, 32 ); ?>								
 							<?php
@@ -215,12 +217,12 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 								 * Filter the extra actions for this user in the approvals list table.
 								 *
 								 * @param array  $actions  The list of actions.
-								 * @param object $template  The user data for this row.
+								 * @param object $user_data  The user data for this row.
 								 * @param object $approval_user  The approval user data for this row.
 								 */
 								$actions = apply_filters( 'pmpro_approvals_user_row_actions', $actions, $user_data, $approval_user );
 
-								$actions_html = [];
+								$actions_html = array();
 							?>
 							<div class="row-actions">
 								<?php
@@ -242,7 +244,7 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 						</td>
 						<?php do_action( 'pmpro_approvals_list_extra_cols_body', $user_data ); ?>						
 						<td data-colname="<?php esc_attr_e( 'Membership', 'pmpro-approvals' ); ?>">
-							<?php echo $approval_user->membership; ?>
+							<?php echo esc_html( $approval_user->membership ); ?>
 						</td>						
 						<td data-colname="<?php esc_attr_e( 'Approval Status', 'pmpro-approvals' ); ?>">										
 							<?php

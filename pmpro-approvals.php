@@ -1918,7 +1918,7 @@ class PMPro_Approvals {
 			$generated_list = '<ul id="pmpro-approvals-log">';
 
 			foreach ( $approval_log as $key => $value ) {
-				$generated_list .= '<li><pre>' . $value . '</pre></li>';
+				$generated_list .= '<li><pre>' . esc_html( $value ) . '</pre></li>';
 			}
 
 			$generated_list .= '</ul>';
