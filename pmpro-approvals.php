@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Approvals Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 Description: Grants administrators the ability to approve/deny memberships after signup.
-Version: 1.7.1
+Version: 1.8
 Author: Stranger Studios
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-approvals
@@ -1681,7 +1681,7 @@ class PMPro_Approvals {
 	 * Output the Email Confirmation column header on the approvals list.
 	 * Only shown when the Email Confirmation Add On is active.
 	 *
-	 * @since TBD
+	 * @since 1.8
 	 */
 	public static function email_confirmation_column_header( $approval_users = null ) {
 		if ( ! function_exists( 'pmproec_load_plugin_text_domain' ) ) {
@@ -1694,7 +1694,7 @@ class PMPro_Approvals {
 	 * Output the Email Confirmation column cell on the approvals list.
 	 * Only shown when the Email Confirmation Add On is active.
 	 *
-	 * @since TBD
+	 * @since 1.8
 	 *
 	 * @param WP_User $user_data The user for this row.
 	 */
@@ -1717,7 +1717,7 @@ class PMPro_Approvals {
 	/**
 	 * Register the Approvals panel on the PMPro Member Edit screen.
 	 *
-	 * @since TBD
+	 * @since 1.8
 	 *
 	 * @param array $panels The member edit panels.
 	 * @return array

@@ -1,9 +1,9 @@
 === Paid Memberships Pro - Approvals ===
-Contributors: strangerstudios, andrewza
+Contributors: strangerstudios
 Tags: paid memberships pro, pmpro, approval, approvals, workflow
-Requires at least: 5.0
-Tested up to: 6.9
-Stable tag: 1.7.1
+Requires at least: 6.0
+Tested up to: 7.0
+Stable tag: 1.8
 
 Grants administrators the ability to approve/deny memberships after signup.
 
@@ -36,6 +36,14 @@ Members pending approval will not have access to view members-only content until
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
+= 1.8 - 2026-06-10 =
+
+* ENHANCEMENT: Modernized the Approvals admin list with level and status filters, responsive table, colored status badges, item count, and standard pagination. Approval status is no longer combined with Email Confirmation status. #221 (@kimcoleman)
+* ENHANCEMENT: Rebuilt the application view into the standard PMPro two-column layout with breadcrumb navigation, inline Approve / Deny / Reset actions, read-only user fields, and a Member Information sidebar. #221 (@kimcoleman)
+* ENHANCEMENT: Added an Approvals panel to the Edit Member screen listing the member's applications and full approval history. #221 (@kimcoleman)
+* ENHANCEMENT: Account page now displays approval status for Pending and Denied members using newer hooks. Requires PMPro 3.4+. #221 (@kimcoleman)
+* ENHANCEMENT: getApprovalCount() now supports all as a status argument. #221 (@kimcoleman)
+
 = 1.7.1 - 2026-05-05 =
 * ENHANCEMENT: Updated default email templates to use the new `{{ variable }}` Liquid syntax when running Paid Memberships Pro 3.7 or higher, while preserving the legacy `!!variable!!` syntax for older versions. #220 (@dparker1005)
 * BUG FIX: Fixed textdomain placement on default email body strings in the Admin Approved, Admin Denied, and Application Approved templates so they are correctly translatable under the `pmpro-approvals` textdomain. #220 (@dparker1005)

@@ -5,7 +5,7 @@
  * Shows the member's membership applications (one row per approval-required level)
  * and their full approval history log.
  *
- * @since TBD
+ * @since 1.8
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 class PMPro_Approvals_Member_Edit_Panel extends PMPro_Member_Edit_Panel {
 
 	/**
-	 * @since TBD
+	 * @since 1.8
 	 */
 	public function __construct() {
 		$this->slug  = 'approvals';
@@ -24,7 +24,7 @@ class PMPro_Approvals_Member_Edit_Panel extends PMPro_Member_Edit_Panel {
 	 * Only show the panel when the current user can edit members and at least
 	 * one membership level requires approval.
 	 *
-	 * @since TBD
+	 * @since 1.8
 	 */
 	public function should_show() {
 		if ( ! function_exists( 'pmpro_get_edit_member_capability' ) || ! current_user_can( pmpro_get_edit_member_capability() ) ) {
@@ -36,7 +36,7 @@ class PMPro_Approvals_Member_Edit_Panel extends PMPro_Member_Edit_Panel {
 	}
 
 	/**
-	 * @since TBD
+	 * @since 1.8
 	 */
 	protected function display_panel_contents() {
 		$user = self::get_user();
