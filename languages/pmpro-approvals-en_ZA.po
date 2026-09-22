@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro - Approvals Add On plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Approvals Add On 1.7.1\n"
+"Project-Id-Version: Paid Memberships Pro - Approvals Add On 1.8.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-10T09:37:31+00:00\n"
+"POT-Creation-Date: 2026-09-22T18:41:42+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pmpro-approvals\n"
@@ -331,6 +331,7 @@ msgstr "Back to Approvals"
 #: classes/class.approvalemails.php:45
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-approved.php:73
 #: classes/class.approvalemails.php:50
+#: classes/class.approvalemails.php:55
 #, php-format
 msgid "Your membership at %s has been approved."
 msgstr "Your membership at %s has been approved."
@@ -341,6 +342,7 @@ msgstr "Your membership at %s has been approved."
 #: classes/class.approvalemails.php:93
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-application-denied.php:73
 #: classes/class.approvalemails.php:105
+#: classes/class.approvalemails.php:115
 #, php-format
 msgid "Your membership at %s has been denied."
 msgstr "Your membership at %s has been denied."
@@ -352,6 +354,7 @@ msgstr "Your membership at %s has been denied."
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:81
 #: classes/class.approvalemails.php:179
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:73
+#: classes/class.approvalemails.php:194
 #, php-format
 msgid "A member at %s is waiting approval."
 msgstr "A member at %s is waiting approval."
@@ -363,6 +366,7 @@ msgstr "A member at %s is waiting approval."
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:80
 #: classes/class.approvalemails.php:262
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:73
+#: classes/class.approvalemails.php:282
 #, php-format
 msgid "A member at %s has been approved."
 msgstr "A member at %s has been approved."
@@ -374,6 +378,7 @@ msgstr "A member at %s has been approved."
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:81
 #: classes/class.approvalemails.php:341
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:73
+#: classes/class.approvalemails.php:366
 #, php-format
 msgid "A member at %s has been denied."
 msgstr "A member at %s has been denied."
@@ -1291,6 +1296,9 @@ msgstr ""
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-approved.php:179
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-denied.php:180
 #: classes/email-templates/class-pmpro-email-template-pmpro-approvals-admin-notification-approval.php:185
+#: classes/class.approvalemails.php:189
+#: classes/class.approvalemails.php:275
+#: classes/class.approvalemails.php:361
 msgid "Admin"
 msgstr ""
 
