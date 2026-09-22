@@ -40,6 +40,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
+
+		// Bail if we could not find a level for this member.
+		if ( empty( $level ) ) {
+			return false;
+		}
 		
 		if ( class_exists( 'PMPro_Email_Template' ) ) {
 			$send_member_approved_email = new PMPro_Email_Template_PMProApprovals_Application_Approved( $member, $level );
@@ -92,6 +97,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		}
+
+		// Bail if we could not find a level for this member.
+		if ( empty( $level ) ) {
+			return false;
 		}
 
 		if ( class_exists( 'PMPro_Email_Template' ) ) {
@@ -151,6 +161,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		}
+
+		// Bail if we could not find a level for this member.
+		if ( empty( $level ) ) {
+			return false;
 		}
 
 		// Use the new email templates if they are available.
@@ -233,6 +248,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
 		}
 
+		// Bail if we could not find a level for this member.
+		if ( empty( $level ) ) {
+			return false;
+		}
+
 		// Use the new email templates if they are available.
 		if ( class_exists( 'PMPro_Email_Template' ) ) {
 			$send_member_approved_email = new PMPro_Email_Template_PMProApprovals_Admin_Approved( $member, $level );
@@ -312,6 +332,11 @@ class PMPro_Approvals_Email extends PMProEmail {
 			$level = pmpro_getMembershipLevelForUser( $member->ID );
 		} else {
 			$level = pmpro_getSpecificMembershipLevelForUser( $member->ID, $level_id );
+		}
+
+		// Bail if we could not find a level for this member.
+		if ( empty( $level ) ) {
+			return false;
 		}
 
 		// Use the new email templates if they are available.
