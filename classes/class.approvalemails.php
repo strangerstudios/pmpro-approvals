@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Make sure PMPro is loaded.
 if ( ! class_exists( 'PMProEmail' ) ) {
 	return;
