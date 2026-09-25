@@ -1,14 +1,18 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 	global $wpdb, $current_user;
 
 	//only admins can get this
 if ( ! function_exists( 'current_user_can' ) || ! current_user_can( 'pmpro_approvals' ) ) {
-	wp_die( __( 'You do not have permissions to perform this action.', 'pmpro-approvals' ) );
+	wp_die( esc_html__( 'You do not have permissions to perform this action.', 'pmpro-approvals' ) );
 }
 
 	//vars
 if ( isset( $_REQUEST['s'] ) ) {
-	$s = sanitize_text_field( $_REQUEST['s'] );
+	$s = sanitize_text_field( wp_unslash( $_REQUEST['s'] ) );
 } else {
 	$s = '';
 }
@@ -20,7 +24,7 @@ if ( isset( $_REQUEST['l'] ) ) {
 }
 
 if ( isset( $_REQUEST['status'] ) ) {
-	$status = sanitize_text_field( $_REQUEST['status'] );
+	$status = sanitize_text_field( wp_unslash( $_REQUEST['status'] ) );
 } else {
 	$status = '';
 }
@@ -60,7 +64,7 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 	}
 
 	if ( isset( $_REQUEST['sortby'] ) ) {
-		$sortby = $_REQUEST['sortby'];
+		$sortby = sanitize_text_field( wp_unslash( $_REQUEST['sortby'] ) );
 	} else {
 		$sortby = 'user_registered';
 	}
@@ -92,9 +96,9 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 	<input type="hidden" name="page" value="pmpro-approvals" />
 	<?php if ( $approval_users ) { ?>
 		<p class="search-box">
-			<label class="hidden" for="post-search-input"><?php _e( 'Search Approvals', 'pmpro-approvals' ); ?>:</label>
+			<label class="hidden" for="post-search-input"><?php esc_html_e( 'Search Approvals', 'pmpro-approvals' ); ?>:</label>
 			<input id="post-search-input" type="text" value="<?php echo esc_attr( $s ); ?>" name="s"/>
-			<input class="button" type="submit" value="<?php _e( 'Search Approvals', 'pmpro-approvals' ); ?>"/>
+			<input class="button" type="submit" value="<?php esc_attr_e( 'Search Approvals', 'pmpro-approvals' ); ?>"/>
 		</p>
 	<?php } ?>
 	<p>
@@ -113,7 +117,7 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 				<?php
 					$approval_level_ids = PMPro_Approvals::getApprovalLevels();
 					if ( ! empty( $approval_level_ids ) ) {
-						$levels = $wpdb->get_results( "SELECT id, name FROM $wpdb->pmpro_membership_levels WHERE id IN(" . implode( ',', $approval_level_ids ) . ') ORDER BY name' );
+						$levels = $wpdb->get_results( "SELECT id, name FROM $wpdb->pmpro_membership_levels WHERE id IN(" . implode( ',', array_map( 'intval', $approval_level_ids ) ) . ') ORDER BY name' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- IN list is cast with intval(); PMPro custom table.
 						foreach ( $levels as $level ) {
 							?>
 							<option value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $l, $level->id ); ?>><?php echo esc_html( $level->name ); ?></option>
@@ -148,11 +152,11 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 					<?php do_action( 'pmpro_approvals_list_extra_cols_header', $approval_users ); ?>
 					<th><?php esc_html_e( 'Membership', 'pmpro-approvals' ); ?></th>
 					<th><?php esc_html_e( 'Approval Status', 'pmpro-approvals' ); ?></th>
-					<th><a href="<?php echo admin_url( 'admin.php?page=pmpro-approvals&s=' . esc_attr( $s ) . '&limit=' . $limit . '&pn=' . $pn . '&sortby=user_registered' ); ?>
+					<th><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $s ) . '&limit=' . $limit . '&pn=' . $pn . '&sortby=user_registered' ) ); ?>
 											<?php
 											if ( $sortby == 'user_registered' && $sortorder == 'DESC' ) {
 							?>
-							&sortorder=ASC<?php } ?>"><?php _e( 'Joined', 'pmpro-approvals' ); ?></a></th>				
+							&sortorder=ASC<?php } ?>"><?php esc_html_e( 'Joined', 'pmpro-approvals' ); ?></a></th>				
 				</tr>
 			</thead>
 			<tbody>	
@@ -262,7 +266,7 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 							?>
 						</td>
 						<td data-colname="<?php esc_attr_e( 'Joined', 'pmpro-approvals' ); ?>">
-							<?php echo date_i18n( get_option( 'date_format' ), strtotime( $user_data->user_registered ) ); ?>
+							<?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $user_data->user_registered ) ) ); ?>
 						</td>
 					</tr>
 					<?php

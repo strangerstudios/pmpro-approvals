@@ -1,9 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 	global $wpdb, $current_user, $pmpro_user_fields;
 
 	//only admins can get this
 if ( ! function_exists( 'current_user_can' ) || ! current_user_can( 'pmpro_approvals' ) ) {
-	wp_die( __( 'You do not have permissions to perform this action.', 'pmpro-approvals' ) );
+	wp_die( esc_html__( 'You do not have permissions to perform this action.', 'pmpro-approvals' ) );
 }
 
 if ( isset( $_REQUEST['l'] ) ) {
@@ -20,13 +24,13 @@ if ( isset( $_REQUEST['l'] ) ) {
 
 	//get the user
 if ( empty( $_REQUEST['user_id'] ) ) {
-	wp_die( __( 'No user id passed in.', 'pmpro-approvals' ) );
+	wp_die( esc_html__( 'No user id passed in.', 'pmpro-approvals' ) );
 } else {
-	$user = get_userdata( intval( $_REQUEST['user_id'] ) );
+	$user = get_userdata( intval( $_REQUEST['user_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only lookup for display; page is capability-gated above.
 
 	//user found?
 	if ( empty( $user->ID ) ) {
-		wp_die( sprintf( __( 'No user found with ID %d.', 'pmpro-approvals' ), intval( $_REQUEST['user_id'] ) ) );
+		wp_die( esc_html( sprintf( __( 'No user found with ID %d.', 'pmpro-approvals' ), intval( $_REQUEST['user_id'] ) ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; used in an error message.
 	}
 }
 

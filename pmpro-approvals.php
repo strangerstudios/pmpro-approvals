@@ -10,6 +10,10 @@ Text Domain: pmpro-approvals
 Domain Path: /languages
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 define( 'PMPRO_APP_DIR', dirname( __FILE__ ) );
 
 /**
@@ -267,7 +271,7 @@ class PMPro_Approvals {
 	 * Load the Approvals admin page.
 	 */
 	public static function admin_page_approvals() {
-		if ( ! empty( $_REQUEST['user_id'] ) ) {
+		if ( ! empty( $_REQUEST['user_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only routing between admin views; actions verify their own nonce.
 			require_once dirname( __FILE__ ) . '/adminpages/userinfo.php';
 		} else {
 			require_once dirname( __FILE__ ) . '/adminpages/approvals.php';
@@ -347,11 +351,11 @@ class PMPro_Approvals {
 	* Load check box to make level require membership.
 	*/
 	public static function pmpro_membership_level_settings() {
-		$level_id = $_REQUEST['edit'];
+		$level_id = isset( $_REQUEST['edit'] ) ? intval( $_REQUEST['edit'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; displays settings on the level edit screen.
 
 		// Get the template if passed in the URL.
-		if ( isset( $_REQUEST['template'] ) ) {
-			$template = sanitize_text_field( $_REQUEST['template'] );
+		if ( isset( $_REQUEST['template'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; selects default settings for display.
+			$template = sanitize_text_field( wp_unslash( $_REQUEST['template'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; selects default settings for display.
 		} else {
 			$template = false;
 		}
@@ -446,7 +450,7 @@ class PMPro_Approvals {
 								<?php
 								foreach ( $levels as $level ) {
 									?>
-									<option value="<?php echo $level->id; ?>" <?php selected( $options['restrict_checkout'], $level->id ); ?>><?php echo $level->name; ?></option>
+									<option value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $options['restrict_checkout'], $level->id ); ?>><?php echo esc_html( $level->name ); ?></option>
 										<?php
 								}
 								?>
@@ -485,6 +489,8 @@ class PMPro_Approvals {
 	public static function pmpro_save_membership_level( $level_id ) {
 		global $msg, $msgt, $saveid, $edit;
 
+		// Nonce and capability are verified by PMPro core before pmpro_save_membership_level fires (adminpages/membershiplevels.php).
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		//get value
 		if ( ! empty( $_REQUEST['approval_setting'] ) ) {
 			$approval_setting = intval( $_REQUEST['approval_setting'] );
@@ -497,6 +503,7 @@ class PMPro_Approvals {
 		} else {
 			$restrict_checkout = 0;
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		//figure out requires_approval and restrict_checkout value from setting
 		if ( $approval_setting == 1 ) {
@@ -719,7 +726,7 @@ class PMPro_Approvals {
 		if ( ! empty( $user_id ) ) {
 			//default to the user's current level
 			if ( empty( $level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'You should pass a level ID to getUserApproval.', 'pmpro-approvals' ), '1.5' );
+				_doing_it_wrong( __FUNCTION__, esc_html__( 'You should pass a level ID to getUserApproval.', 'pmpro-approvals' ), '1.5' );
 				$level = pmpro_getMembershipLevelForUser( $user_id );
 				if ( ! empty( $level ) ) {
 					$level_id = $level->id;
@@ -766,7 +773,7 @@ class PMPro_Approvals {
 
 		//get the PMPro level for the user
 		if ( empty( $level_id ) ) {
-			_doing_it_wrong( __FUNCTION__, __( 'You should pass a level ID to getUserApprovalStatus.', 'pmpro-approvals' ), '1.5' );
+			_doing_it_wrong( __FUNCTION__, esc_html__( 'You should pass a level ID to getUserApprovalStatus.', 'pmpro-approvals' ), '1.5' );
 			$level    = pmpro_getMembershipLevelForUser( $user_id );
 			
 			if ( ! empty( $level ) ) {
@@ -996,7 +1003,7 @@ class PMPro_Approvals {
 		if ( $l ) {
 			$sql_parts['WHERE'] .= "AND mu.membership_id = '" . esc_sql( $l ) . "' ";
 		} else {
-			$sql_parts['WHERE'] .= "AND mu.membership_id IN(" . implode( ',', $approval_levels ) . ") ";
+			$sql_parts['WHERE'] .= "AND mu.membership_id IN(" . implode( ',', array_map( 'intval', $approval_levels ) ) . ") ";
 		}
 
 		if ( ! empty( $status ) && $status != 'all' ) {
@@ -1065,7 +1072,7 @@ class PMPro_Approvals {
 			$limit
 		);
 
-		$theusers = $wpdb->get_results( $sqlQuery );
+		$theusers = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Strings are esc_sql()'d and quoted, IDs intval()'d, sort values whitelisted by the caller; PMPro custom table.
 
 		return $theusers;
 	}
@@ -1110,7 +1117,7 @@ class PMPro_Approvals {
 
 		// get user's current level if none given.
 		if ( empty( $level_id ) ) {
-			_doing_it_wrong( __FUNCTION__, __( 'No level ID given. Please pass a level ID to approveMember().', 'pmpro-approvals' ), '1.5' );
+			_doing_it_wrong( __FUNCTION__, esc_html__( 'No level ID given. Please pass a level ID to approveMember().', 'pmpro-approvals' ), '1.5' );
 			$user_level = pmpro_getMembershipLevelForUser( $user_id );
 			$level_id   = $user_level->id;
 		}
@@ -1178,7 +1185,7 @@ class PMPro_Approvals {
 
 		//get user's current level if none given
 		if ( empty( $level_id ) ) {
-			_doing_it_wrong( __FUNCTION__, __( 'No level ID given. Please pass a level ID to denyMember().', 'pmpro-approvals' ), '1.5' );
+			_doing_it_wrong( __FUNCTION__, esc_html__( 'No level ID given. Please pass a level ID to denyMember().', 'pmpro-approvals' ), '1.5' );
 			$user_level = pmpro_getMembershipLevelForUser( $user_id );
 			$level_id   = $user_level->id;
 		}
@@ -1231,7 +1238,7 @@ class PMPro_Approvals {
 
 		//get user's current level if none given
 		if ( empty( $level_id ) ) {
-			_doing_it_wrong( __FUNCTION__, __( 'No level ID given. Please pass a level ID to resetMember().', 'pmpro-approvals' ), '1.5' );
+			_doing_it_wrong( __FUNCTION__, esc_html__( 'No level ID given. Please pass a level ID to resetMember().', 'pmpro-approvals' ), '1.5' );
 			$user_level = pmpro_getMembershipLevelForUser( $user_id );
 			$level_id   = $user_level->id;
 		}
@@ -1458,10 +1465,9 @@ class PMPro_Approvals {
 
 	// Hide ('pending') link from the following statuses.
 	$status_in = apply_filters( 'pmpro_approvals_members_list_status', array( 'oldmembers', 'cancelled', 'expired' ) );
-	$level_type = isset( $_REQUEST['l'] ) ? $_REQUEST['l'] : '';
 
 	// Bail if this is the dashboard page.
-	if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-dashboard' ) {
+	if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-dashboard' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only comparison against a fixed string.
 		return $user;
 	}
 
@@ -1505,8 +1511,8 @@ class PMPro_Approvals {
 		// Try to get the membership ID for the confirmation.
 		if ( ! empty( $pmpro_invoice ) ) {
 			$membership_id = $pmpro_invoice->membership_id;
-		} elseif ( empty( $pmpro_invoice ) && ! empty( $_REQUEST['level' ] ) ) {
-			$membership_id = (int) $_REQUEST['level'];
+		} elseif ( empty( $pmpro_invoice ) && ! empty( $_REQUEST['level' ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; used to display the confirmation message.
+			$membership_id = (int) $_REQUEST['level']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; used to display the confirmation message.
 		} else {
 			$membership_id = $current_user->membership_level->ID;
 		}
@@ -1543,7 +1549,7 @@ class PMPro_Approvals {
 		 */
 		if ( apply_filters( 'pmpro_approvals_show_level_confirmation_message', false, $pmpro_invoice->membership_id ) ) {
 			// Add the level confirmation message if set.
-			$level_message = $wpdb->get_var("SELECT confirmation FROM $wpdb->pmpro_membership_levels WHERE id = '" . intval( $pmpro_invoice->membership_id ) . "' LIMIT 1");
+			$level_message = $wpdb->get_var("SELECT confirmation FROM $wpdb->pmpro_membership_levels WHERE id = '" . intval( $pmpro_invoice->membership_id ) . "' LIMIT 1"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table; ID is cast with intval().
 
 			if ( ! empty( $level_message ) ) {
 				$confirmation_message .= wpautop( stripslashes( $level_message ) );
@@ -1737,7 +1743,7 @@ class PMPro_Approvals {
 	public static function show_user_profile_status( $user ) {
 		// The PMPro Member Edit screen shows the dedicated Approvals panel instead, so
 		// don't duplicate the approval information in the user-info panel there.
-		if ( ! empty( $_REQUEST['page'] ) && 'pmpro-member' === sanitize_key( wp_unslash( $_REQUEST['page'] ) ) ) {
+		if ( ! empty( $_REQUEST['page'] ) && 'pmpro-member' === sanitize_key( wp_unslash( $_REQUEST['page'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only screen detection.
 			return;
 		}
 
@@ -1804,7 +1810,7 @@ class PMPro_Approvals {
 				<th><?php esc_html_e( 'User Approval Log', 'pmpro-approvals' ); ?></th>
 					<td>
 					<?php
-					echo self::showUserLog( $user->ID );
+					echo wp_kses_post( self::showUserLog( $user->ID ) );
 					?>
 					</td>
 			</tr>
@@ -1969,7 +1975,7 @@ class PMPro_Approvals {
 			$sql_parts = array();
 			$sql_parts['SELECT'] = "SELECT COUNT(mu.user_id) as count FROM $wpdb->pmpro_memberships_users mu ";
 			$sql_parts['JOIN'] = "LEFT JOIN $wpdb->usermeta um ON um.user_id = mu.user_id AND um.meta_key LIKE CONCAT('pmpro_approval_', mu.membership_id) ";
-			$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND mu.membership_id IN (" . implode( ',', $approval_levels ) . ") ";
+			$sql_parts['WHERE'] = "WHERE mu.status = 'active' AND mu.membership_id IN (" . implode( ',', array_map( 'intval', $approval_levels ) ) . ") ";
 			// 'all' counts every member in an approval-required level, regardless of approval status.
 			if ( 'all' !== $approval_status ) {
 				$sql_parts['WHERE'] .= "AND um.meta_value LIKE '%" . esc_sql( $approval_status ) . "%' ";
@@ -2023,7 +2029,7 @@ class PMPro_Approvals {
 				$s
 			);
 
-			$results         = $wpdb->get_results( $sqlQuery );
+			$results         = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Strings are esc_sql()'d and quoted, IDs intval()'d; PMPro custom table.
 
 			if ( ! $results ) {
 				$number_of_users[$approval_status] = 0;
