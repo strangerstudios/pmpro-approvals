@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: paid memberships pro, pmpro, approval, approvals, workflow
 Requires at least: 6.0
 Tested up to: 7.1
-Stable tag: 1.8.1
+Stable tag: 1.8.2
 
 Grants administrators the ability to approve/deny memberships after signup.
 
@@ -36,6 +36,10 @@ Members pending approval will not have access to view members-only content until
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
+= 1.8.2 - 2026-09-29 =
+* SECURITY: Improved sanitization and escaping throughout the plugin to resolve Plugin Check security findings. #225 (@dparker1005)
+* BUG FIX: Fixed searches containing an apostrophe on the Approvals admin page. #225 (@dparker1005)
+
 = 1.8.1 - 2026-09-22 =
 * BUG FIX: Fixed a fatal error when approving or denying a member who no longer has the level being approved or denied. #224 (@dwanjuki)
 
