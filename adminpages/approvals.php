@@ -152,11 +152,13 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 					<?php do_action( 'pmpro_approvals_list_extra_cols_header', $approval_users ); ?>
 					<th><?php esc_html_e( 'Membership', 'pmpro-approvals' ); ?></th>
 					<th><?php esc_html_e( 'Approval Status', 'pmpro-approvals' ); ?></th>
-					<th><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $s ) . '&limit=' . $limit . '&pn=' . $pn . '&sortby=user_registered' ) ); ?>
-											<?php
-											if ( $sortby == 'user_registered' && $sortorder == 'DESC' ) {
-							?>
-							&sortorder=ASC<?php } ?>"><?php esc_html_e( 'Joined', 'pmpro-approvals' ); ?></a></th>				
+					<?php
+					$joined_sort_url = admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $s ) . '&limit=' . $limit . '&pn=' . $pn . '&sortby=user_registered' );
+					if ( $sortby == 'user_registered' && $sortorder == 'DESC' ) {
+						$joined_sort_url .= '&sortorder=ASC';
+					}
+					?>
+					<th><a href="<?php echo esc_url( $joined_sort_url ); ?>"><?php esc_html_e( 'Joined', 'pmpro-approvals' ); ?></a></th>				
 				</tr>
 			</thead>
 			<tbody>	
