@@ -1078,12 +1078,35 @@ class PMPro_Approvals {
 	}
 
 	/**
+	 * Check whether any directory level requires approval.
+	 *
+	 * @param array $level_ids Level IDs included in the directory. Empty means all levels.
+	 * @return bool
+	 */
+	private static function directory_needs_approval_check( $level_ids ) {
+		if ( empty( $level_ids ) ) {
+			$level_ids = wp_list_pluck( pmpro_getAllLevels( true, true ), 'id' );
+		}
+
+		foreach ( $level_ids as $level_id ) {
+			if ( self::requiresApproval( (int) $level_id ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Hooks into the BuddyPress member directory.
 	 * Hide the user if they are pending/denied.
 	 * 
 	 * @since 1.5
 	 */
 	public static function buddypress_sql( $sql_parts, $levels_included ) {
+		if ( ! self::directory_needs_approval_check( $levels_included ) ) {
+			return $sql_parts;
+		}
 
 		global $wpdb;
 
@@ -2093,6 +2116,11 @@ class PMPro_Approvals {
 	 * @since 1.3
 	 */
 	public static function pmpro_member_directory_sql_parts( $sql_parts, $levels, $s, $pn, $limit, $start, $end, $order_by, $order ) {
+		$level_ids = empty( $levels ) ? array() : array_map( 'intval', explode( ',', $levels ) );
+		if ( ! self::directory_needs_approval_check( $level_ids ) ) {
+			return $sql_parts;
+		}
+
 		global $wpdb;
 		$sql_parts['JOIN'] .= "LEFT JOIN {$wpdb->usermeta} umm
 		ON umm.meta_key = CONCAT('pmpro_approval_', mu.membership_id)
