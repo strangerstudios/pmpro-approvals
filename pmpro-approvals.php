@@ -464,7 +464,7 @@ class PMPro_Approvals {
 									<p class="description pmproap-restrict-level-notice" data-level="<?php echo esc_attr( $level->id ); ?>" style="display: none;">
 										<?php
 										/* translators: %1$s: membership level name */
-										echo esc_html( sprintf( __( '%1$s does not require approval, so any member of %1$s can check out for this level. To require an admin-approved membership, set %1$s to require approval.', 'pmpro-approvals' ), $level->name ) );
+										echo esc_html( sprintf( __( '%1$s does not require approval, so any member of %1$s can check out for this level. To require an admin-approved membership, set %1$s to "Yes. Admin must approve new members for this level."', 'pmpro-approvals' ), $level->name ) );
 										?>
 									</p>
 									<?php
