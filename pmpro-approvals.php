@@ -43,6 +43,7 @@ class PMPro_Approvals {
 		Attributes
 	*/
 	private static $instance = null;        // Refers to a single instance of this class.
+	private static $pending_admin_emails = array(); // Admin pending emails waiting for checkout to finish.
 
 	/**
 	 * Constructor
@@ -1327,9 +1328,38 @@ class PMPro_Approvals {
 			return;
 		}
 
+		//during checkout, wait until user fields are saved so they can be included in the email.
+		//the shutdown hook covers checkouts that stop before pmpro_after_checkout.
+		if ( did_action( 'pmpro_checkout_before_change_membership_level' ) > did_action( 'pmpro_after_checkout' ) ) {
+			self::$pending_admin_emails[] = array( $user_id, $level_id );
+			add_action( 'pmpro_after_checkout', array( 'PMPro_Approvals', 'send_pending_admin_emails' ), 20 );
+			add_action( 'shutdown', array( 'PMPro_Approvals', 'send_pending_admin_emails' ) );
+			return;
+		}
+
 		//send email to admin that a new member requires approval.
 		$email = new PMPro_Approvals_Email();
 		$email->sendAdminPending( $user_id, null, $level_id );
+	}
+
+	/**
+	 * Send admin pending approval emails that were held until checkout finished.
+	 *
+	 * @since TBD
+	 */
+	public static function send_pending_admin_emails() {
+		$pending_admin_emails       = self::$pending_admin_emails;
+		self::$pending_admin_emails = array();
+
+		foreach ( $pending_admin_emails as $pending ) {
+			list( $user_id, $level_id ) = $pending;
+			if ( ! self::hasMembershipLevelSansApproval( $level_id, $user_id ) || self::isApproved( $user_id, $level_id ) ) {
+				continue;
+			}
+
+			$email = new PMPro_Approvals_Email();
+			$email->sendAdminPending( $user_id, null, $level_id );
+		}
 	}
 
 	/**
@@ -1642,13 +1672,14 @@ class PMPro_Approvals {
 		}
 
 		// If the email is an admin email, include user fields for all Approval emails.
-		if ( ! in_array( $email->template, array( 'admin_approved', 'admin_denied', 'admin_notification_approval' ) ) ) {
+		if ( ! in_array( $email->template, array( 'admin_approved', 'admin_denied', 'admin_notification_approval', 'admin_approved_admin', 'admin_denied_admin', 'admin_notification_approval_admin' ) ) ) {
 			return $email;
 		}
 
 		// Get the user_id from the email
-		$user = get_user_by( 'email', $email->data['user_email'] );
+		$user = ! empty( $email->data['member_email'] ) ? get_user_by( 'email', $email->data['member_email'] ) : false;
 		$user_id = $user ? $user->ID : 0;
+		$level_id = ! empty( $email->data['membership_id'] ) ? (int) $email->data['membership_id'] : 0;
 
 		if ( ! empty( $user_id ) ) {
 			//add to bottom of email
@@ -1658,16 +1689,16 @@ class PMPro_Approvals {
 				$added_field = false;
 				// Loop through all the field groups.
 				foreach( $field_groups as $group_name => $group ) {
-					// Loop through all the fields in the group.
-					$fields = $group->get_fields_to_display(
-						array(
-							'scope' => 'checkout',
-							'user_id' => $user_id,
-						)
-					);
-					foreach( $fields as $field ) {
+					// Loop through the group's checkout fields for the email's level.
+					foreach( $group->get_fields() as $field ) {
+						if ( in_array( $field->profile, array( 'only', 'only_admin' ), true ) ) {
+							continue;
+						}
+						if ( ! empty( $field->levels ) && ! in_array( $level_id, $field->levels, true ) ) {
+							continue;
+						}
 						$fields_content .= "- " . esc_html( $field->label ) . ": ";
-						$fields_content .= $field->displayValue( get_user_meta( $user_id, $field->name, true), false );
+						$fields_content .= $field->displayValue( get_user_meta( $user_id, $field->meta_key, true), false );
 						$fields_content .= "<br />";
 						$added_field = true;
 					}
