@@ -1463,8 +1463,8 @@ class PMPro_Approvals {
 	 */
 	public static function pmpro_members_list_user( $user ) {
 
-	// Hide ('pending') link from the following statuses.
-	$status_in = apply_filters( 'pmpro_approvals_members_list_status', array( 'oldmembers', 'cancelled', 'expired' ) );
+	// Deprecated: the Pending link is only shown for levels the user currently holds.
+	apply_filters_deprecated( 'pmpro_approvals_members_list_status', array( array( 'oldmembers', 'cancelled', 'expired' ) ), 'TBD' );
 
 	// Bail if this is the dashboard page.
 	if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-dashboard' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only comparison against a fixed string.
@@ -1474,7 +1474,7 @@ class PMPro_Approvals {
 	// Check if the user is pending for any of their levels.
 	$approval_levels = self::getApprovalLevels();
 	foreach ( $approval_levels as $approval_level_id ) {
-		if ( self::isPending( $user->ID, $approval_level_id ) ) {
+		if ( self::hasMembershipLevelSansApproval( $approval_level_id, $user->ID ) && self::isPending( $user->ID, $approval_level_id ) ) {
 			$user->membership .= ' (<a href="' . admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $user->user_email ) ) . '">' . __( 'Pending', 'pmpro-approvals' ) . '</a>)';
 			break;
 		}
