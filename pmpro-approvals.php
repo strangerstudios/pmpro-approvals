@@ -1642,12 +1642,12 @@ class PMPro_Approvals {
 		}
 
 		// If the email is an admin email, include user fields for all Approval emails.
-		if ( ! in_array( $email->template, array( 'admin_approved', 'admin_denied', 'admin_notification_approval' ) ) ) {
+		if ( ! in_array( $email->template, array( 'admin_approved', 'admin_denied', 'admin_notification_approval', 'admin_approved_admin', 'admin_denied_admin', 'admin_notification_approval_admin' ) ) ) {
 			return $email;
 		}
 
 		// Get the user_id from the email
-		$user = get_user_by( 'email', $email->data['user_email'] );
+		$user = ! empty( $email->data['member_email'] ) ? get_user_by( 'email', $email->data['member_email'] ) : false;
 		$user_id = $user ? $user->ID : 0;
 
 		if ( ! empty( $user_id ) ) {
