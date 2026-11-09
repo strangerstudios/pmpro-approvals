@@ -1329,6 +1329,7 @@ class PMPro_Approvals {
 		}
 
 		//during checkout, wait until user fields are saved so they can be included in the email.
+		//the shutdown hook covers checkouts that stop before pmpro_after_checkout.
 		if ( did_action( 'pmpro_checkout_before_change_membership_level' ) > did_action( 'pmpro_after_checkout' ) ) {
 			self::$pending_admin_emails[] = array( $user_id, $level_id );
 			add_action( 'pmpro_after_checkout', array( 'PMPro_Approvals', 'send_pending_admin_emails' ), 20 );
@@ -1678,6 +1679,7 @@ class PMPro_Approvals {
 		// Get the user_id from the email
 		$user = ! empty( $email->data['member_email'] ) ? get_user_by( 'email', $email->data['member_email'] ) : false;
 		$user_id = $user ? $user->ID : 0;
+		$level_id = ! empty( $email->data['membership_id'] ) ? (int) $email->data['membership_id'] : 0;
 
 		if ( ! empty( $user_id ) ) {
 			//add to bottom of email
@@ -1687,14 +1689,14 @@ class PMPro_Approvals {
 				$added_field = false;
 				// Loop through all the field groups.
 				foreach( $field_groups as $group_name => $group ) {
-					// Loop through all the fields in the group.
-					$fields = $group->get_fields_to_display(
-						array(
-							'scope' => 'checkout',
-							'user_id' => $user_id,
-						)
-					);
-					foreach( $fields as $field ) {
+					// Loop through the group's checkout fields for the email's level.
+					foreach( $group->get_fields() as $field ) {
+						if ( in_array( $field->profile, array( 'only', 'only_admin' ), true ) ) {
+							continue;
+						}
+						if ( ! empty( $field->levels ) && ! in_array( $level_id, $field->levels, true ) ) {
+							continue;
+						}
 						$fields_content .= "- " . esc_html( $field->label ) . ": ";
 						$fields_content .= $field->displayValue( get_user_meta( $user_id, $field->meta_key, true), false );
 						$fields_content .= "<br />";
