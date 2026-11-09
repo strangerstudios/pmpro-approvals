@@ -454,6 +454,22 @@ class PMPro_Approvals {
 										<?php
 								}
 								?>
+								</select>
+								<?php
+								foreach ( $levels as $level ) {
+									if ( self::requiresApproval( $level->id ) ) {
+										continue;
+									}
+									?>
+									<p class="description pmproap-restrict-level-notice" data-level="<?php echo esc_attr( $level->id ); ?>" style="display: none;">
+										<?php
+										/* translators: %1$s: membership level name */
+										echo esc_html( sprintf( __( '%1$s does not require approval, so any member of %1$s can check out for this level. To require an admin-approved membership, set %1$s to "Yes. Admin must approve new members for this level."', 'pmpro-approvals' ), $level->name ) );
+										?>
+									</p>
+									<?php
+								}
+								?>
 							</td>
 						</tr>
 						<?php } ?>
@@ -467,10 +483,14 @@ class PMPro_Approvals {
 									jQuery('#approval_restrict_level').closest('tr').show();
 								else
 									jQuery('#approval_restrict_level').closest('tr').hide();
+
+								//warn if the chosen level does not require approval
+								jQuery('.pmproap-restrict-level-notice').hide();
+								jQuery('.pmproap-restrict-level-notice[data-level="' + jQuery('#approval_restrict_level').val() + '"]').show();
 							}
 							
-							//bind to approval setting change
-							jQuery('#approval_setting').change(function() { pmproap_toggleWhichLevel(); });
+							//bind to approval setting and level changes
+							jQuery('#approval_setting, #approval_restrict_level').change(function() { pmproap_toggleWhichLevel(); });
 							
 							//run on load
 							pmproap_toggleWhichLevel();
