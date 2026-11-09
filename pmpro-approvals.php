@@ -1462,26 +1462,27 @@ class PMPro_Approvals {
 	 * Add approval status to the members list in the dashboard
 	 */
 	public static function pmpro_members_list_user( $user ) {
+		static $warned = false;
 
-	// Hide ('pending') link from the following statuses.
-	$status_in = apply_filters( 'pmpro_approvals_members_list_status', array( 'oldmembers', 'cancelled', 'expired' ) );
+		// Deprecated: the Pending link is only shown on rows for a level the user holds.
+		if ( ! $warned ) {
+			apply_filters_deprecated( 'pmpro_approvals_members_list_status', array( array( 'oldmembers', 'cancelled', 'expired' ) ), 'TBD', '', __( 'Pending is now shown only on rows for an approval level the user currently holds; this filter has no effect.', 'pmpro-approvals' ) );
+			$warned = true;
+		}
 
-	// Bail if this is the dashboard page.
-	if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-dashboard' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only comparison against a fixed string.
+		// Bail if this is the dashboard page.
+		if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-dashboard' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only comparison against a fixed string.
+			return $user;
+		}
+
+		// Check if the user is pending for the level on this row.
+		$level_id = isset( $user->membership_id ) ? (int) $user->membership_id : 0;
+		if ( ! empty( $level_id ) && self::requiresApproval( $level_id ) && self::hasMembershipLevelSansApproval( $level_id, $user->ID ) && self::isPending( $user->ID, $level_id ) ) {
+			$user->membership .= ' (<a href="' . admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $user->user_email ) ) . '">' . __( 'Pending', 'pmpro-approvals' ) . '</a>)';
+		}
+
 		return $user;
 	}
-
-	// Check if the user is pending for any of their levels.
-	$approval_levels = self::getApprovalLevels();
-	foreach ( $approval_levels as $approval_level_id ) {
-		if ( self::isPending( $user->ID, $approval_level_id ) ) {
-			$user->membership .= ' (<a href="' . admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $user->user_email ) ) . '">' . __( 'Pending', 'pmpro-approvals' ) . '</a>)';
-			break;
-		}
-	}
-
-	return $user;
-}
 
 	/**
 	 * Add the approval membership level template
