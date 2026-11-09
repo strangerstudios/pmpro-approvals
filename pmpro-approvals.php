@@ -1332,6 +1332,7 @@ class PMPro_Approvals {
 		if ( did_action( 'pmpro_checkout_before_change_membership_level' ) > did_action( 'pmpro_after_checkout' ) ) {
 			self::$pending_admin_emails[] = array( $user_id, $level_id );
 			add_action( 'pmpro_after_checkout', array( 'PMPro_Approvals', 'send_pending_admin_emails' ), 20 );
+			add_action( 'shutdown', array( 'PMPro_Approvals', 'send_pending_admin_emails' ) );
 			return;
 		}
 
@@ -1351,7 +1352,7 @@ class PMPro_Approvals {
 
 		foreach ( $pending_admin_emails as $pending ) {
 			list( $user_id, $level_id ) = $pending;
-			if ( self::isApproved( $user_id, $level_id ) ) {
+			if ( ! self::hasMembershipLevelSansApproval( $level_id, $user_id ) || self::isApproved( $user_id, $level_id ) ) {
 				continue;
 			}
 
@@ -1695,7 +1696,7 @@ class PMPro_Approvals {
 					);
 					foreach( $fields as $field ) {
 						$fields_content .= "- " . esc_html( $field->label ) . ": ";
-						$fields_content .= $field->displayValue( get_user_meta( $user_id, $field->name, true), false );
+						$fields_content .= $field->displayValue( get_user_meta( $user_id, $field->meta_key, true), false );
 						$fields_content .= "<br />";
 						$added_field = true;
 					}
