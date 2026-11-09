@@ -51,6 +51,9 @@ if ( ! empty( $_REQUEST['approve'] ) && ! $pmpro_approvals_nonce_valid ) { // ph
 		$msg = 1;
 		/* translators: %s: member display name */
 		$msgt = sprintf( __( '%s is already approved.', 'pmpro-approvals' ), $user->display_name );
+	} elseif ( PMPro_Approvals::isApproved( $user->ID, $l ) || PMPro_Approvals::isDenied( $user->ID, $l ) ) {
+		$msg  = -1;
+		$msgt = __( 'This application has already been decided. To change it, use Reset Approval below.', 'pmpro-approvals' );
 	} elseif ( PMPro_Approvals::approveMember( $user->ID, $l ) ) {
 		/* translators: %s: member display name */
 		$msgt = sprintf( __( '%s has been approved.', 'pmpro-approvals' ), $user->display_name );
@@ -61,13 +64,16 @@ if ( ! empty( $_REQUEST['approve'] ) && ! $pmpro_approvals_nonce_valid ) { // ph
 		$msg = 1;
 		/* translators: %s: member display name */
 		$msgt = sprintf( __( '%s is already denied.', 'pmpro-approvals' ), $user->display_name );
+	} elseif ( PMPro_Approvals::isApproved( $user->ID, $l ) || PMPro_Approvals::isDenied( $user->ID, $l ) ) {
+		$msg  = -1;
+		$msgt = __( 'This application has already been decided. To change it, use Reset Approval below.', 'pmpro-approvals' );
 	} elseif ( PMPro_Approvals::denyMember( $user->ID, $l ) ) {
 		/* translators: %s: member display name */
 		$msgt = sprintf( __( '%s has been denied.', 'pmpro-approvals' ), $user->display_name );
 	}
 } elseif ( ! empty( $_REQUEST['unapprove'] ) ) {
 	check_admin_referer( 'pmpro_approvals', 'pmpro_approvals_nonce' );
-	if ( PMPro_Approvals::resetMember( intval( $_REQUEST['unapprove'] ), $l ) ) {
+	if ( PMPro_Approvals::resetMember( $user->ID, $l ) ) {
 		/* translators: %s: member display name */
 		$msgt = sprintf( __( 'Approval for %s has been reset to pending.', 'pmpro-approvals' ), $user->display_name );
 	}
@@ -102,12 +108,12 @@ if ( ! empty( $_REQUEST['approve'] ) && ! $pmpro_approvals_nonce_valid ) { // ph
 
 <?php
 if ( ! empty( $pmpro_approvals_confirm_action ) ) {
-	$pmpro_approvals_already = ( 'approve' === $pmpro_approvals_confirm_action ) ? PMPro_Approvals::isApproved( $user->ID, $l ) : PMPro_Approvals::isDenied( $user->ID, $l );
-	if ( $pmpro_approvals_already ) {
-		/* translators: %s: member display name */
-		$pmpro_approvals_confirm_text = ( 'approve' === $pmpro_approvals_confirm_action ) ? __( '%s is already approved.', 'pmpro-approvals' ) : __( '%s is already denied.', 'pmpro-approvals' );
+	if ( PMPro_Approvals::isApproved( $user->ID, $l ) || PMPro_Approvals::isDenied( $user->ID, $l ) ) {
 		?>
-		<div class="notice notice-info"><p><?php echo esc_html( sprintf( $pmpro_approvals_confirm_text, $user->display_name ) ); ?></p></div>
+		<div class="notice notice-info">
+			<p><?php echo wp_kses_post( PMPro_Approvals::getUserApprovalStatus( $user->ID, $l, false ) ); ?></p>
+			<p><?php esc_html_e( 'This application has already been decided. To change it, use Reset Approval below.', 'pmpro-approvals' ); ?></p>
+		</div>
 		<?php
 	} else {
 		$pmpro_approvals_confirm_url = add_query_arg(
