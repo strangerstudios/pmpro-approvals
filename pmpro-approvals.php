@@ -43,6 +43,7 @@ class PMPro_Approvals {
 		Attributes
 	*/
 	private static $instance = null;        // Refers to a single instance of this class.
+	private static $pending_admin_emails = array(); // Admin pending emails waiting for checkout to finish.
 
 	/**
 	 * Constructor
@@ -1327,9 +1328,36 @@ class PMPro_Approvals {
 			return;
 		}
 
+		//during checkout, wait until user fields are saved so they can be included in the email.
+		if ( did_action( 'pmpro_checkout_before_change_membership_level' ) > did_action( 'pmpro_after_checkout' ) ) {
+			self::$pending_admin_emails[] = array( $user_id, $level_id );
+			add_action( 'pmpro_after_checkout', array( 'PMPro_Approvals', 'send_pending_admin_emails' ), 20 );
+			return;
+		}
+
 		//send email to admin that a new member requires approval.
 		$email = new PMPro_Approvals_Email();
 		$email->sendAdminPending( $user_id, null, $level_id );
+	}
+
+	/**
+	 * Send admin pending approval emails that were held until checkout finished.
+	 *
+	 * @since TBD
+	 */
+	public static function send_pending_admin_emails() {
+		$pending_admin_emails       = self::$pending_admin_emails;
+		self::$pending_admin_emails = array();
+
+		foreach ( $pending_admin_emails as $pending ) {
+			list( $user_id, $level_id ) = $pending;
+			if ( self::isApproved( $user_id, $level_id ) ) {
+				continue;
+			}
+
+			$email = new PMPro_Approvals_Email();
+			$email->sendAdminPending( $user_id, null, $level_id );
+		}
 	}
 
 	/**
