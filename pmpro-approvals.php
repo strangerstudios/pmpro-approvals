@@ -1466,7 +1466,7 @@ class PMPro_Approvals {
 
 		// Deprecated: the Pending link is only shown on rows for a level the user holds.
 		if ( ! $warned ) {
-			apply_filters_deprecated( 'pmpro_approvals_members_list_status', array( array( 'oldmembers', 'cancelled', 'expired' ) ), 'TBD' );
+			apply_filters_deprecated( 'pmpro_approvals_members_list_status', array( array( 'oldmembers', 'cancelled', 'expired' ) ), 'TBD', '', __( 'Pending is now shown only on rows for an approval level the user currently holds; this filter has no effect.', 'pmpro-approvals' ) );
 			$warned = true;
 		}
 
