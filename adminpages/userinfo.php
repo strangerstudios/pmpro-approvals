@@ -41,19 +41,27 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 	global $msg, $msgt;
 	$pmpro_approvals_confirm_action = '';
 	$pmpro_approvals_nonce_valid    = ! empty( $_REQUEST['pmpro_approvals_nonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['pmpro_approvals_nonce'] ) ), 'pmpro_approvals' );
-if ( ! empty( $_REQUEST['approve'] ) && ! $pmpro_approvals_nonce_valid ) {
+if ( ! empty( $_REQUEST['approve'] ) && ! $pmpro_approvals_nonce_valid ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Unverified request only renders a confirmation; actions verify the nonce below.
 	$pmpro_approvals_confirm_action = 'approve';
-} elseif ( ! empty( $_REQUEST['deny'] ) && ! $pmpro_approvals_nonce_valid ) {
+} elseif ( ! empty( $_REQUEST['deny'] ) && ! $pmpro_approvals_nonce_valid ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Unverified request only renders a confirmation; actions verify the nonce below.
 	$pmpro_approvals_confirm_action = 'deny';
 } elseif ( ! empty( $_REQUEST['approve'] ) ) {
 	check_admin_referer( 'pmpro_approvals', 'pmpro_approvals_nonce' );
-	if ( PMPro_Approvals::approveMember( intval( $_REQUEST['approve'] ), $l ) ) {
+	if ( PMPro_Approvals::isApproved( $user->ID, $l ) ) {
+		$msg = 1;
+		/* translators: %s: member display name */
+		$msgt = sprintf( __( '%s is already approved.', 'pmpro-approvals' ), $user->display_name );
+	} elseif ( PMPro_Approvals::approveMember( $user->ID, $l ) ) {
 		/* translators: %s: member display name */
 		$msgt = sprintf( __( '%s has been approved.', 'pmpro-approvals' ), $user->display_name );
 	}
 } elseif ( ! empty( $_REQUEST['deny'] ) ) {
 	check_admin_referer( 'pmpro_approvals', 'pmpro_approvals_nonce' );
-	if ( PMPro_Approvals::denyMember( intval( $_REQUEST['deny'] ), $l ) ) {
+	if ( PMPro_Approvals::isDenied( $user->ID, $l ) ) {
+		$msg = 1;
+		/* translators: %s: member display name */
+		$msgt = sprintf( __( '%s is already denied.', 'pmpro-approvals' ), $user->display_name );
+	} elseif ( PMPro_Approvals::denyMember( $user->ID, $l ) ) {
 		/* translators: %s: member display name */
 		$msgt = sprintf( __( '%s has been denied.', 'pmpro-approvals' ), $user->display_name );
 	}
