@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: paid memberships pro, pmpro, approval, approvals, workflow
 Requires at least: 6.0
 Tested up to: 7.1
-Stable tag: 1.8.2
+Stable tag: 1.8.3
 
 Grants administrators the ability to approve/deny memberships after signup.
 
@@ -36,6 +36,13 @@ Members pending approval will not have access to view members-only content until
 View full documentation at: https://www.paidmembershipspro.com/add-ons/approval-process-membership/
 
 == Changelog ==
+= 1.8.3 - 2026-11-18 =
+* ENHANCEMENT: Improved Member Directory and BuddyPress directory performance by skipping the approval status query when none of the directory's levels require approval. #226 (@dparker1005)
+* ENHANCEMENT: The level settings now warn when the level a member must be approved for doesn't itself require approval. #234 (@flintfromthebasement)
+* BUG FIX: Fixed the approve and deny links in admin emails showing "The link you followed has expired". They now open a confirmation screen. #231 (@flintfromthebasement)
+* BUG FIX: Fixed User Fields not being included in admin approval emails. Admin approved, denied and pending emails now list the member's User Fields under "Extra Fields". #232 (@flintfromthebasement)
+* DEPRECATED: The `pmpro_approvals_members_list_status` filter is deprecated and has no effect. The Members List "Pending" link code was removed because PMPro has not displayed it since v2.4.5. #233 (@flintfromthebasement)
+
 = 1.8.2 - 2026-09-29 =
 * SECURITY: Improved sanitization and escaping throughout the plugin to resolve Plugin Check security findings. #225 (@dparker1005)
 * BUG FIX: Fixed searches containing an apostrophe on the Approvals admin page. #225 (@dparker1005)
