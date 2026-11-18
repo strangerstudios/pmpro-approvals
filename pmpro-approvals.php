@@ -1085,7 +1085,7 @@ class PMPro_Approvals {
 	 */
 	private static function directory_needs_approval_check( $level_ids ) {
 		if ( empty( $level_ids ) ) {
-			$level_ids = wp_list_pluck( pmpro_getAllLevels( true, true ), 'id' );
+			$level_ids = wp_list_pluck( pmpro_getAllLevels( true ), 'id' );
 		}
 
 		foreach ( $level_ids as $level_id ) {
