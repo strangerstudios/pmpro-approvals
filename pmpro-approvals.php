@@ -109,9 +109,6 @@ class PMPro_Approvals {
 		//check approval status at checkout
 		add_action( 'pmpro_checkout_preheader', array( 'PMPro_Approvals', 'pmpro_checkout_preheader' ) );
 
-		//add approval status to members list
-		add_action( 'pmpro_members_list_user', array( 'PMPro_Approvals', 'pmpro_members_list_user' ) );
-
 		//add an Email Confirmation column to the approvals list (only when the Email Confirmation Add On is active)
 		add_action( 'pmpro_approvals_list_extra_cols_header', array( 'PMPro_Approvals', 'email_confirmation_column_header' ) );
 		add_action( 'pmpro_approvals_list_extra_cols_body', array( 'PMPro_Approvals', 'email_confirmation_column_body' ) );
@@ -156,6 +153,11 @@ class PMPro_Approvals {
 	* Run code on admin init
 	*/
 	public static function admin_init() {
+		// Deprecated: core has not displayed the Members List Pending link since PMPro 2.4.5, so it was removed.
+		if ( has_filter( 'pmpro_approvals_members_list_status' ) ) {
+			apply_filters_deprecated( 'pmpro_approvals_members_list_status', array( array( 'oldmembers', 'cancelled', 'expired' ) ), 'TBD', '', __( 'The Members List Pending link has been removed; this filter has no effect.', 'pmpro-approvals' ) );
+		}
+
 		// Get role of administrator
 		$role = get_role( 'administrator' );
 		
@@ -1456,32 +1458,6 @@ class PMPro_Approvals {
 			esc_html( $status_label )
 		);
 		echo '</span></p>';
-	}
-
-	/**
-	 * Add approval status to the members list in the dashboard
-	 */
-	public static function pmpro_members_list_user( $user ) {
-		static $warned = false;
-
-		// Deprecated: the Pending link is only shown on rows for a level the user holds.
-		if ( ! $warned ) {
-			apply_filters_deprecated( 'pmpro_approvals_members_list_status', array( array( 'oldmembers', 'cancelled', 'expired' ) ), 'TBD', '', __( 'Pending is now shown only on rows for an approval level the user currently holds; this filter has no effect.', 'pmpro-approvals' ) );
-			$warned = true;
-		}
-
-		// Bail if this is the dashboard page.
-		if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-dashboard' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only comparison against a fixed string.
-			return $user;
-		}
-
-		// Check if the user is pending for the level on this row.
-		$level_id = isset( $user->membership_id ) ? (int) $user->membership_id : 0;
-		if ( ! empty( $level_id ) && self::requiresApproval( $level_id ) && self::hasMembershipLevelSansApproval( $level_id, $user->ID ) && self::isPending( $user->ID, $level_id ) ) {
-			$user->membership .= ' (<a href="' . admin_url( 'admin.php?page=pmpro-approvals&s=' . urlencode( $user->user_email ) ) . '">' . __( 'Pending', 'pmpro-approvals' ) . '</a>)';
-		}
-
-		return $user;
 	}
 
 	/**
