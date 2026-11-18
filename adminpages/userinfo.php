@@ -37,22 +37,43 @@ if ( empty( $_REQUEST['user_id'] ) ) {
 	//process approve/deny/reset actions. The action methods set the global $msg/$msgt
 	//that admin_header.php prints; on success, override $msgt to personalize it with the
 	//member's name. On failure the methods set their own error message, so leave it alone.
+	//approve/deny links from emails carry no nonce, so ask the admin to confirm instead of failing.
 	global $msg, $msgt;
-if ( ! empty( $_REQUEST['approve'] ) ) {
+	$pmpro_approvals_confirm_action = '';
+	$pmpro_approvals_nonce_valid    = ! empty( $_REQUEST['pmpro_approvals_nonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['pmpro_approvals_nonce'] ) ), 'pmpro_approvals' );
+if ( ! empty( $_REQUEST['approve'] ) && ! $pmpro_approvals_nonce_valid ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Unverified request only renders a confirmation; actions verify the nonce below.
+	$pmpro_approvals_confirm_action = 'approve';
+} elseif ( ! empty( $_REQUEST['deny'] ) && ! $pmpro_approvals_nonce_valid ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Unverified request only renders a confirmation; actions verify the nonce below.
+	$pmpro_approvals_confirm_action = 'deny';
+} elseif ( ! empty( $_REQUEST['approve'] ) ) {
 	check_admin_referer( 'pmpro_approvals', 'pmpro_approvals_nonce' );
-	if ( PMPro_Approvals::approveMember( intval( $_REQUEST['approve'] ), $l ) ) {
+	if ( PMPro_Approvals::isApproved( $user->ID, $l ) ) {
+		$msg = 1;
+		/* translators: %s: member display name */
+		$msgt = sprintf( __( '%s is already approved.', 'pmpro-approvals' ), $user->display_name );
+	} elseif ( PMPro_Approvals::isApproved( $user->ID, $l ) || PMPro_Approvals::isDenied( $user->ID, $l ) ) {
+		$msg  = -1;
+		$msgt = __( 'This application has already been decided. To change it, use Reset Approval below.', 'pmpro-approvals' );
+	} elseif ( PMPro_Approvals::approveMember( $user->ID, $l ) ) {
 		/* translators: %s: member display name */
 		$msgt = sprintf( __( '%s has been approved.', 'pmpro-approvals' ), $user->display_name );
 	}
 } elseif ( ! empty( $_REQUEST['deny'] ) ) {
 	check_admin_referer( 'pmpro_approvals', 'pmpro_approvals_nonce' );
-	if ( PMPro_Approvals::denyMember( intval( $_REQUEST['deny'] ), $l ) ) {
+	if ( PMPro_Approvals::isDenied( $user->ID, $l ) ) {
+		$msg = 1;
+		/* translators: %s: member display name */
+		$msgt = sprintf( __( '%s is already denied.', 'pmpro-approvals' ), $user->display_name );
+	} elseif ( PMPro_Approvals::isApproved( $user->ID, $l ) || PMPro_Approvals::isDenied( $user->ID, $l ) ) {
+		$msg  = -1;
+		$msgt = __( 'This application has already been decided. To change it, use Reset Approval below.', 'pmpro-approvals' );
+	} elseif ( PMPro_Approvals::denyMember( $user->ID, $l ) ) {
 		/* translators: %s: member display name */
 		$msgt = sprintf( __( '%s has been denied.', 'pmpro-approvals' ), $user->display_name );
 	}
 } elseif ( ! empty( $_REQUEST['unapprove'] ) ) {
 	check_admin_referer( 'pmpro_approvals', 'pmpro_approvals_nonce' );
-	if ( PMPro_Approvals::resetMember( intval( $_REQUEST['unapprove'] ), $l ) ) {
+	if ( PMPro_Approvals::resetMember( $user->ID, $l ) ) {
 		/* translators: %s: member display name */
 		$msgt = sprintf( __( 'Approval for %s has been reset to pending.', 'pmpro-approvals' ), $user->display_name );
 	}
@@ -84,6 +105,43 @@ if ( ! empty( $_REQUEST['approve'] ) ) {
 </nav>
 
 <h1><?php echo esc_html( sprintf( __( 'Application for %s', 'pmpro-approvals' ), $user->display_name ) ); ?></h1>
+
+<?php
+if ( ! empty( $pmpro_approvals_confirm_action ) ) {
+	if ( PMPro_Approvals::isApproved( $user->ID, $l ) || PMPro_Approvals::isDenied( $user->ID, $l ) ) {
+		?>
+		<div class="notice notice-info">
+			<p><?php echo wp_kses_post( PMPro_Approvals::getUserApprovalStatus( $user->ID, $l, false ) ); ?></p>
+			<p><?php esc_html_e( 'This application has already been decided. To change it, use Reset Approval below.', 'pmpro-approvals' ); ?></p>
+		</div>
+		<?php
+	} else {
+		$pmpro_approvals_confirm_url = add_query_arg(
+			array(
+				'page'                          => 'pmpro-approvals',
+				'user_id'                       => (int) $user->ID,
+				'l'                             => (int) $l,
+				$pmpro_approvals_confirm_action => (int) $user->ID,
+				'pmpro_approvals_nonce'         => wp_create_nonce( 'pmpro_approvals' ),
+			),
+			admin_url( 'admin.php' )
+		);
+		/* translators: %s: member display name */
+		$pmpro_approvals_confirm_text = ( 'approve' === $pmpro_approvals_confirm_action ) ? __( 'Approve %s?', 'pmpro-approvals' ) : __( 'Deny %s?', 'pmpro-approvals' );
+		?>
+		<div class="notice notice-warning">
+			<p><?php echo esc_html( sprintf( $pmpro_approvals_confirm_text, $user->display_name ) ); ?></p>
+			<p>
+				<a href="<?php echo esc_url( $pmpro_approvals_confirm_url ); ?>" class="button <?php echo ( 'approve' === $pmpro_approvals_confirm_action ) ? 'button-primary' : 'is-destructive'; ?>">
+					<?php echo ( 'approve' === $pmpro_approvals_confirm_action ) ? esc_html__( 'Approve', 'pmpro-approvals' ) : esc_html__( 'Deny', 'pmpro-approvals' ); ?>
+				</a>
+				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-approvals', 'user_id' => (int) $user->ID, 'l' => (int) $l ), admin_url( 'admin.php' ) ) ); ?>" class="button button-secondary"><?php esc_html_e( 'Cancel', 'pmpro-approvals' ); ?></a>
+			</p>
+		</div>
+		<?php
+	}
+}
+?>
 
 <div class="pmpro_two_col pmpro_two_col-right">
 
