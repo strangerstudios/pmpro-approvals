@@ -156,7 +156,7 @@ class PMPro_Approvals {
 	public static function admin_init() {
 		// Deprecated: core has not displayed the Members List Pending link since PMPro 2.4.5, so it was removed.
 		if ( has_filter( 'pmpro_approvals_members_list_status' ) ) {
-			apply_filters_deprecated( 'pmpro_approvals_members_list_status', array( array( 'oldmembers', 'cancelled', 'expired' ) ), 'TBD', '', __( 'The Members List Pending link has been removed; this filter has no effect.', 'pmpro-approvals' ) );
+			apply_filters_deprecated( 'pmpro_approvals_members_list_status', array( array( 'oldmembers', 'cancelled', 'expired' ) ), '1.8.3', '', __( 'The Members List Pending link has been removed; this filter has no effect.', 'pmpro-approvals' ) );
 		}
 
 		// Get role of administrator
